@@ -1,8 +1,8 @@
 float toCircle(float value) {
-	if (value > 2 * PI)
-		return value - (2 * PI);
+	if (value > 2.0 * PI)
+		return value - (2.0 * PI);
     if (value < 0)
-      return value + 2 * PI;
+      return value + 2.0 * PI;
 		
 	return value;
 }
@@ -30,13 +30,13 @@ float angleDiff(float a1, float a2, boolean sign) {
     }
     
     float d = larger - smaller;
-    if (d > 180) {
-        d = 360 - d;
+    if (d > 180.0) {
+        d = 360.0 - d;
         mult *= -1;
     }
 
     if (!sign)
-        mult = 1;
+        mult = 1.0;
 
     return mult * d;
 }

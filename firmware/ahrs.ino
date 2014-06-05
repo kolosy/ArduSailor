@@ -112,5 +112,5 @@ float readSteadyHeading() {
 	}
 
 	// rotate by 180* to get to 0-360
-	return toCircle(heading / ((float) MPU_ITERATIONS) + PI);
+	return toCircle(heading / ((float) MPU_ITERATIONS) + 3.0 * PI / 2);
 }

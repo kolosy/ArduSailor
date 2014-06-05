@@ -79,11 +79,11 @@ void winchTo(int value) {
 }
 
 void rudderTo(int value) {
-    int v = v;//constrain(value, RUDDER_MIN, RUDDER_MAX);
+    int v = constrain(value, RUDDER_MIN, RUDDER_MAX);
 	
 	digitalWrite(RUDDER_EN, HIGH);
 	delay(100);
-	sv_rudder.write(value);
+	sv_rudder.write(v);
 	delay(1000);
 	digitalWrite(RUDDER_EN, LOW);
 	

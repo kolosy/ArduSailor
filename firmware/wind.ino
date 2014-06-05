@@ -2,7 +2,7 @@
 #define WS2 0
 
 #define SIGN_SHIFT 500
-#define SENSOR_OFFSET 19.5
+#define SENSOR_OFFSET 209.0
 
 #define WIND_ITERATIONS 50
 
@@ -15,6 +15,6 @@ float readSteadyWind() {
 		ws2 += analogRead(WS2);
 		delay(1);
 	}
-	
-	return toCircle(atan2(ws1 / ((float) WIND_ITERATIONS) - SIGN_SHIFT, ws2 / ((float) WIND_ITERATIONS) - SIGN_SHIFT) - (SENSOR_OFFSET * PI / 180.0) + PI);
+
+	return toCircle(-atan2(ws1 / ((float) WIND_ITERATIONS) - SIGN_SHIFT, ws2 / ((float) WIND_ITERATIONS) - SIGN_SHIFT) - (SENSOR_OFFSET * PI / 180.0) + PI);
 }

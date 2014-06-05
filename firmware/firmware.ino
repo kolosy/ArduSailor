@@ -32,8 +32,8 @@ char gps_aprs_lon[10];
 float gps_course = 0;
 float gps_speed = 0;
 float gps_altitude = 0;
-uint8_t ahrs_heading = 0;
-uint8_t wind = 0;
+uint16_t ahrs_heading = 0;
+uint16_t wind = 0;
 
 uint8_t current_rudder = 0;
 uint8_t current_winch = 0;
@@ -84,6 +84,8 @@ void setup()
 
 	Serial.println("ArduSailor Starting...");
 	
+pinMode(7, INPUT);
+pinMode(4, OUTPUT);
 	gpsSerial.begin(GPS_BAUDRATE);
 	
 	pinMode(NAV_LOCK, INPUT);
@@ -105,9 +107,13 @@ void updateSensors() {
 	ahrs_heading = readSteadyHeading() * 180.0 / PI;
 	wind = readSteadyWind() * 180.0 / PI;
 	
+	gpsSerial.begin(GPS_BAUDRATE);
+
     do {
 	    while (! gpsSerial.available());
 	} while (! gps_decode(gpsSerial.read()));
+gpsSerial.end();
+
 }
 
 void loop() 

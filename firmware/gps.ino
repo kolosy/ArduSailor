@@ -1,5 +1,5 @@
 // Module constants
-static const uint32_t VALID_POS_TIMEOUT = 2000;	// ms
+static const uint32_t VALID_POS_TIMEOUT = 2000; // ms
 
 // Module types
 typedef void (*t_nmea_parser)(const char *token);
@@ -18,7 +18,7 @@ static const t_nmea_parser unk_parsers[] = {
 
 static const t_nmea_parser gga_parsers[] = {
 	NULL,						 // $GPGGA
-	parse_time,			         // Time
+	parse_time,					 // Time
 	NULL,						 // Latitude
 	NULL,						 // N/S
 	NULL,						 // Longitude
@@ -26,12 +26,12 @@ static const t_nmea_parser gga_parsers[] = {
 	NULL,						 // Fix quality 
 	NULL,						 // Number of satellites
 	NULL,						 // Horizontal dilution of position
-	parse_altitude,	             // Altitude
+	parse_altitude,				 // Altitude
 	NULL,						 // "M" (mean sea level)
 	NULL,						 // Height of GEOID (MSL) above WGS84 ellipsoid
 	NULL,						 // "M" (mean sea level)
 	NULL,						 // Time in seconds since the last DGPS update
-	NULL                         // DGPS station ID number
+	NULL						 // DGPS station ID number
 };
 
 static const t_nmea_parser rmc_parsers[] = {

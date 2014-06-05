@@ -84,22 +84,22 @@ void setup()
 
 	Serial.println("ArduSailor Starting...");
 	
-pinMode(7, INPUT);
-pinMode(4, OUTPUT);
+    pinMode(7, INPUT);
+    pinMode(4, OUTPUT);
 	gpsSerial.begin(GPS_BAUDRATE);
 	
 	pinMode(NAV_LOCK, INPUT);
 
 	servoInit();
 	mpuInit();
-    // sdInit();
+	// sdInit();
 	gpsInit();
 
-    Serial.print("Waiting for GPS lock...");
-    while (digitalRead(NAV_LOCK) == LOW);
-    Serial.println("locked.");
-    
-    pilotInit();
+	Serial.print("Waiting for GPS lock...");
+	while (digitalRead(NAV_LOCK) == LOW);
+	Serial.println("locked.");
+	
+	pilotInit();
 } 
 
 void updateSensors() {
@@ -109,18 +109,18 @@ void updateSensors() {
 	
 	gpsSerial.begin(GPS_BAUDRATE);
 
-    do {
-	    while (! gpsSerial.available());
+	do {
+		while (! gpsSerial.available());
 	} while (! gps_decode(gpsSerial.read()));
-gpsSerial.end();
-
+    
+    gpsSerial.end();
 }
 
 void loop() 
 { 
-    updateSensors();
-    
-        doPilot();
-        
-    sleepMillis(adjustment_made ? SCAN_RATE_FAST : SCAN_RATE_NORMAL);
+	updateSensors();
+	
+	doPilot();
+		
+	sleepMillis(adjustment_made ? SCAN_RATE_FAST : SCAN_RATE_NORMAL);
 } 

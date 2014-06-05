@@ -63,7 +63,7 @@ float computeBearing(float i_lat, float i_lon, float f_lat, float f_lon) {
 	float y = sin(f_lon-i_lon) * cos(f_lat);
 	float x = cos(i_lat)*sin(f_lat) -
 						sin(i_lat)*cos(f_lat)*cos(f_lon-i_lon);
-	return atan2(y, x);	
+	return atan2(y, x); 
 }
 
 // lat/lon in radians. returns distance in meters
@@ -118,71 +118,71 @@ void gybe() {
 }
 
 void safetyCheck() {
-    return;
-    
-    if (IN_IRONS(wind)) {
-        if (wind < 180) TO_PORT(15); else TO_SBRD(15);
-        sleepMillis(1000);
-        adjustment_made = true;
-        updateSensors();
-    } else if (MIGHT_GYBE(wind)) {
-        if (wind > 180) TO_PORT(15); else TO_SBRD(15);
-        sleepMillis(1000);
-        adjustment_made = true;
-        updateSensors();
-    }
+	return;
+	
+	if (IN_IRONS(wind)) {
+		if (wind < 180) TO_PORT(15); else TO_SBRD(15);
+		sleepMillis(1000);
+		adjustment_made = true;
+		updateSensors();
+	} else if (MIGHT_GYBE(wind)) {
+		if (wind > 180) TO_PORT(15); else TO_SBRD(15);
+		sleepMillis(1000);
+		adjustment_made = true;
+		updateSensors();
+	}
 }
 
 void adjustSails() {
-    float new_winch = map(abs(wind - 180), 30, 170, WINCH_MIN, WINCH_MAX);
-    
-    if (abs(new_winch - current_winch) > SAIL_ADJUST_ON) {
-        adjustment_made = true;
-        winchTo(new_winch);
-    }
+	float new_winch = map(abs(wind - 180), 30, 170, WINCH_MIN, WINCH_MAX);
+	
+	if (abs(new_winch - current_winch) > SAIL_ADJUST_ON) {
+		adjustment_made = true;
+		winchTo(new_winch);
+	}
 }
 
 void adjustHeading() {
-    float off_course = angleDiff(ahrs_heading, wp_heading, true);
-    
-    int new_wind = DEG(toCircle(RAD(wind - off_course)));
-    
-    if (IN_IRONS(new_wind) || MIGHT_GYBE(new_wind)) {
-        if (CAN_TURN()) {
-            IN_IRONS(new_wind) ? tack() : gybe();
-            last_turn = millis();
-            adjustment_made = true;
-        }
-        else {
-            if (off_course < 0) {
-                if (wind > 270)
-                    new_wind = 360 - IRONS;
-                else
-                    new_wind = 180 - ON_RUN;
-            } else {
-                if (wind < 90)
-                    new_wind = IRONS;
-                else 
-                    new_wind = 180 + ON_RUN;
-            }
+	float off_course = angleDiff(ahrs_heading, wp_heading, true);
+	
+	int new_wind = DEG(toCircle(RAD(wind - off_course)));
+	
+	if (IN_IRONS(new_wind) || MIGHT_GYBE(new_wind)) {
+		if (CAN_TURN()) {
+			IN_IRONS(new_wind) ? tack() : gybe();
+			last_turn = millis();
+			adjustment_made = true;
+		}
+		else {
+			if (off_course < 0) {
+				if (wind > 270)
+					new_wind = 360 - IRONS;
+				else
+					new_wind = 180 - ON_RUN;
+			} else {
+				if (wind < 90)
+					new_wind = IRONS;
+				else 
+					new_wind = 180 + ON_RUN;
+			}
 
-            float max_adjust = angleDiff(new_wind, wind, true);
-            if (abs(max_adjust) > COURSE_ADJUST_ON) {
-                if (max_adjust < 0)
-                    TO_PORT(-max_adjust);
-                else 
-                    TO_SBRD(max_adjust);
-                adjustment_made = true;
-            }
-        }
-    } else {
-        off_course < 0 ? TO_PORT(2 * -off_course) : TO_SBRD(2 * off_course);
-        sleepMillis(COURSE_CORRECTION_TIME);
-        updateSensors();
-        adjustSails();
-        centerRudder();
-        adjustment_made = true;
-    }
+			float max_adjust = angleDiff(new_wind, wind, true);
+			if (abs(max_adjust) > COURSE_ADJUST_ON) {
+				if (max_adjust < 0)
+					TO_PORT(-max_adjust);
+				else 
+					TO_SBRD(max_adjust);
+				adjustment_made = true;
+			}
+		}
+	} else {
+		off_course < 0 ? TO_PORT(2 * -off_course) : TO_SBRD(2 * off_course);
+		sleepMillis(COURSE_CORRECTION_TIME);
+		updateSensors();
+		adjustSails();
+		centerRudder();
+		adjustment_made = true;
+	}
 }
 
 void pilotInit() {
@@ -198,7 +198,7 @@ void doPilot() {
 	// check if we've hit the waypoint
 	wp_distance = computeDistance(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon));
 	wp_heading = toCircle(computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon))) * 180 / PI;
-    adjustment_made = false;
+	adjustment_made = false;
 	
 	Serial.print("Distance to waypoint: ");
 	Serial.println(wp_distance, 2);
@@ -229,9 +229,9 @@ void doPilot() {
 		Serial.println(wp_heading);
 	}
 	
-    safetyCheck();
-    
-    adjustSails();
+	safetyCheck();
+	
+	adjustSails();
 	
 	if (angleDiff(ahrs_heading, wp_heading, false) > COURSE_ADJUST_ON)
 		adjustHeading();

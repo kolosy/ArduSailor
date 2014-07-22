@@ -4,8 +4,8 @@
 #define WINCH_EN A2
 #define RUDDER_EN A3
 
-#define RUDDER_MIN 75
-#define RUDDER_MAX 105
+#define RUDDER_MIN 55
+#define RUDDER_MAX 125
 #define WINCH_MIN 60
 #define WINCH_MAX 115
 
@@ -72,7 +72,7 @@ void winchTo(int value) {
 	digitalWrite(WINCH_EN, HIGH);
 	delay(100);
 	sv_winch.write(v);
-	delay(1500);
+	delay(2500);
 	digitalWrite(WINCH_EN, LOW);
 	
 	current_winch = v;
@@ -84,7 +84,7 @@ void rudderTo(int value) {
 	digitalWrite(RUDDER_EN, HIGH);
 	delay(100);
 	sv_rudder.write(v);
-	delay(1000);
+	delay(1500);
 	digitalWrite(RUDDER_EN, LOW);
 	
 	current_rudder = v;

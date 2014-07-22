@@ -207,7 +207,7 @@ void doPilot() {
 	Serial.println(wp_heading, 2);
 	
 	if (wp_distance < GET_WITHIN) {
-		Serial.println("Waypoint reached. Selecting new waypoint.");
+		Serial.println("Waypoint reached");
 		if (target_wp == 1) {
 			target_wp = 2;
 			wp_lat = WP2_LAT;
@@ -221,16 +221,10 @@ void doPilot() {
 		// wp changed, need to recompute
 		wp_distance = computeDistance(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon));
 		wp_heading = computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon)) * 180 / PI;
-
-		Serial.print("Distance to new waypoint ");
-		Serial.println(wp_distance, 2);
-		
-		Serial.print("Heading to new waypoint ");
-		Serial.println(wp_heading);
 	}
 	
-	safetyCheck();
-	
+    // safetyCheck();
+    // 
 	adjustSails();
 	
 	if (angleDiff(ahrs_heading, wp_heading, false) > COURSE_ADJUST_ON)

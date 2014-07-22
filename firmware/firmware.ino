@@ -32,7 +32,7 @@ char gps_aprs_lon[10];
 float gps_course = 0;
 float gps_speed = 0;
 float gps_altitude = 0;
-uint16_t ahrs_heading = 0;
+int16_t ahrs_heading = 0;
 uint16_t wind = 0;
 
 uint8_t current_rudder = 0;
@@ -80,13 +80,12 @@ void setup()
 { 
 	Wire.begin();
 
-	Serial.begin(38400);
+	Serial.begin(115200);
 
-	Serial.println("ArduSailor Starting...");
+    // Serial.println("ArduSailor Starting...");
 	
     pinMode(7, INPUT);
     pinMode(4, OUTPUT);
-	gpsSerial.begin(GPS_BAUDRATE);
 	
 	pinMode(NAV_LOCK, INPUT);
 
@@ -95,9 +94,9 @@ void setup()
 	// sdInit();
 	gpsInit();
 
-	Serial.print("Waiting for GPS lock...");
-	while (digitalRead(NAV_LOCK) == LOW);
-	Serial.println("locked.");
+    // Serial.print("Waiting for GPS lock...");
+    // while (digitalRead(NAV_LOCK) == LOW);
+    // Serial.println("GPS locked.");
 	
 	pilotInit();
 } 
@@ -107,20 +106,30 @@ void updateSensors() {
 	ahrs_heading = readSteadyHeading() * 180.0 / PI;
 	wind = readSteadyWind() * 180.0 / PI;
 	
-	gpsSerial.begin(GPS_BAUDRATE);
+    // gpsSerial.begin(GPS_BAUDRATE);
+    // 
+    // do {
+    //  while (! gpsSerial.available());
+    // } while (! gps_decode(gpsSerial.read()));
+    //     
+    //     gpsSerial.end();
 
-	do {
-		while (! gpsSerial.available());
-	} while (! gps_decode(gpsSerial.read()));
-    
-    gpsSerial.end();
+//    Serial.print("Wind: ");
+//    Serial.print(wind);
+//    Serial.print("; Heading: ");
+//    Serial.print(ahrs_heading);
+//    Serial.print("; Lat: ");
+//    Serial.print(gps_lat, 8);
+//    Serial.print("; Lon: ");
+//    Serial.println(gps_lon, 8);
 }
 
 void loop() 
 { 
 	updateSensors();
+        delay(100);
 	
-	doPilot();
+//	doPilot();
 		
-	sleepMillis(adjustment_made ? SCAN_RATE_FAST : SCAN_RATE_NORMAL);
+//	sleepMillis(adjustment_made ? SCAN_RATE_FAST : SCAN_RATE_NORMAL);
 } 

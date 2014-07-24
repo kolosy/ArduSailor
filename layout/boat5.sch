@@ -8,20 +8,20 @@
 </settings>
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
-<layer number="17" name="Pads" color="2" fill="1" visible="no" active="no"/>
-<layer number="18" name="Vias" color="2" fill="1" visible="no" active="no"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="no"/>
-<layer number="20" name="Dimension" color="15" fill="1" visible="no" active="no"/>
-<layer number="21" name="tPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="no"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="no"/>
-<layer number="25" name="tNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="26" name="bNames" color="7" fill="1" visible="no" active="no"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="no" active="no"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="no" active="no"/>
+<layer number="1" name="Top" color="4" fill="1" visible="yes" active="no"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="no"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="no"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="no"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="no"/>
+<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="no"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="no"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="no"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="no"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="no"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="no"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="no"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="no"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="no"/>
@@ -30,8 +30,8 @@
 <layer number="34" name="bFinish" color="6" fill="6" visible="no" active="no"/>
 <layer number="35" name="tGlue" color="7" fill="4" visible="no" active="no"/>
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="no"/>
-<layer number="37" name="tTest" color="7" fill="1" visible="no" active="no"/>
-<layer number="38" name="bTest" color="7" fill="1" visible="no" active="no"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="yes" active="no"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="yes" active="no"/>
 <layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="no"/>
 <layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="no"/>
 <layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="no"/>
@@ -39,16 +39,16 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="no"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="no"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="no"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="no" active="no"/>
-<layer number="47" name="Measures" color="7" fill="1" visible="no" active="no"/>
-<layer number="48" name="Document" color="7" fill="1" visible="no" active="no"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="no" active="no"/>
-<layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
-<layer number="51" name="tDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="52" name="bDocu" color="7" fill="1" visible="no" active="no"/>
-<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="no" active="no"/>
-<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
-<layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="no"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="yes" active="no"/>
+<layer number="48" name="Document" color="7" fill="1" visible="yes" active="no"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="no"/>
+<layer number="50" name="dxf" color="7" fill="1" visible="yes" active="no"/>
+<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="no"/>
+<layer number="53" name="tGND_GNDA" color="7" fill="9" visible="yes" active="no"/>
+<layer number="54" name="bGND_GNDA" color="1" fill="9" visible="yes" active="no"/>
+<layer number="56" name="wert" color="7" fill="1" visible="yes" active="no"/>
 <layer number="91" name="Nets" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="92" name="Busses" color="1" fill="1" visible="yes" active="yes"/>
 <layer number="93" name="Pins" color="2" fill="1" visible="no" active="yes"/>
@@ -1534,44 +1534,6 @@ Yageo CFR series &lt;a href="http://www.yageo.com/pdf/yageo/Leaded-R_CFR_2008.pd
 <text x="-7.62" y="3.175" size="0.8128" layer="25" font="vector" ratio="15">&gt;Name</text>
 <text x="-5.969" y="-0.381" size="0.8128" layer="21" font="vector" ratio="15">&gt;Value</text>
 </package>
-<package name="AXIAL-0.3-KIT">
-<wire x1="-2.54" y1="1.27" x2="2.54" y2="1.27" width="0.254" layer="21"/>
-<wire x1="2.54" y1="1.27" x2="2.54" y2="0" width="0.254" layer="21"/>
-<wire x1="2.54" y1="0" x2="2.54" y2="-1.27" width="0.254" layer="21"/>
-<wire x1="2.54" y1="-1.27" x2="-2.54" y2="-1.27" width="0.254" layer="21"/>
-<wire x1="-2.54" y1="-1.27" x2="-2.54" y2="0" width="0.254" layer="21"/>
-<wire x1="-2.54" y1="0" x2="-2.54" y2="1.27" width="0.254" layer="21"/>
-<wire x1="2.54" y1="0" x2="2.794" y2="0" width="0.254" layer="21"/>
-<wire x1="-2.54" y1="0" x2="-2.794" y2="0" width="0.254" layer="21"/>
-<pad name="P$1" x="-3.81" y="0" drill="1.016" diameter="2.032" stop="no"/>
-<pad name="P$2" x="3.81" y="0" drill="1.016" diameter="2.032" stop="no"/>
-<text x="-2.54" y="1.27" size="0.4064" layer="25" font="vector">&gt;Name</text>
-<text x="-2.159" y="-0.762" size="1.27" layer="21" font="vector" ratio="15">&gt;Value</text>
-<polygon width="0.127" layer="30">
-<vertex x="3.8201" y="-0.9449" curve="-90"/>
-<vertex x="2.8652" y="-0.0152" curve="-90.011749"/>
-<vertex x="3.8176" y="0.9602" curve="-90"/>
-<vertex x="4.7676" y="-0.0178" curve="-90.024193"/>
-</polygon>
-<polygon width="0.127" layer="29">
-<vertex x="3.8176" y="-0.4369" curve="-90.012891"/>
-<vertex x="3.3731" y="-0.0127" curve="-90"/>
-<vertex x="3.8176" y="0.4546" curve="-90"/>
-<vertex x="4.2595" y="-0.0025" curve="-90.012967"/>
-</polygon>
-<polygon width="0.127" layer="30">
-<vertex x="-3.8075" y="-0.9525" curve="-90"/>
-<vertex x="-4.7624" y="-0.0228" curve="-90.011749"/>
-<vertex x="-3.81" y="0.9526" curve="-90"/>
-<vertex x="-2.86" y="-0.0254" curve="-90.024193"/>
-</polygon>
-<polygon width="0.127" layer="29">
-<vertex x="-3.81" y="-0.4445" curve="-90.012891"/>
-<vertex x="-4.2545" y="-0.0203" curve="-90"/>
-<vertex x="-3.81" y="0.447" curve="-90"/>
-<vertex x="-3.3681" y="-0.0101" curve="-90.012967"/>
-</polygon>
-</package>
 <package name="CAP-PTH-SMALL">
 <wire x1="1.27" y1="0.635" x2="1.27" y2="-0.635" width="0.2032" layer="21"/>
 <pad name="1" x="0" y="0" drill="0.7" diameter="1.651"/>
@@ -1589,16 +1551,6 @@ Yageo CFR series &lt;a href="http://www.yageo.com/pdf/yageo/Leaded-R_CFR_2008.pd
 <pad name="2" x="2.54" y="0" drill="0.7" diameter="1.651"/>
 <text x="-1.27" y="1.905" size="0.6096" layer="25">&gt;Name</text>
 <text x="-1.27" y="-2.54" size="0.6096" layer="27">&gt;Value</text>
-</package>
-<package name="CAP-PTH-LARGE">
-<wire x1="0" y1="0.635" x2="0" y2="0" width="0.2032" layer="21"/>
-<wire x1="0" y1="0" x2="0" y2="-0.635" width="0.2032" layer="21"/>
-<wire x1="0" y1="0" x2="-2.54" y2="0" width="0.2032" layer="21"/>
-<wire x1="0" y1="0" x2="2.54" y2="0" width="0.2032" layer="21"/>
-<pad name="1" x="-4.826" y="0" drill="0.9" diameter="1.905"/>
-<pad name="2" x="4.572" y="0" drill="0.9" diameter="1.905"/>
-<text x="-0.762" y="1.27" size="0.4064" layer="25">&gt;Name</text>
-<text x="-1.016" y="-1.524" size="0.4064" layer="27">&gt;Value</text>
 </package>
 <package name="GRM43D">
 <wire x1="2.25" y1="1.6" x2="1.1" y2="1.6" width="0.127" layer="51"/>
@@ -1708,39 +1660,6 @@ chip</description>
 <smd name="-" x="0" y="-2.05" dx="1.5" dy="1.2" layer="1"/>
 <text x="-2" y="3" size="0.4064" layer="25">&gt;NAME</text>
 <text x="-2" y="-3.4" size="0.4064" layer="27">&gt;VALUE</text>
-</package>
-<package name="CAP-PTH-SMALL-KIT">
-<wire x1="0" y1="0.635" x2="0" y2="-0.635" width="0.254" layer="21"/>
-<wire x1="-2.667" y1="1.27" x2="2.667" y2="1.27" width="0.254" layer="21"/>
-<wire x1="2.667" y1="1.27" x2="2.667" y2="-1.27" width="0.254" layer="21"/>
-<wire x1="2.667" y1="-1.27" x2="-2.667" y2="-1.27" width="0.254" layer="21"/>
-<wire x1="-2.667" y1="-1.27" x2="-2.667" y2="1.27" width="0.254" layer="21"/>
-<pad name="1" x="-1.397" y="0" drill="1.016" diameter="2.032" stop="no"/>
-<pad name="2" x="1.397" y="0" drill="1.016" diameter="2.032" stop="no"/>
-<polygon width="0.127" layer="30">
-<vertex x="-1.4021" y="-0.9475" curve="-90"/>
-<vertex x="-2.357" y="-0.0178" curve="-90.011749"/>
-<vertex x="-1.4046" y="0.9576" curve="-90"/>
-<vertex x="-0.4546" y="-0.0204" curve="-90.024193"/>
-</polygon>
-<polygon width="0.127" layer="29">
-<vertex x="-1.4046" y="-0.4395" curve="-90.012891"/>
-<vertex x="-1.8491" y="-0.0153" curve="-90"/>
-<vertex x="-1.4046" y="0.452" curve="-90"/>
-<vertex x="-0.9627" y="-0.0051" curve="-90.012967"/>
-</polygon>
-<polygon width="0.127" layer="30">
-<vertex x="1.397" y="-0.9475" curve="-90"/>
-<vertex x="0.4421" y="-0.0178" curve="-90.011749"/>
-<vertex x="1.3945" y="0.9576" curve="-90"/>
-<vertex x="2.3445" y="-0.0204" curve="-90.024193"/>
-</polygon>
-<polygon width="0.127" layer="29">
-<vertex x="1.3945" y="-0.4395" curve="-90.012891"/>
-<vertex x="0.95" y="-0.0153" curve="-90"/>
-<vertex x="1.3945" y="0.452" curve="-90"/>
-<vertex x="1.8364" y="-0.0051" curve="-90.012967"/>
-</polygon>
 </package>
 <package name="SJ_2W">
 <description>&lt;b&gt;Solder jumper&lt;/b&gt;</description>
@@ -2737,6 +2656,43 @@ Basic small signal diode good up to 200mA. SMB footprint. Common part #: BAS16</
 <smd name="C" x="2.4" y="0" dx="1.77" dy="1.47" layer="1"/>
 <text x="-2.286" y="1.651" size="0.4064" layer="25">&gt;NAME</text>
 <text x="0.254" y="1.651" size="0.4064" layer="27">&gt;VALUE</text>
+</package>
+<package name="CAP-PTH-LARGE">
+<wire x1="0" y1="0.635" x2="0" y2="0" width="0.2032" layer="21"/>
+<wire x1="0" y1="0" x2="0" y2="-0.635" width="0.2032" layer="21"/>
+<wire x1="0" y1="0" x2="-2.54" y2="0" width="0.2032" layer="21"/>
+<wire x1="0" y1="0" x2="2.54" y2="0" width="0.2032" layer="21"/>
+<pad name="1" x="-4.826" y="0" drill="0.7" diameter="1.651"/>
+<pad name="2" x="4.572" y="0" drill="0.7" diameter="1.651"/>
+<text x="-0.762" y="1.27" size="0.4064" layer="25">&gt;Name</text>
+<text x="-1.016" y="-1.524" size="0.4064" layer="27">&gt;Value</text>
+</package>
+<package name="16LPCC">
+<wire x1="-1.7" y1="-1.7" x2="-1.7" y2="-1.1" width="0.2032" layer="21"/>
+<wire x1="-1.7" y1="-1.7" x2="-1.1" y2="-1.7" width="0.2032" layer="21"/>
+<wire x1="1.1" y1="-1.7" x2="1.7" y2="-1.7" width="0.2032" layer="21"/>
+<wire x1="1.7" y1="-1.7" x2="1.7" y2="-1.1" width="0.2032" layer="21"/>
+<wire x1="1.7" y1="1.1" x2="1.7" y2="1.7" width="0.2032" layer="21"/>
+<wire x1="1.7" y1="1.7" x2="1.1" y2="1.7" width="0.2032" layer="21"/>
+<wire x1="-1.28" y1="1.635" x2="-1.635" y2="1.26" width="0.2032" layer="21"/>
+<smd name="4" x="-1.37" y="-0.75" dx="0.65" dy="0.28" layer="1"/>
+<smd name="3" x="-1.37" y="-0.25" dx="0.65" dy="0.28" layer="1"/>
+<smd name="2" x="-1.37" y="0.25" dx="0.65" dy="0.28" layer="1"/>
+<smd name="1" x="-1.37" y="0.75" dx="0.65" dy="0.28" layer="1"/>
+<smd name="5" x="-0.75" y="-1.37" dx="0.65" dy="0.28" layer="1" rot="R270"/>
+<smd name="15" x="-0.25" y="1.37" dx="0.65" dy="0.28" layer="1" rot="R90"/>
+<smd name="14" x="0.25" y="1.37" dx="0.65" dy="0.28" layer="1" rot="R90"/>
+<smd name="13" x="0.75" y="1.37" dx="0.65" dy="0.28" layer="1" rot="R90"/>
+<smd name="12" x="1.37" y="0.75" dx="0.65" dy="0.28" layer="1"/>
+<smd name="11" x="1.37" y="0.25" dx="0.65" dy="0.28" layer="1"/>
+<smd name="10" x="1.37" y="-0.25" dx="0.65" dy="0.28" layer="1"/>
+<smd name="9" x="1.37" y="-0.75" dx="0.65" dy="0.28" layer="1"/>
+<smd name="6" x="-0.25" y="-1.37" dx="0.65" dy="0.28" layer="1" rot="R90"/>
+<smd name="8" x="0.75" y="-1.37" dx="0.65" dy="0.28" layer="1" rot="R90"/>
+<smd name="16" x="-0.75" y="1.37" dx="0.65" dy="0.28" layer="1" rot="R90"/>
+<smd name="7" x="0.25" y="-1.37" dx="0.65" dy="0.28" layer="1" rot="R90"/>
+<text x="-1.27" y="1.905" size="0.6096" layer="25">&gt;NAME</text>
+<text x="-1.905" y="-2.54" size="0.6096" layer="27">&gt;VALUE</text>
 </package>
 </packages>
 <symbols>
@@ -6423,6 +6379,30 @@ Basic small signal diode good up to 200mA. SMB footprint. Common part #: BAS16</
 <pin name="A" x="-2.54" y="0" visible="off" length="short" direction="pas"/>
 <pin name="C" x="2.54" y="0" visible="off" length="short" direction="pas" rot="R180"/>
 </symbol>
+<symbol name="HMC5883L">
+<wire x1="10.16" y1="15.24" x2="10.16" y2="-15.24" width="0.254" layer="94"/>
+<wire x1="10.16" y1="-15.24" x2="-10.16" y2="-15.24" width="0.254" layer="94"/>
+<wire x1="-10.16" y1="-15.24" x2="-10.16" y2="15.24" width="0.254" layer="94"/>
+<wire x1="-10.16" y1="15.24" x2="10.16" y2="15.24" width="0.254" layer="94"/>
+<text x="-10.16" y="15.24" size="1.778" layer="95">&gt;NAME</text>
+<text x="-10.16" y="-17.78" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="SCL" x="15.24" y="2.54" length="middle" rot="R180"/>
+<pin name="VDD" x="15.24" y="12.7" length="middle" rot="R180"/>
+<pin name="NC@1" x="-15.24" y="12.7" length="middle"/>
+<pin name="S1" x="15.24" y="7.62" length="middle" rot="R180"/>
+<pin name="NC@2" x="-15.24" y="10.16" length="middle"/>
+<pin name="NC@3" x="-15.24" y="7.62" length="middle"/>
+<pin name="NC@4" x="-15.24" y="5.08" length="middle"/>
+<pin name="SETP" x="15.24" y="-5.08" length="middle" rot="R180"/>
+<pin name="GND@1" x="-15.24" y="-7.62" length="middle"/>
+<pin name="C1" x="-15.24" y="-2.54" length="middle"/>
+<pin name="GND@2" x="-15.24" y="-10.16" length="middle"/>
+<pin name="SETC" x="15.24" y="-7.62" length="middle" rot="R180"/>
+<pin name="VDDIO" x="15.24" y="10.16" length="middle" rot="R180"/>
+<pin name="NC@5" x="-15.24" y="2.54" length="middle"/>
+<pin name="DRDY" x="15.24" y="-12.7" length="middle" rot="R180"/>
+<pin name="SDA" x="15.24" y="0" length="middle" rot="R180"/>
+</symbol>
 </symbols>
 <devicesets>
 <deviceset name="GND" prefix="GND">
@@ -6634,15 +6614,6 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <technology name=""/>
 </technologies>
 </device>
-<device name="KIT" package="AXIAL-0.3-KIT">
-<connects>
-<connect gate="G$1" pin="1" pad="P$1"/>
-<connect gate="G$1" pin="2" pad="P$2"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
 </devices>
 </deviceset>
 <deviceset name="CAP" prefix="C" uservalue="yes">
@@ -6755,15 +6726,6 @@ Standard 0603 ceramic capacitor, and 0.1" leaded capacitor.</description>
 <connects>
 <connect gate="G$1" pin="1" pad="+"/>
 <connect gate="G$1" pin="2" pad="-"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="KIT" package="CAP-PTH-SMALL-KIT">
-<connects>
-<connect gate="G$1" pin="1" pad="1"/>
-<connect gate="G$1" pin="2" pad="2"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -7323,6 +7285,37 @@ These are standard reverse protection diodes and small signal diodes. SMA packag
 <connects>
 <connect gate="G$1" pin="A" pad="A"/>
 <connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="HMC5883L">
+<description>3 Axis Digital Compass IC</description>
+<gates>
+<gate name="G$1" symbol="HMC5883L" x="0" y="0"/>
+</gates>
+<devices>
+<device name="SMD" package="16LPCC">
+<connects>
+<connect gate="G$1" pin="C1" pad="10"/>
+<connect gate="G$1" pin="DRDY" pad="15"/>
+<connect gate="G$1" pin="GND@1" pad="9"/>
+<connect gate="G$1" pin="GND@2" pad="11"/>
+<connect gate="G$1" pin="NC@1" pad="3"/>
+<connect gate="G$1" pin="NC@2" pad="5"/>
+<connect gate="G$1" pin="NC@3" pad="6"/>
+<connect gate="G$1" pin="NC@4" pad="7"/>
+<connect gate="G$1" pin="NC@5" pad="14"/>
+<connect gate="G$1" pin="S1" pad="4"/>
+<connect gate="G$1" pin="SCL" pad="1"/>
+<connect gate="G$1" pin="SDA" pad="16"/>
+<connect gate="G$1" pin="SETC" pad="12"/>
+<connect gate="G$1" pin="SETP" pad="8"/>
+<connect gate="G$1" pin="VDD" pad="2"/>
+<connect gate="G$1" pin="VDDIO" pad="13"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -18242,7 +18235,7 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <part name="U$4" library="SparkFun" deviceset="OSHW-LOGO" device="S"/>
 <part name="R7" library="mike-temp" deviceset="GND-JUMP" device="" value="0"/>
 <part name="GND14" library="SparkFun" deviceset="GND" device=""/>
-<part name="C9" library="SparkFun" deviceset="CAP_POL" device="PTH4" value="DNP"/>
+<part name="C9" library="SparkFun" deviceset="CAP_POL" device="EN_J2" value="DNP"/>
 <part name="D1" library="SparkFun" deviceset="DIODE" device="SOD" value="BAS16"/>
 <part name="R6" library="SparkFun" deviceset="RESISTOR" device="0402-RES" value="330"/>
 <part name="GND15" library="SparkFun" deviceset="GND" device=""/>
@@ -18313,6 +18306,15 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <part name="GND36" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="D$1" library="kolosy" deviceset="SS1P3L" device=""/>
 <part name="D$2" library="kolosy" deviceset="SS1P3L" device=""/>
+<part name="U4" library="SparkFun" deviceset="HMC5883L" device="SMD"/>
+<part name="C25" library="SparkFun" deviceset="CAP" device="0402-CAP" value=".1uF"/>
+<part name="C26" library="SparkFun" deviceset="CAP" device="0402-CAP" value=".22uF"/>
+<part name="C27" library="SparkFun" deviceset="CAP" device="0402-CAP" value="4.7uF"/>
+<part name="R2" library="SparkFun" deviceset="RESISTOR" device="0402-RES" value="DNP"/>
+<part name="R10" library="SparkFun" deviceset="RESISTOR" device="0402-RES" value="DNP"/>
+<part name="GND37" library="SparkFun" deviceset="GND" device=""/>
+<part name="GND38" library="SparkFun" deviceset="GND" device=""/>
+<part name="GND39" library="SparkFun" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -18595,6 +18597,15 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <instance part="GND36" gate="1" x="215.9" y="-66.04"/>
 <instance part="D$1" gate="G$1" x="198.12" y="-91.44" rot="MR0"/>
 <instance part="D$2" gate="G$1" x="137.16" y="-91.44" rot="MR0"/>
+<instance part="U4" gate="G$1" x="124.46" y="10.16"/>
+<instance part="C25" gate="G$1" x="170.18" y="20.32"/>
+<instance part="C26" gate="G$1" x="149.86" y="0"/>
+<instance part="C27" gate="G$1" x="96.52" y="0"/>
+<instance part="R2" gate="G$1" x="147.32" y="20.32" rot="R90"/>
+<instance part="R10" gate="G$1" x="154.94" y="20.32" rot="R90"/>
+<instance part="GND37" gate="1" x="96.52" y="-7.62"/>
+<instance part="GND38" gate="1" x="106.68" y="-7.62"/>
+<instance part="GND39" gate="1" x="170.18" y="12.7"/>
 </instances>
 <busses>
 </busses>
@@ -18899,6 +18910,26 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <pinref part="GND36" gate="1" pin="GND"/>
 <wire x1="215.9" y1="-58.42" x2="215.9" y2="-63.5" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<wire x1="96.52" y1="-5.08" x2="96.52" y2="-2.54" width="0.1524" layer="91"/>
+<pinref part="C27" gate="G$1" pin="2"/>
+<pinref part="GND37" gate="1" pin="GND"/>
+</segment>
+<segment>
+<wire x1="170.18" y1="17.78" x2="170.18" y2="15.24" width="0.1524" layer="91"/>
+<pinref part="C25" gate="G$1" pin="2"/>
+<pinref part="GND39" gate="1" pin="GND"/>
+</segment>
+<segment>
+<wire x1="106.68" y1="-5.08" x2="106.68" y2="0" width="0.1524" layer="91"/>
+<wire x1="106.68" y1="0" x2="106.68" y2="2.54" width="0.1524" layer="91"/>
+<wire x1="106.68" y1="2.54" x2="109.22" y2="2.54" width="0.1524" layer="91"/>
+<wire x1="109.22" y1="0" x2="106.68" y2="0" width="0.1524" layer="91"/>
+<junction x="106.68" y="0"/>
+<pinref part="GND38" gate="1" pin="GND"/>
+<pinref part="U4" gate="G$1" pin="GND@1"/>
+<pinref part="U4" gate="G$1" pin="GND@2"/>
+</segment>
 </net>
 <net name="SDA" class="0">
 <segment>
@@ -18922,6 +18953,15 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <label x="471.805" y="-40.005" size="1.778" layer="95"/>
 <pinref part="IC3" gate="1" pin="(SDA/INT1)PD1"/>
 </segment>
+<segment>
+<wire x1="139.7" y1="10.16" x2="154.94" y2="10.16" width="0.1524" layer="91"/>
+<wire x1="154.94" y1="10.16" x2="154.94" y2="15.24" width="0.1524" layer="91"/>
+<wire x1="154.94" y1="10.16" x2="160.02" y2="10.16" width="0.1524" layer="91"/>
+<junction x="154.94" y="10.16"/>
+<label x="157.48" y="10.16" size="1.778" layer="95"/>
+<pinref part="U4" gate="G$1" pin="SDA"/>
+<pinref part="R10" gate="G$1" pin="1"/>
+</segment>
 </net>
 <net name="SCL" class="0">
 <segment>
@@ -18944,6 +18984,15 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <wire x1="523.24" y1="-43.18" x2="467.36" y2="-43.18" width="0.1524" layer="91"/>
 <label x="471.805" y="-42.545" size="1.778" layer="95"/>
 <pinref part="IC3" gate="1" pin="(SCL/INT0)PD0"/>
+</segment>
+<segment>
+<wire x1="139.7" y1="12.7" x2="147.32" y2="12.7" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="15.24" x2="147.32" y2="12.7" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="12.7" x2="160.02" y2="12.7" width="0.1524" layer="91"/>
+<junction x="147.32" y="12.7"/>
+<label x="157.48" y="12.7" size="1.778" layer="95"/>
+<pinref part="U4" gate="G$1" pin="SCL"/>
+<pinref part="R2" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="INT" class="0">
@@ -19191,6 +19240,11 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <wire x1="187.96" y1="-5.08" x2="198.12" y2="-5.08" width="0.1524" layer="91"/>
 <label x="190.5" y="-5.08" size="1.778" layer="95"/>
 </segment>
+<segment>
+<wire x1="480.06" y1="35.56" x2="467.36" y2="35.56" width="0.1524" layer="91"/>
+<label x="469.265" y="36.195" size="1.778" layer="95"/>
+<pinref part="IC3" gate="1" pin="(AD4)PA4"/>
+</segment>
 </net>
 <net name="N$9" class="0">
 <segment>
@@ -19279,6 +19333,11 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <segment>
 <wire x1="187.96" y1="-7.62" x2="198.12" y2="-7.62" width="0.1524" layer="91"/>
 <label x="190.5" y="-7.62" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="480.06" y1="38.1" x2="467.36" y2="38.1" width="0.1524" layer="91"/>
+<label x="469.265" y="38.735" size="1.778" layer="95"/>
+<pinref part="IC3" gate="1" pin="(AD5)PA5"/>
 </segment>
 </net>
 <net name="RUD_V" class="0">
@@ -19964,20 +20023,6 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <pinref part="IC3" gate="1" pin="(T0)PD7"/>
 </segment>
 </net>
-<net name="PA4" class="0">
-<segment>
-<wire x1="480.06" y1="35.56" x2="467.36" y2="35.56" width="0.1524" layer="91"/>
-<label x="469.265" y="36.195" size="1.778" layer="95"/>
-<pinref part="IC3" gate="1" pin="(AD4)PA4"/>
-</segment>
-</net>
-<net name="PA5" class="0">
-<segment>
-<wire x1="480.06" y1="38.1" x2="467.36" y2="38.1" width="0.1524" layer="91"/>
-<label x="469.265" y="38.735" size="1.778" layer="95"/>
-<pinref part="IC3" gate="1" pin="(AD5)PA5"/>
-</segment>
-</net>
 <net name="PA6" class="0">
 <segment>
 <wire x1="480.06" y1="40.64" x2="467.36" y2="40.64" width="0.1524" layer="91"/>
@@ -20171,6 +20216,33 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <pinref part="P+17" gate="1" pin="VCC"/>
 <wire x1="441.96" y1="76.2" x2="441.96" y2="83.82" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<wire x1="139.7" y1="17.78" x2="142.24" y2="17.78" width="0.1524" layer="91"/>
+<wire x1="142.24" y1="17.78" x2="142.24" y2="20.32" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="20.32" x2="142.24" y2="20.32" width="0.1524" layer="91"/>
+<wire x1="142.24" y1="20.32" x2="142.24" y2="22.86" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="22.86" x2="142.24" y2="22.86" width="0.1524" layer="91"/>
+<wire x1="142.24" y1="22.86" x2="142.24" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="142.24" y1="27.94" x2="147.32" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="27.94" x2="147.32" y2="25.4" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="27.94" x2="154.94" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="154.94" y1="27.94" x2="154.94" y2="25.4" width="0.1524" layer="91"/>
+<wire x1="154.94" y1="27.94" x2="170.18" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="170.18" y1="27.94" x2="170.18" y2="25.4" width="0.1524" layer="91"/>
+<wire x1="170.18" y1="27.94" x2="175.26" y2="27.94" width="0.1524" layer="91"/>
+<junction x="142.24" y="20.32"/>
+<junction x="142.24" y="22.86"/>
+<junction x="147.32" y="27.94"/>
+<junction x="154.94" y="27.94"/>
+<junction x="170.18" y="27.94"/>
+<label x="172.72" y="27.94" size="1.778" layer="95"/>
+<pinref part="U4" gate="G$1" pin="S1"/>
+<pinref part="U4" gate="G$1" pin="VDDIO"/>
+<pinref part="U4" gate="G$1" pin="VDD"/>
+<pinref part="R2" gate="G$1" pin="2"/>
+<pinref part="R10" gate="G$1" pin="2"/>
+<pinref part="C25" gate="G$1" pin="1"/>
+</segment>
 </net>
 <net name="5V_EN" class="0">
 <segment>
@@ -20327,12 +20399,39 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <pinref part="IC3" gate="1" pin="(AD2)PA2"/>
 </segment>
 </net>
+<net name="N$3" class="0">
+<segment>
+<wire x1="139.7" y1="5.08" x2="142.24" y2="5.08" width="0.1524" layer="91"/>
+<wire x1="142.24" y1="5.08" x2="142.24" y2="7.62" width="0.1524" layer="91"/>
+<wire x1="142.24" y1="7.62" x2="149.86" y2="7.62" width="0.1524" layer="91"/>
+<wire x1="149.86" y1="7.62" x2="149.86" y2="5.08" width="0.1524" layer="91"/>
+<pinref part="U4" gate="G$1" pin="SETP"/>
+<pinref part="C26" gate="G$1" pin="1"/>
+</segment>
+</net>
+<net name="N$13" class="0">
+<segment>
+<wire x1="139.7" y1="2.54" x2="142.24" y2="2.54" width="0.1524" layer="91"/>
+<wire x1="142.24" y1="2.54" x2="142.24" y2="-5.08" width="0.1524" layer="91"/>
+<wire x1="142.24" y1="-5.08" x2="149.86" y2="-5.08" width="0.1524" layer="91"/>
+<wire x1="149.86" y1="-5.08" x2="149.86" y2="-2.54" width="0.1524" layer="91"/>
+<pinref part="U4" gate="G$1" pin="SETC"/>
+<pinref part="C26" gate="G$1" pin="2"/>
+</segment>
+</net>
+<net name="N$16" class="0">
+<segment>
+<wire x1="96.52" y1="5.08" x2="96.52" y2="7.62" width="0.1524" layer="91"/>
+<wire x1="96.52" y1="7.62" x2="109.22" y2="7.62" width="0.1524" layer="91"/>
+<pinref part="U4" gate="G$1" pin="C1"/>
+<pinref part="C27" gate="G$1" pin="1"/>
+</segment>
+</net>
 </nets>
 </sheet>
 </sheets>
 <errors>
 <approved hash="102,1,58.42,76.2,VCC,3.3V,,,,"/>
-<approved hash="102,1,114.3,91.44,VCC,3.3V,,,,"/>
 <approved hash="102,1,73.66,99.06,VCC,3.3V,,,,"/>
 <approved hash="102,1,86.36,99.06,VCC,3.3V,,,,"/>
 <approved hash="106,1,96.52,58.42,CLKOUT,,,,,"/>
@@ -20345,10 +20444,7 @@ These are standard SMD and PTH capacitors. Normally 10uF, 47uF, and 100uF in ele
 <approved hash="115,1,120.979,60.96,SJ1,,,,,"/>
 <approved hash="115,1,136.483,-56.9553,S_RUD,,,,,"/>
 <approved hash="115,1,197.443,-56.9553,S_WINCH,,,,,"/>
-<approved hash="115,1,263.483,33.2147,CAM,,,,,"/>
-<approved hash="115,1,263.483,-2.34527,WIND,,,,,"/>
 <approved hash="115,1,154.263,87.8247,JP1,,,,,"/>
-<approved hash="115,1,202.465,16.51,C13,,,,,"/>
 <approved hash="117,1,53.34,-30.48,RFGND,,,,,"/>
 <approved hash="117,1,12.7,-115.57,RFGND,,,,,"/>
 <approved hash="117,1,40.64,-34.29,RFGND,,,,,"/>

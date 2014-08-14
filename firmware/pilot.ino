@@ -1,9 +1,12 @@
 // radius of Earth in m
 #define R 6371000
 
+// minimum speed needed to establish course (knots)
+#define MIN_SPEED 1.0
+
 // our course!
-#define WP1_LAT 41.923398
-#define WP1_LON -87.631633
+#define WP1_LAT 41.923374
+#define WP1_LON -87.631205
 
 #define WP2_LAT 41.916709
 #define WP2_LON -87.628885
@@ -15,7 +18,7 @@
 #define FEATHER 3
 
 // adjust course when we're more than this much off-course
-#define COURSE_ADJUST_ON 5
+#define COURSE_ADJUST_ON 7
 
 // adjust sails when we're more than this much off-plan
 #define SAIL_ADJUST_ON 5
@@ -41,7 +44,7 @@
 // if the course requires zig-zags, turn every x millis
 #define TURN_EVERY 90000
 #define CAN_TURN() (last_turn + TURN_EVERY < millis())
-#define COURSE_CORRECTION_TIME 8000
+#define COURSE_CORRECTION_TIME 750
 
 #define TO_PORT(amt) rudderTo(current_rudder + amt)
 #define TO_SBRD(amt) rudderTo(current_rudder - amt)
@@ -57,6 +60,18 @@ int last_turn = 0;
 
 float wp_heading = 0;
 float wp_distance = 0;
+
+float ahrs_offset = 0;
+uint8_t offset_set = 0;
+
+// not real fusion for now
+float fused_heading = 0;
+
+inline void fuseHeading() {
+    fused_heading = toCircleDeg(ahrs_heading + ahrs_offset);
+    Serial.print("Heading: ");
+    Serial.println(fused_heading, 2);
+}
 
 // lat/lon and result in radians
 float computeBearing(float i_lat, float i_lon, float f_lat, float f_lon) {
@@ -78,17 +93,23 @@ float computeDistance(float i_lat, float i_lon, float f_lat, float f_lon) {
 
 // when this is called, we're assuming that we're close to irons, otherwise why tack?
 void tack() {
-	float start_heading = ahrs_heading;
+	float start_heading = fused_heading;
 
 	// yank the tiller, sails are fine
 	if (wind > 180) {
 		// tacking to port
 		// todo: what's the servo direction here?
 		TO_PORT(25);
-		while (!isPast(start_heading, TACK_START_STRAIGHT, readSteadyHeading() * 180.0 / PI, false));
+		while (!isPast(start_heading, TACK_START_STRAIGHT, fused_heading, false)) {
+            updateSensors();
+            fuseHeading();
+	    }
 	} else {
 		TO_SBRD(25);
-		while (!isPast(start_heading, TACK_START_STRAIGHT, readSteadyHeading() * 180.0 / PI, true));
+		while (!isPast(start_heading, TACK_START_STRAIGHT, fused_heading, true)) {
+            updateSensors();
+            fuseHeading();
+	    }
 	}
 	
 	centerRudder();
@@ -96,7 +117,7 @@ void tack() {
 }
 
 void gybe() {
-	float start_heading = ahrs_heading;
+	float start_heading = fused_heading;
 	int start_winch = current_winch;
 	
 	// move sail to safer position
@@ -107,10 +128,16 @@ void gybe() {
 		// gybe to starboard
 		// todo: what's the servo direction here?
 		TO_SBRD(25);
-		while (!isPast(start_heading, GYBE_START_STRAIGHT, readSteadyHeading() * 180.0 / PI, true));
+		while (!isPast(start_heading, GYBE_START_STRAIGHT, fused_heading, true)) {
+            updateSensors();
+            fuseHeading();
+	    }
 	} else {
 		TO_PORT(25);
-		while (!isPast(start_heading, GYBE_START_STRAIGHT, readSteadyHeading() * 180.0 / PI, false));
+		while (!isPast(start_heading, GYBE_START_STRAIGHT, fused_heading, false)) {
+            updateSensors();
+            fuseHeading();
+	    }
 	}
 	
 	centerRudder();
@@ -125,11 +152,13 @@ void safetyCheck() {
 		sleepMillis(1000);
 		adjustment_made = true;
 		updateSensors();
+        fuseHeading();
 	} else if (MIGHT_GYBE(wind)) {
 		if (wind > 180) TO_PORT(15); else TO_SBRD(15);
 		sleepMillis(1000);
 		adjustment_made = true;
 		updateSensors();
+        fuseHeading();
 	}
 }
 
@@ -143,7 +172,8 @@ void adjustSails() {
 }
 
 void adjustHeading() {
-	float off_course = angleDiff(ahrs_heading, wp_heading, true);
+    // we wouldn't be here without a magnitude of error check. don't need one here.
+	float off_course = angleDiff(fused_heading, wp_heading, true);
 	
 	int new_wind = DEG(toCircle(RAD(wind - off_course)));
 	
@@ -168,17 +198,34 @@ void adjustHeading() {
 
 			float max_adjust = angleDiff(new_wind, wind, true);
 			if (abs(max_adjust) > COURSE_ADJUST_ON) {
-				if (max_adjust < 0)
+				if (max_adjust < 0) {
 					TO_PORT(-max_adjust);
-				else 
+            		delay(COURSE_CORRECTION_TIME);
+					TO_SBRD(-max_adjust/2);
+            		delay(COURSE_CORRECTION_TIME/2);
+				}
+				else {
 					TO_SBRD(max_adjust);
+            		delay(COURSE_CORRECTION_TIME);
+					TO_PORT(max_adjust/2);
+            		delay(COURSE_CORRECTION_TIME/2);
+				}
+        		updateSensors();
+                fuseHeading();
+        		adjustSails();
+        		centerRudder();
+
 				adjustment_made = true;
 			}
 		}
 	} else {
-		off_course < 0 ? TO_PORT(2 * -off_course) : TO_SBRD(2 * off_course);
-		sleepMillis(COURSE_CORRECTION_TIME);
+		off_course < 0 ? TO_PORT(-off_course) : TO_SBRD(off_course);
+		delay(COURSE_CORRECTION_TIME);
+		// counter steer
+		off_course < 0 ? TO_PORT(off_course) : TO_SBRD(-off_course);
+		delay(COURSE_CORRECTION_TIME / 2);
 		updateSensors();
+        fuseHeading();
 		adjustSails();
 		centerRudder();
 		adjustment_made = true;
@@ -195,38 +242,71 @@ void pilotInit() {
 
 // returns true when everything is good, false when another cycle is needed
 void doPilot() {
-	// check if we've hit the waypoint
-	wp_distance = computeDistance(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon));
-	wp_heading = toCircle(computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon))) * 180 / PI;
-	adjustment_made = false;
+    if (!offset_set) {
+        adjustSails();
+    	Serial.print("Offset not set. GPS speed: ");
+    	Serial.println(gps_speed, 2);
+        if (gps_speed > MIN_SPEED) {
+            ahrs_offset = angleDiff(ahrs_heading, gps_course, true);
+            offset_set = 1;
+            high_res_gps = false;
+        }
+    }
+    
+    // this could have changed above
+    if (offset_set) {
+        // still want to check this
+        if ((gps_speed > MIN_SPEED) && gps_updated)
+            ahrs_offset = angleDiff(ahrs_heading, gps_course, true);
+
+        fuseHeading();        
+        
+    	// check if we've hit the waypoint
+    	wp_distance = computeDistance(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon));
+    	wp_heading = toCircle(computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon))) * 180 / PI;
+    	adjustment_made = false;
 	
-	Serial.print("Distance to waypoint: ");
-	Serial.println(wp_distance, 2);
+        // Serial.print("GPS heading: ");
+        // Serial.println(gps_course, 2);
+        //  
+        // Serial.print("GPS speed: ");
+        // Serial.println(gps_speed, 2);
+        //  
+        // Serial.print("AHRS: ");
+        // Serial.println(ahrs_heading, 2);
+        //  
+        // Serial.print("Fused: ");
+        // Serial.println(fused_heading, 2);
+        //  
+
+    	Serial.print("HTW: ");
+    	Serial.println(wp_heading, 2);
 	
-	Serial.print("Heading to waypoint: ");
-	Serial.println(wp_heading, 2);
+    	Serial.print("DTW: ");
+    	Serial.println(wp_distance, 2);
 	
-	if (wp_distance < GET_WITHIN) {
-		Serial.println("Waypoint reached");
-		if (target_wp == 1) {
-			target_wp = 2;
-			wp_lat = WP2_LAT;
-			wp_lon = WP2_LON;
-		} else {
-			target_wp = 1;
-			wp_lat = WP1_LAT;
-			wp_lon = WP1_LON;
-		}
+    	if (wp_distance < GET_WITHIN) {
+    		Serial.println("Waypoint reached");
+    		if (target_wp == 1) {
+    			target_wp = 2;
+    			wp_lat = WP2_LAT;
+    			wp_lon = WP2_LON;
+    		} else {
+    			target_wp = 1;
+    			wp_lat = WP1_LAT;
+    			wp_lon = WP1_LON;
+    		}
 		
-		// wp changed, need to recompute
-		wp_distance = computeDistance(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon));
-		wp_heading = computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon)) * 180 / PI;
+    		// wp changed, need to recompute
+    		wp_distance = computeDistance(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon));
+    		wp_heading = computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon)) * 180 / PI;
+    	}
+	
+        // safetyCheck();
+        // 
+    	adjustSails();
+	
+    	if (angleDiff(fused_heading, wp_heading, false) > COURSE_ADJUST_ON)
+    		adjustHeading();
 	}
-	
-    // safetyCheck();
-    // 
-	adjustSails();
-	
-	if (angleDiff(ahrs_heading, wp_heading, false) > COURSE_ADJUST_ON)
-		adjustHeading();
 }

@@ -7,6 +7,15 @@ float toCircle(float value) {
 	return value;
 }
 
+float toCircleDeg(float value) {
+	if (value > 360.0)
+		return value - 360.0;
+	if (value < 0)
+	  return value + 360.0;
+		
+	return value;
+}
+
 boolean isPast(int start, int amount, int check, boolean clockwise) {
 	float v = angleDiff(start+amount, check, true);
 	

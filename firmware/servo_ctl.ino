@@ -4,7 +4,7 @@
 #define WINCH_EN A2
 #define RUDDER_EN A3
 
-#define RUDDER_MIN 55
+#define RUDDER_MIN 50
 #define RUDDER_MAX 125
 #define WINCH_MIN 60
 #define WINCH_MAX 115
@@ -15,15 +15,15 @@ Servo sv_winch, sv_rudder;
 // rudder - 90 (center) +/-40
 // winch	- 60 -> 115 (center)
 void servoInit() {
-	pinMode(WINCH_EN, OUTPUT);
-	digitalWrite(WINCH_EN, HIGH);
+    pinMode(WINCH_EN, OUTPUT);
+    digitalWrite(WINCH_EN, HIGH);
 
 	pinMode(RUDDER_EN, OUTPUT);
 	digitalWrite(RUDDER_EN, LOW);
 
-	sv_winch.attach(WINCH_PORT);
-	delay(100);
-	digitalWrite(WINCH_EN, LOW);
+    sv_winch.attach(WINCH_PORT);
+    delay(100);
+    digitalWrite(WINCH_EN, LOW);
 	
 	digitalWrite(RUDDER_EN, HIGH);
 	sv_rudder.attach(RUDDER_PORT);	
@@ -36,7 +36,7 @@ void centerWinch() {
 }
 
 void centerRudder() {
-	rudderTo(90);
+	rudderTo(80);
 }
 
 void bothTo(int rudder, int winch) {

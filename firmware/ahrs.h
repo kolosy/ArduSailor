@@ -1,2 +1,5 @@
-typedef float MPUQuaternion[4]; 
-typedef float MPUVector3[3];
+#include "Arduino.h"
+
+float readSteadyHeading();
+int mpuInit();
+

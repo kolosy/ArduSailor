@@ -90,7 +90,7 @@ void setup()
 { 
 	Wire.begin();
 
-	Serial.begin(115200);
+	Serial.begin(38400);
 
     // Serial.println("ArduSailor Starting...");
 	
@@ -108,7 +108,7 @@ void setup()
     // sdInit();
     gpsInit();
     
-        while (digitalRead(NAV_LOCK) == LOW);
+//        while (digitalRead(NAV_LOCK) == LOW);
         // Serial.println("GPS locked.");
     
     pilotInit();
@@ -134,13 +134,13 @@ void updateSensors() {
         gps_updated = false;
     }
 
-   // Serial.print("Wind: ");
-   // Serial.print(wind);
-//    Serial.print("; Heading: ");
+    Serial.print("W: ");
+    Serial.println(wind);
+//    Serial.print("; H: ");
 //    Serial.print(ahrs_heading);
-//    Serial.print("; Lat: ");
+//    Serial.print("; T: ");
 //    Serial.print(gps_lat, 8);
-//    Serial.print("; Lon: ");
+//    Serial.print("; N: ");
 //    Serial.println(gps_lon, 8);
 }
 

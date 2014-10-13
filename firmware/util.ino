@@ -51,8 +51,9 @@ float angleDiff(float a1, float a2, boolean sign) {
 }
 
 void sleepMillis(int amount) {
-	int sleeps = amount / 2000; // max sleep time is 2s, so this is the number of times we'll have to sleep
-
-	while (sleeps-- > 0)
-		LowPower.powerDown(SLEEP_2S, ADC_OFF, BOD_OFF);
+  delay(amount);
+//	int sleeps = amount / 2000; // max sleep time is 2s, so this is the number of times we'll have to sleep
+//
+//	while (sleeps-- > 0)
+//		LowPower.powerDown(SLEEP_2S, ADC_OFF, BOD_OFF);
 }

@@ -67,6 +67,9 @@ void bothTo(int rudder, int winch) {
 }
 
 void winchTo(int value) {
+  Serial.print("Winch ");
+  Serial.println(value);
+  
 	int v = constrain(value, WINCH_MIN, WINCH_MAX);
 	
 	digitalWrite(WINCH_EN, HIGH);
@@ -79,6 +82,8 @@ void winchTo(int value) {
 }
 
 void rudderTo(int value) {
+  Serial.print("Rudder ");
+  Serial.println(value);
 	int v = constrain(value, RUDDER_MIN, RUDDER_MAX);
 	
 	digitalWrite(RUDDER_EN, HIGH);

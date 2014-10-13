@@ -21,7 +21,7 @@
 #define COURSE_ADJUST_ON 7
 
 // adjust sails when we're more than this much off-plan
-#define SAIL_ADJUST_ON 5
+#define SAIL_ADJUST_ON 10
 
 // either side of 0 for "in irons"
 #define IRONS 30
@@ -240,7 +240,6 @@ void pilotInit() {
 	wp_lon = WP1_LON;
 }
 
-// returns true when everything is good, false when another cycle is needed
 void doPilot() {
     if (!offset_set) {
         adjustSails();
@@ -266,17 +265,17 @@ void doPilot() {
     	wp_heading = toCircle(computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon))) * 180 / PI;
     	adjustment_made = false;
 	
-        // Serial.print("GPS heading: ");
-        // Serial.println(gps_course, 2);
-        //  
-        // Serial.print("GPS speed: ");
-        // Serial.println(gps_speed, 2);
-        //  
-        // Serial.print("AHRS: ");
-        // Serial.println(ahrs_heading, 2);
-        //  
-        // Serial.print("Fused: ");
-        // Serial.println(fused_heading, 2);
+       Serial.print("GPS heading: ");
+       Serial.println(gps_course, 2);
+        
+       Serial.print("GPS speed: ");
+       Serial.println(gps_speed, 2);
+        
+       Serial.print("AHRS: ");
+       Serial.println(ahrs_heading, 2);
+        
+       Serial.print("Fused: ");
+       Serial.println(fused_heading, 2);
         //  
 
     	Serial.print("HTW: ");

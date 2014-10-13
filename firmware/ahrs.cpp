@@ -15,11 +15,11 @@ uint16_t fifoCount;		 // count of all bytes currently in FIFO
 int mpuInit() {
 
 	// initialize device
-	Serial.println(F("Initializing MPU9150 ..."));
+//	Serial.println(F("Initializing MPU9150 ..."));
 	mpu.initialize();
 
 	// verify connection
-	Serial.println(F("Testing device connections..."));
+//	Serial.println(F("Testing device connections..."));
 	Serial.println(mpu.testConnection() ? F("MPU9150 connection successful") : F("MPU9150 connection failed"));
 
 	// load and configure the DMP
@@ -29,7 +29,7 @@ int mpuInit() {
 	// make sure it worked (returns 0 if so)
 	if (devStatus == 0) {
 		// turn on the DMP, now that it's ready
-		Serial.println(F("Enabling DMP..."));
+//		Serial.println(F("Enabling DMP..."));
 		mpu.setDMPEnabled(true);
 
 		mpuIntStatus = mpu.getIntStatus();

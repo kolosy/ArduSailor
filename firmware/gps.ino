@@ -4,6 +4,8 @@ static const uint32_t VALID_POS_TIMEOUT = 2000; // ms
 // Module types
 typedef void (*t_nmea_parser)(const char *token);
 
+#define GPS_EN 30
+
 enum t_sentence_type {
 	SENTENCE_UNK,
 	SENTENCE_GGA,
@@ -72,7 +74,7 @@ static char new_aprs_lon[10];
 static float new_course;
 static float new_speed;
 static float new_altitude;
-
+static bool gps_on = false;
 
 
 // Module functions
@@ -191,6 +193,10 @@ void gpsInit() {
 	strcpy(gps_time, "000000");
 	strcpy(gps_aprs_lat, "0000.00N");
 	strcpy(gps_aprs_lon, "00000.00E");
+	
+    pinMode(GPS_EN, OUTPUT);
+    digitalWrite(GPS_EN, LOW);
+    gps_on = true;
 }
 
 bool gps_decode(char c)
@@ -204,8 +210,8 @@ bool gps_decode(char c)
 
 			if (num_tokens && our_checksum == their_checksum) {
 #ifdef DEBUG_GPS
-				Serial.print(" (OK!) ");
-				Serial.print(millis());
+				log(" (OK!) ");
+				log(millis());
 #endif
 				// Return a valid position only when we've got two rmc and gga
 				// messages with the same timestamp.
@@ -256,7 +262,7 @@ bool gps_decode(char c)
 			}
 #ifdef DEBUG_GPS
 			if (num_tokens)
-				Serial.println();
+				logln("");
 #endif
 			at_checksum = false;				// CR/LF signals the end of the checksum
 			our_checksum = '$';				 // Reset checksums
@@ -296,7 +302,7 @@ bool gps_decode(char c)
 			num_tokens++;
 			offset = 0;
 #ifdef DEBUG_GPS
-			Serial.print(c);
+			log(c);
 #endif
 			break;
 
@@ -314,8 +320,27 @@ bool gps_decode(char c)
 				}
 			}
 #ifdef DEBUG_GPS
-			Serial.print(c);
+			log(c);
 #endif
 	}
 	return ret;
+}
+
+void warnGPS() {
+    digitalWrite(GPS_EN, LOW);
+    gps_on = true;
+}
+
+void updateGPS() {
+    if (!gps_on)
+        warnGPS();
+    
+	do {
+		while (Serial2.available() == 0);
+	} while (! gps_decode(Serial2.read()));
+
+    if (!high_res_gps) {
+        digitalWrite(GPS_EN, HIGH);
+        gps_on = false;
+    }
 }

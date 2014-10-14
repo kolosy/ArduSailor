@@ -1,37 +1,30 @@
-
+#include "logger.h"
 #include <Servo.h> 
 #include "LowPower.h"
 #include "ahrs.h"
 
-//#include <SD.h>
+#include <SD.h>
+#include <Fat16.h>
+#include <Fat16util.h> // use functions to print strings from flash memory
 
 #include "Wire.h"
 #include "I2Cdev.h"
 
 #include "SoftwareSerial.h"
 #include "MPU6050.h"
-
-
-//#include <Fat16.h>
-//#include <Fat16util.h> // use functions to print strings from flash memory
-
-#define debug
+#include "HMC58X3.h"
 
 #define GPS_BAUDRATE 9600
-#define NAV_LOCK 9
+#define STATUS_LED 32
 
 #define SCAN_RATE_NORMAL 30000
 #define SCAN_RATE_FAST 1000
 
 #define GPS_REFRESH 10000
+#define GPS_WARNING 7000
 
-
-//SdCard card;
-//Fat16 file;
 
 // Public (extern) variables, readable from other modules
-char gps_time[7];		// HHMMSS
-uint32_t gps_seconds = 0;	// seconds after midnight
 uint16_t last_gps_time = 0;
 float gps_lat = 0;
 float gps_lon = 0;
@@ -49,107 +42,71 @@ boolean adjustment_made = false;
 boolean high_res_gps = true;
 boolean gps_updated = false;
 
-SoftwareSerial gpsSerial(7,4);
-
-void sdInit() {
-	/*
-	// initialize the SD card
-	if (!card.init()) { 
-	Serial.print("Error initializing card - ");
-	Serial.println(card.errorCode, HEX);
-	}
-	
-	// initialize a FAT16 volume
-	if (!Fat16::init(&card))
-	Serial.println("Can't initialize volume.");
-	
-	// create a new file
-	char name[] = "LOGGER00.TXT";
-	for (uint8_t i = 0; i < 100; i++) {
-	name[6] = i/10 + '0';
-	name[7] = i%10 + '0';
-	// O_CREAT - create the file if it does not exist
-	// O_EXCL - fail if the file exists
-	// O_WRITE - open for write only
-	if (file.open(name, O_CREAT | O_EXCL | O_WRITE)) break;
-	}
-	if (!file.isOpen()) Serial.println("Error creating log file.");
-	Serial.print("Logging to: ");
-	Serial.println(name);
-
-	// write data header
-	
-	// clear write error
-	file.writeError = false;
-	file.print("Started log.");
-	file.sync();
-	*/
-}
-
 void setup() 
 { 
+    pinMode(STATUS_LED, OUTPUT);
+    digitalWrite(STATUS_LED, HIGH);
+    
 	Wire.begin();
 
 	Serial.begin(38400);
+	logInit();
 
-    // Serial.println("ArduSailor Starting...");
+	logln("ArduSailor Starting...");
+	Serial2.begin(GPS_BAUDRATE);
 	
-    pinMode(7, INPUT);
-    pinMode(4, OUTPUT);
-	
-	pinMode(NAV_LOCK, INPUT);
-
 	servoInit();
 
-    centerRudder();
-    centerWinch();
+    windInit();
+	mpuInit();
+	gpsInit();
+    batteryInit();
+	
+	pilotInit();
+    
+    blink(STATUS_LED, 100, 10, HIGH);
+    logln("Acquiring GPS...");
+    
+    updateGPS();
+	last_gps_time = millis();
+	gps_updated = true;
 
-    mpuInit();
-    // sdInit();
-    gpsInit();
-    
-//        while (digitalRead(NAV_LOCK) == LOW);
-        // Serial.println("GPS locked.");
-    
-    pilotInit();
+    logln("Done. System ready.");
+	
+    digitalWrite(STATUS_LED, LOW);
 } 
 
 void updateSensors() {
-    // most of this will be used in human comparison stuff, no need to keep in radians.
-    ahrs_heading = readSteadyHeading() * 180.0 / PI;
-    wind = readSteadyWind() * 180.0 / PI;
-    
-    if (high_res_gps || (last_gps_time == 0) || (millis() - last_gps_time > GPS_REFRESH)) {
-        gpsSerial.begin(GPS_BAUDRATE);
-        
-        do {
-         while (! gpsSerial.available());
-        } while (! gps_decode(gpsSerial.read()));
-            
-        gpsSerial.end();
-        
-        last_gps_time = millis();
-        gps_updated = true;
-    } else {
-        gps_updated = false;
-    }
+	// most of this will be used in human comparison stuff, no need to keep in radians.
+	ahrs_heading = readSteadyHeading() * 180.0 / PI;
+	wind = readSteadyWind() * 180.0 / PI;
+	
+	if (high_res_gps || (last_gps_time == 0) || ((millis() - last_gps_time) > GPS_REFRESH)) {
+        updateGPS();
+			
+		last_gps_time = millis();
+		gps_updated = true;
+	} else
+		gps_updated = false;
+		
+	if (!high_res_gps && (millis() - last_gps_time > GPS_WARNING))
+        warnGPS();
 
-    Serial.print("W: ");
-    Serial.println(wind);
-//    Serial.print("; H: ");
-//    Serial.print(ahrs_heading);
-//    Serial.print("; T: ");
-//    Serial.print(gps_lat, 8);
-//    Serial.print("; N: ");
-//    Serial.println(gps_lon, 8);
+    logln("Position: %s, %s (%dms old), Speed (x10): %d, Direction: %d, Wind: %d, Battery %d", 
+                gps_aprs_lat, 
+                gps_aprs_lon, 
+                millis() - last_gps_time,
+                (int16_t) (gps_speed * 10),
+                (int16_t)gps_course,
+                wind, 
+                ((int16_t)measureVoltage() * 10));
 }
 
 void loop() 
 { 
-    updateSensors();
-            delay(100);
-    
-        doPilot();
-     
-        sleepMillis(adjustment_made ? SCAN_RATE_FAST : SCAN_RATE_NORMAL);
+	updateSensors();
+
+    doPilot();
+
+    sleepMillis(adjustment_made ? SCAN_RATE_FAST : SCAN_RATE_NORMAL);
 } 

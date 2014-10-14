@@ -167,7 +167,6 @@
 <hole x="2" y="52" drill="3.2"/>
 <text x="87" y="37" size="1.016" layer="16" rot="MR90">ARDUSAILOR V5.1</text>
 <text x="87" y="37" size="1.016" layer="16" rot="MR90">ARDUSAILOR V5.1</text>
-<text x="87" y="37" size="1.016" layer="16" rot="MR90">ARDUSAILOR V5.1</text>
 </plain>
 <libraries>
 <library name="SparkFun-Sensors">
@@ -2096,10 +2095,9 @@ Please make sure your boards conform to these design rules.</description>
 <via x="29" y="43" extent="1-16" drill="0.381"/>
 <via x="65" y="45" extent="1-16" drill="0.5"/>
 <via x="73" y="50" extent="1-16" drill="0.5"/>
-<via x="15" y="17" extent="1-16" drill="0.5"/>
-<via x="15" y="21" extent="1-16" drill="0.5"/>
-<via x="25" y="30" extent="1-16" drill="0.5"/>
-<via x="27.15" y="30" extent="1-16" drill="0.5"/>
+<via x="10" y="16" extent="1-16" drill="0.5"/>
+<via x="25" y="30" extent="1-16" drill="0.381"/>
+<via x="29.15" y="28" extent="1-16" drill="0.381"/>
 <contactref element="C9" pad="2"/>
 <via x="24.886" y="46.563" extent="1-16" drill="0.381"/>
 <via x="25.836" y="46.763" extent="1-16" drill="0.381"/>
@@ -2111,8 +2109,8 @@ Please make sure your boards conform to these design rules.</description>
 <via x="49" y="12" extent="1-16" drill="0.381"/>
 <via x="79" y="8" extent="1-16" drill="0.381"/>
 <via x="81" y="8" extent="1-16" drill="0.381"/>
-<via x="19" y="21" extent="1-16" drill="0.5"/>
-<via x="19" y="17" extent="1-16" drill="0.5"/>
+<via x="17" y="24" extent="1-16" drill="0.5"/>
+<via x="29" y="22" extent="1-16" drill="0.5"/>
 <via x="50" y="20.9" extent="1-16" drill="0.381"/>
 <contactref element="U1" pad="9"/>
 <contactref element="U1" pad="1"/>
@@ -2150,6 +2148,8 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="83.15" y1="18" x2="82" y2="18" width="0.254" layer="1"/>
 <via x="76" y="25" extent="1-16" drill="0.381"/>
 <via x="41.9" y="36.25" extent="1-16" drill="0.381"/>
+<via x="41" y="14" extent="1-16" drill="0.381"/>
+<via x="41" y="18" extent="1-16" drill="0.381"/>
 </signal>
 <signal name="SDA">
 <contactref element="U1" pad="24"/>

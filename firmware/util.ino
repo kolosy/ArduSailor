@@ -50,6 +50,17 @@ float angleDiff(float a1, float a2, boolean sign) {
 	return mult * d;
 }
 
+void blink(uint8_t pin, uint8_t duration, uint8_t count, uint8_t finalState) {
+    for (uint8_t i=0; i<count; i++) {
+        digitalWrite(pin, HIGH);
+        delay(duration);
+        digitalWrite(pin, LOW);
+        delay(duration);
+    }
+    
+    digitalWrite(pin, finalState);
+}
+
 void sleepMillis(int amount) {
   delay(amount);
 //	int sleeps = amount / 2000; // max sleep time is 2s, so this is the number of times we'll have to sleep

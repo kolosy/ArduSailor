@@ -92,14 +92,16 @@ void updateSensors() {
 	if (!high_res_gps && (millis() - last_gps_time > GPS_WARNING))
         warnGPS();
 
+    uint16_t gps_elapsed = millis() - last_gps_time;
+    int16_t voltage = ((int16_t)measureVoltage() * 10);
     logln("Position: %s, %s (%dms old), Speed (x10): %d, Direction: %d, Wind: %d, Battery %d", 
                 gps_aprs_lat, 
                 gps_aprs_lon, 
-                millis() - last_gps_time,
+                gps_elapsed,
                 (int16_t) (gps_speed * 10),
                 (int16_t)gps_course,
                 wind, 
-                ((int16_t)measureVoltage() * 10));
+                voltage);
 }
 
 void loop() 

@@ -8,51 +8,51 @@
 SdCard card;
 Fat16 file;
 
-char gps_time[7];		// HHMMSS
-uint32_t gps_seconds = 0;	// seconds after midnight
+char gps_time[7];       // HHMMSS
+uint32_t gps_seconds = 0;   // seconds after midnight
 
 uint8_t fileReady = 0;
 
 void logInit() {
-	// initialize the SD card
-	if (!card.init()) { 
-    	Serial.print("Error initializing card - ");
-    	Serial.println(card.errorCode, HEX);
-        return;
-	}
-	
-	// initialize a FAT16 volume
-	if (!Fat16::init(&card)) {
-	    Serial.println("Can't initialize volume.");
-        return;
-    }
-	
-	// create a new file
-	char name[] = "LOGGER00.TXT";
-	for (uint8_t i = 0; i < 100; i++) {
-    	name[6] = i/10 + '0';
-    	name[7] = i%10 + '0';
-    	// O_CREAT - create the file if it does not exist
-    	// O_EXCL - fail if the file exists
-    	// O_WRITE - open for write only
-    	if (file.open(name, O_CREAT | O_EXCL | O_WRITE)) break;
-	}
-
-	if (!file.isOpen()) {
-	    Serial.println("Error creating log file.");
+    // initialize the SD card
+    if (!card.init()) { 
+        Serial.print("Error initializing card - ");
+        Serial.println(card.errorCode, HEX);
         return;
     }
     
-	Serial.print("Logging to: ");
-	Serial.println(name);
+    // initialize a FAT16 volume
+    if (!Fat16::init(&card)) {
+        Serial.println("Can't initialize volume.");
+        return;
+    }
+    
+    // create a new file
+    char name[] = "LOGGER00.TXT";
+    for (uint8_t i = 0; i < 100; i++) {
+        name[6] = i/10 + '0';
+        name[7] = i%10 + '0';
+        // O_CREAT - create the file if it does not exist
+        // O_EXCL - fail if the file exists
+        // O_WRITE - open for write only
+        if (file.open(name, O_CREAT | O_EXCL | O_WRITE)) break;
+    }
 
-	// write data header
-	
-	// clear write error
-	file.writeError = false;
-	file.println("Started log.");
-	file.sync();
-	
+    if (!file.isOpen()) {
+        Serial.println("Error creating log file.");
+        return;
+    }
+    
+    Serial.print("Logging to: ");
+    Serial.println(name);
+
+    // write data header
+    
+    // clear write error
+    file.writeError = false;
+    file.println("Started log.");
+    file.sync();
+    
     fileReady = 1;
 }
 

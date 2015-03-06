@@ -47,49 +47,49 @@ void setup()
     pinMode(STATUS_LED, OUTPUT);
     digitalWrite(STATUS_LED, HIGH);
     
-	Wire.begin();
+    Wire.begin();
 
-	Serial.begin(38400);
-	logInit();
+    Serial.begin(38400);
+    logInit();
 
-	logln("ArduSailor Starting...");
-	Serial2.begin(GPS_BAUDRATE);
-	
-	servoInit();
+    logln("ArduSailor Starting...");
+    Serial2.begin(GPS_BAUDRATE);
+    
+    servoInit();
 
     windInit();
-	mpuInit();
-	gpsInit();
+    mpuInit();
+    gpsInit();
     batteryInit();
-	
-	pilotInit();
+    
+    pilotInit();
     
     blink(STATUS_LED, 100, 10, HIGH);
     logln("Acquiring GPS...");
     
     updateGPS();
-	last_gps_time = millis();
-	gps_updated = true;
+    last_gps_time = millis();
+    gps_updated = true;
 
     logln("Done. System ready.");
-	
+    
     digitalWrite(STATUS_LED, LOW);
 } 
 
 void updateSensors() {
-	// most of this will be used in human comparison stuff, no need to keep in radians.
-	ahrs_heading = readSteadyHeading() * 180.0 / PI;
-	wind = readSteadyWind() * 180.0 / PI;
-	
-	if (high_res_gps || (last_gps_time == 0) || ((millis() - last_gps_time) > GPS_REFRESH)) {
+    // most of this will be used in human comparison stuff, no need to keep in radians.
+    ahrs_heading = readSteadyHeading() * 180.0 / PI;
+    wind = readSteadyWind() * 180.0 / PI;
+    
+    if (high_res_gps || (last_gps_time == 0) || ((millis() - last_gps_time) > GPS_REFRESH)) {
         updateGPS();
-			
-		last_gps_time = millis();
-		gps_updated = true;
-	} else
-		gps_updated = false;
-		
-	if (!high_res_gps && (millis() - last_gps_time > GPS_WARNING))
+            
+        last_gps_time = millis();
+        gps_updated = true;
+    } else
+        gps_updated = false;
+        
+    if (!high_res_gps && (millis() - last_gps_time > GPS_WARNING))
         warnGPS();
 
     uint16_t gps_elapsed = millis() - last_gps_time;
@@ -106,7 +106,7 @@ void updateSensors() {
 
 void loop() 
 { 
-	updateSensors();
+    updateSensors();
 
     doPilot();
 

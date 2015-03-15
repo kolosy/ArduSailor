@@ -188,7 +188,9 @@ float readSteadyHeading() {
         delay(MPU_PAUSES);
     }
     
-    heading /= (float)MPU_LOOPS;
+    heading /= ((float)MPU_LOOPS);
+    heading = toCircle(-heading);
+    // heading = (-heading) - (PI / 2.0);
     logln("AHRS (y,p,r): %d, %d, %d", 
         ((int16_t) (heading * 180.0 / PI)),
         ((int16_t) (f_ypr[1] * 180.0 / PI)),

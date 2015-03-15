@@ -41,6 +41,7 @@ uint8_t current_winch = 0;
 boolean adjustment_made = false;
 boolean high_res_gps = true;
 boolean gps_updated = false;
+boolean manual_override = false;
 
 void setup() 
 { 
@@ -49,7 +50,7 @@ void setup()
     
     Wire.begin();
 
-    Serial.begin(38400);
+    Serial.begin(9600);
     logInit();
 
     logln("ArduSailor Starting...");
@@ -104,10 +105,20 @@ void updateSensors() {
                 voltage);
 }
 
+void checkInput() {
+    while (Serial.available())
+        if (Serial.read() == 'o') {
+            logln("Entering manual override");
+            manual_override = true;
+            break;
+        }
+}
+
 void loop() 
 { 
     updateSensors();
 
+    checkInput();
     doPilot();
 
     sleepMillis(adjustment_made ? SCAN_RATE_FAST : SCAN_RATE_NORMAL);

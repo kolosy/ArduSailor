@@ -68,6 +68,7 @@ uint8_t offset_set = 0;
 float fused_heading = 0;
 
 inline void fuseHeading() {
+    // no fusion for now. todo: add gps-based mag calibration compensation
     fused_heading = ahrs_heading;
 }
 
@@ -219,18 +220,6 @@ void adjustHeading() {
             
             if (abs(max_adjust) > COURSE_ADJUST_ON) {
                 steer_with_cs(-max_adjust);
-                // if (max_adjust < 0) {
-                //  TO_PORT(-max_adjust);
-                //  delay(COURSE_CORRECTION_TIME);
-                //  TO_SBRD(-max_adjust/2);
-                //  delay(COURSE_CORRECTION_TIME/2);
-                // }
-                // else {
-                //  TO_SBRD(max_adjust);
-                //  delay(COURSE_CORRECTION_TIME);
-                //  TO_PORT(max_adjust/2);
-                //  delay(COURSE_CORRECTION_TIME/2);
-                // }
                 updateSensors();
                 fuseHeading();
                 adjustSails();
@@ -241,11 +230,6 @@ void adjustHeading() {
     } else {
         logln("Adjusting by %d", (int16_t) -off_course);
         steer_with_cs(-off_course);
-        // off_course < 0 ? TO_PORT(-off_course) : TO_SBRD(off_course);
-        // delay(COURSE_CORRECTION_TIME);
-        // // counter steer
-        // off_course < 0 ? TO_PORT(off_course) : TO_SBRD(-off_course);
-        // delay(COURSE_CORRECTION_TIME / 2);
         updateSensors();
         fuseHeading();
         adjustSails();
@@ -300,8 +284,48 @@ void doPilot() {
         wp_heading = computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon)) * 180 / PI;
     }
 
+    while (manual_override) {
+        
+        do {
+            updateSensors();
+            delay(1000);
+        } while (!Serial.available());
+        
+        
+        switch ((char)Serial.read()) {
+            case 'a':
+                TO_PORT(5);
+                logln("5 degrees to port");
+                break;
+            case 'd':
+                TO_SBRD(5);
+                logln("5 degrees to starboard");
+                break;
+            case 's':
+                centerRudder();
+                logln("Center rudder");
+                break;
+            case 'q':
+                winchTo(current_winch - 5);
+                logln("Sheet out");
+                break;
+            case 'e':
+                winchTo(current_winch + 5);
+                logln("Sheet in");
+                break;
+            case 'w':
+                centerWinch();
+                logln("Center winch");
+                break;
+            case 'x':
+                manual_override = false;
+                logln("End manual override");
+                break;
+        }
+    }
+
     safetyCheck();
-    
+
     adjustSails();
 
     if (angleDiff(fused_heading, wp_heading, false) > COURSE_ADJUST_ON)

@@ -288,7 +288,7 @@ void doPilot() {
         
         do {
             updateSensors();
-            delay(1000);
+            delay(500);
         } while (!Serial.available());
         
         
@@ -306,11 +306,11 @@ void doPilot() {
                 logln("Center rudder");
                 break;
             case 'q':
-                winchTo(current_winch - 5);
+                winchTo(current_winch + 5);
                 logln("Sheet out");
                 break;
             case 'e':
-                winchTo(current_winch + 5);
+                winchTo(current_winch - 5);
                 logln("Sheet in");
                 break;
             case 'w':

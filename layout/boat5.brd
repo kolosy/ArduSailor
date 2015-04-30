@@ -1779,8 +1779,8 @@ Please make sure your boards conform to these design rules.</description>
 <attribute name="VALUE" x="72.034" y="30.807" size="0.4064" layer="27" font="vector"/>
 </element>
 <element name="R1" library="SparkFun-Resistors" package="0603-RES" value="100k" x="80" y="27" rot="R90"/>
-<element name="C13" library="SparkFun-Capacitors" package="CAP-PTH-5MM" value="250uF" x="76" y="49" rot="R270"/>
-<element name="C24" library="SparkFun-Capacitors" package="CAP-PTH-5MM" value="250uF" x="40" y="50" rot="R90"/>
+<element name="C13" library="SparkFun-Capacitors" package="CAP-PTH-5MM" value="4700uF" x="76" y="49" rot="R270"/>
+<element name="C24" library="SparkFun-Capacitors" package="CAP-PTH-5MM" value="1000uF" x="40" y="50" rot="R90"/>
 <element name="D$1" library="kolosy" package="MICROSMP" value="SS1P3L" x="51" y="47"/>
 <element name="D$2" library="kolosy" package="MICROSMP" value="SS1P3L" x="62" y="47"/>
 <element name="U4" library="SparkFun" package="16LPCC" value="HMC5883LSMD" x="23" y="44" smashed="yes" rot="R90">
@@ -1901,6 +1901,7 @@ Please make sure your boards conform to these design rules.</description>
 <attribute name="NAME" x="78.261" y="34.0985" size="0.4064" layer="25"/>
 <attribute name="VALUE" x="79.6705" y="34.107" size="0.4064" layer="27"/>
 </element>
+<element name="C34" library="SparkFun-Capacitors" package="CAP-PTH-5MM" value="470uF" x="79" y="21" rot="R270"/>
 </elements>
 <signals>
 <signal name="GND">
@@ -2161,6 +2162,7 @@ Please make sure your boards conform to these design rules.</description>
 <via x="35" y="45" extent="1-16" drill="0.5"/>
 <via x="76.55" y="36.4" extent="1-16" drill="0.381"/>
 <via x="75.45" y="36.4" extent="1-16" drill="0.381"/>
+<contactref element="C34" pad="2"/>
 </signal>
 <signal name="SDA">
 <contactref element="U1" pad="24"/>
@@ -2655,6 +2657,7 @@ Please make sure your boards conform to these design rules.</description>
 <contactref element="U$2" pad="3"/>
 <contactref element="C17" pad="1"/>
 <contactref element="C32" pad="1"/>
+<contactref element="C34" pad="1"/>
 </signal>
 <signal name="N$8">
 <contactref element="S_WINCH" pad="1"/>

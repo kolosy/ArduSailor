@@ -46,8 +46,9 @@
 #define CAN_TURN() ((last_turn + TURN_EVERY) < millis())
 #define COURSE_CORRECTION_TIME 750
 
-#define TO_PORT(amt) rudderTo(current_rudder + amt)
-#define TO_SBRD(amt) rudderTo(current_rudder - amt)
+#define SERVO_ORIENTATION -1
+#define TO_PORT(amt) rudderTo(current_rudder + (SERVO_ORIENTATION * amt))
+#define TO_SBRD(amt) rudderTo(current_rudder - (SERVO_ORIENTATION * amt))
 #define RAD(v) ((v) * PI / 180.0)
 #define DEG(v) ((v) * 180.0 / PI)
 
@@ -128,7 +129,6 @@ void gybe() {
     // yank the tiller, sails are fine
     if (wind > 180) {
         // gybe to starboard
-        // todo: what's the servo direction here?
         TO_SBRD(25);
         while (!isPast(start_heading, GYBE_START_STRAIGHT, fused_heading, true)) {
             updateSensors();
@@ -151,6 +151,7 @@ void gybe() {
 void safetyCheck() {
     if (IN_IRONS(wind)) {
         logln("wind direction of %d has put us in irons. falling off...", wind);
+        // todo: this should be a steer_with_cs call
         if (wind < 180) TO_PORT(15); else TO_SBRD(15);
         sleepMillis(1000);
         adjustment_made = true;
@@ -167,17 +168,23 @@ void safetyCheck() {
     //  updateSensors();
     //  fuseHeading();
     // }
+    
+    centerRudder();
 }
 
 // steer with counter steer. port is +, starboard is -
 void steer_with_cs(int amount) {
-    rudderTo(current_rudder + amount);
+    int corrected = amount * SERVO_ORIENTATION;
+    
+    int c_rudder = current_rudder;
+    
+    rudderTo(c_rudder + corrected);
     delay(COURSE_CORRECTION_TIME);
     
-    rudderTo(current_rudder - amount/2);
+    rudderTo(c_rudder - corrected/2);
     delay(COURSE_CORRECTION_TIME/2);
     
-    centerRudder();
+    rudderTo(c_rudder);
 }
 
 void adjustSails() {
@@ -246,45 +253,7 @@ void pilotInit() {
 }
 
 void doPilot() {
-    // still want to check this
-    if ((gps_speed > MIN_SPEED) && gps_updated) {
-        ahrs_offset = angleDiff(ahrs_heading, gps_course, true);
-        logln("GPS vs AHRS difference is %d", (int16_t) ahrs_offset * 10);
-    }
-
-    fuseHeading();        
-    
-    // check if we've hit the waypoint
-    wp_distance = computeDistance(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon));
-    wp_heading = toCircle(computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon))) * 180 / PI;
-    adjustment_made = false;
-
-    logln("GPS heading: %d, GPS speed (x10): %dkts, HTW: %d, DTW: %dm", 
-            ((int16_t) gps_course), 
-            ((int16_t) gps_speed * 10),
-            ((int16_t) wp_heading), 
-            ((int16_t) wp_distance));
-
-    if (wp_distance < GET_WITHIN) {
-        log("Waypoint reached.");
-        if (target_wp == 1) {
-            target_wp = 2;
-            wp_lat = WP2_LAT;
-            wp_lon = WP2_LON;
-            logln(" Setting waypoint 2.");
-        } else {
-            target_wp = 1;
-            wp_lat = WP1_LAT;
-            wp_lon = WP1_LON;
-            logln(" Setting waypoint 1.");
-        }
-    
-        // wp changed, need to recompute
-        wp_distance = computeDistance(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon));
-        wp_heading = computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon)) * 180 / PI;
-    }
-
-    while (manual_override) {
+    if (manual_override) {
         
         do {
             updateSensors();
@@ -294,12 +263,12 @@ void doPilot() {
         
         switch ((char)Serial.read()) {
             case 'a':
-                TO_PORT(5);
-                logln("5 degrees to port");
+                TO_PORT(10);
+                logln("10 degrees to port");
                 break;
             case 'd':
-                TO_SBRD(5);
-                logln("5 degrees to starboard");
+                TO_SBRD(10);
+                logln("10 degrees to starboard");
                 break;
             case 's':
                 centerRudder();
@@ -322,6 +291,46 @@ void doPilot() {
                 logln("End manual override");
                 break;
         }
+        
+        return;
+    }
+
+    // still want to check this
+    if ((gps_speed > MIN_SPEED) && gps_updated) {
+        ahrs_offset = angleDiff(ahrs_heading, gps_course, true);
+        logln("GPS vs AHRS difference is %d", (int16_t) ahrs_offset * 10);
+    }
+
+    fuseHeading();        
+    
+    // check if we've hit the waypoint
+    wp_distance = computeDistance(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon));
+    wp_heading = toCircle(computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon))) * 180 / PI;
+    adjustment_made = false;
+
+    logln("GPS heading: %d, GPS speed (x10): %dkts, HTW: %d, DTW: %dm", 
+            ((int16_t) gps_course), 
+            ((int16_t) gps_speed * 10.0),
+            ((int16_t) wp_heading), 
+            ((int16_t) wp_distance));
+
+    if (wp_distance < GET_WITHIN) {
+        log("Waypoint reached.");
+        if (target_wp == 1) {
+            target_wp = 2;
+            wp_lat = WP2_LAT;
+            wp_lon = WP2_LON;
+            logln(" Setting waypoint 2.");
+        } else {
+            target_wp = 1;
+            wp_lat = WP1_LAT;
+            wp_lon = WP1_LON;
+            logln(" Setting waypoint 1.");
+        }
+    
+        // wp changed, need to recompute
+        wp_distance = computeDistance(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon));
+        wp_heading = computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon)) * 180 / PI;
     }
 
     safetyCheck();

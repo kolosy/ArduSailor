@@ -94,7 +94,7 @@ void updateSensors() {
         warnGPS();
 
     uint16_t gps_elapsed = millis() - last_gps_time;
-    int16_t voltage = ((int16_t)measureVoltage() * 10);
+    int16_t voltage = ((int16_t)(measureVoltage() * 100.0));
     logln("Position: %s, %s (%dms old), Speed (x10): %d, Direction: %d, Wind: %d, Battery %d", 
                 gps_aprs_lat, 
                 gps_aprs_lon, 
@@ -118,8 +118,11 @@ void loop()
 { 
     updateSensors();
 
-    checkInput();
-    doPilot();
+    if (!manual_override) {
+        checkInput();
+        doPilot();
 
-    sleepMillis(adjustment_made ? SCAN_RATE_FAST : SCAN_RATE_NORMAL);
+        sleepMillis(adjustment_made ? SCAN_RATE_FAST : SCAN_RATE_NORMAL);
+    } else
+        doPilot();
 } 

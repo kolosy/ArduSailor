@@ -11,6 +11,10 @@
 #define WINCH_MIN 60
 #define WINCH_MAX 115
 
+// degrees per second
+#define RUDDER_SPEED 300.0
+#define WINCH_SPEED 277.0
+
 Servo sv_winch, sv_rudder;
 
 // servo absolute limits:
@@ -35,7 +39,7 @@ void centerWinch() {
 }
 
 void centerRudder() {
-    rudderTo(80);
+    rudderTo(90);
 }
 
 void winchTo(int value) {
@@ -44,11 +48,11 @@ void winchTo(int value) {
     int v = constrain(value, WINCH_MIN, WINCH_MAX);
 
     digitalWrite(SP_EN, HIGH);
-    delay(50);
+    delay(10);
     digitalWrite(WINCH_EN, HIGH);
-    delay(100);
+    delay(10);
     sv_winch.write(v);
-    delay(2500);
+    delay(abs((current_winch - v))/WINCH_SPEED + 50);
     digitalWrite(WINCH_EN, LOW);
     digitalWrite(SP_EN, LOW);
     
@@ -61,11 +65,11 @@ void rudderTo(int value) {
     int v = constrain(value, RUDDER_MIN, RUDDER_MAX);
     
     digitalWrite(SP_EN, HIGH);
-    delay(50);
+    delay(10);
     digitalWrite(RUDDER_EN, HIGH);
-    delay(100);
+    delay(10);
     sv_rudder.write(v);
-    delay(1500);
+    delay(abs((current_rudder - v))/RUDDER_SPEED + 50);
     digitalWrite(RUDDER_EN, LOW);
     digitalWrite(SP_EN, LOW);
     

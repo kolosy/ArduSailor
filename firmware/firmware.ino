@@ -23,7 +23,6 @@
 #define GPS_REFRESH 10000
 #define GPS_WARNING 7000
 
-
 // Public (extern) variables, readable from other modules
 uint16_t last_gps_time = 0;
 float gps_lat = 0;
@@ -55,7 +54,10 @@ void setup()
 
     logln("ArduSailor Starting...");
     Serial2.begin(GPS_BAUDRATE);
-    
+
+#ifdef CALIBRATE_ONLY
+    mpuInit();
+#else
     servoInit();
 
     windInit();
@@ -71,6 +73,7 @@ void setup()
     updateGPS();
     last_gps_time = millis();
     gps_updated = true;
+#endif
 
     logln("Done. System ready.");
     
@@ -116,13 +119,20 @@ void checkInput() {
 
 void loop() 
 { 
-    updateSensors();
-
+#ifdef CALIBRATE_ONLY
+    writeCalibrationLine();
+    digitalWrite(STATUS_LED, HIGH);
+    delay(10);
+    digitalWrite(STATUS_LED, LOW);
+    delay(10);
+#else
     if (!manual_override) {
+        updateSensors();
         checkInput();
         doPilot();
 
         sleepMillis(adjustment_made ? SCAN_RATE_FAST : SCAN_RATE_NORMAL);
     } else
         doPilot();
+#endif
 } 

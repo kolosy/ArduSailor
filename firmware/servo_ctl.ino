@@ -13,7 +13,7 @@
 
 // degrees per second
 #define RUDDER_SPEED 300.0
-#define WINCH_SPEED 277.0
+#define WINCH_SPEED 35.0
 
 Servo sv_winch, sv_rudder;
 
@@ -46,13 +46,16 @@ void winchTo(int value) {
     logln("Winch to %d", value);
   
     int v = constrain(value, WINCH_MIN, WINCH_MAX);
+    
+    if (current_winch == v)
+      return;
 
     digitalWrite(SP_EN, HIGH);
     delay(10);
     digitalWrite(WINCH_EN, HIGH);
     delay(10);
     sv_winch.write(v);
-    delay(abs((current_winch - v))/WINCH_SPEED + 50);
+    delay(1000 * (abs((current_winch - v))/WINCH_SPEED) + 50);
     digitalWrite(WINCH_EN, LOW);
     digitalWrite(SP_EN, LOW);
     
@@ -64,12 +67,15 @@ void rudderTo(int value) {
 
     int v = constrain(value, RUDDER_MIN, RUDDER_MAX);
     
+    if (current_rudder == v)
+      return;
+    
     digitalWrite(SP_EN, HIGH);
     delay(10);
     digitalWrite(RUDDER_EN, HIGH);
     delay(10);
     sv_rudder.write(v);
-    delay(abs((current_rudder - v))/RUDDER_SPEED + 50);
+    delay(1000 * (abs((current_rudder - v))/RUDDER_SPEED) + 50);
     digitalWrite(RUDDER_EN, LOW);
     digitalWrite(SP_EN, LOW);
     

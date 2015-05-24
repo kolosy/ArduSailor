@@ -255,41 +255,40 @@ void pilotInit() {
 void doPilot() {
     if (manual_override) {
         
-        do {
-            updateSensors();
-            delay(500);
-        } while (!Serial.available());
-        
-        
-        switch ((char)Serial.read()) {
-            case 'a':
-                TO_PORT(10);
-                logln("10 degrees to port");
-                break;
-            case 'd':
-                TO_SBRD(10);
-                logln("10 degrees to starboard");
-                break;
-            case 's':
-                centerRudder();
-                logln("Center rudder");
-                break;
-            case 'q':
-                winchTo(current_winch + 5);
-                logln("Sheet out");
-                break;
-            case 'e':
-                winchTo(current_winch - 5);
-                logln("Sheet in");
-                break;
-            case 'w':
-                centerWinch();
-                logln("Center winch");
-                break;
-            case 'x':
-                manual_override = false;
-                logln("End manual override");
-                break;
+        while (Serial.available()) {
+            switch ((char)Serial.read()) {
+                case 'i':
+                    updateSensors();
+                    break;
+                case 'a':
+                    TO_PORT(10);
+                    logln("10 degrees to port");
+                    break;
+                case 'd':
+                    TO_SBRD(10);
+                    logln("10 degrees to starboard");
+                    break;
+                case 's':
+                    centerRudder();
+                    logln("Center rudder");
+                    break;
+                case 'q':
+                    winchTo(current_winch + 5);
+                    logln("Sheet out");
+                    break;
+                case 'e':
+                    winchTo(current_winch - 5);
+                    logln("Sheet in");
+                    break;
+                case 'w':
+                    centerWinch();
+                    logln("Center winch");
+                    break;
+                case 'x':
+                    manual_override = false;
+                    logln("End manual override");
+                    break;
+            }
         }
         
         return;
@@ -305,7 +304,7 @@ void doPilot() {
     
     // check if we've hit the waypoint
     wp_distance = computeDistance(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon));
-    wp_heading = toCircle(computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon))) * 180 / PI;
+    wp_heading = DEG(toCircle(computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon))));
     adjustment_made = false;
 
     logln("GPS heading: %d, GPS speed (x10): %dkts, HTW: %d, DTW: %dm", 

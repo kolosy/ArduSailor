@@ -1,0 +1,173 @@
+Error initializing card - 1
+:2107 ArduSailor Starting...
+:2109 Initializing I2C devices...
+:8857 Testing device connections...
+:8859 MPU6050 connection successful
+:8867 Initializing DMP...
+:9967 Enabling DMP...
+:9969 DMP ready! Waiting for first interrupt...
+000000:9981 Rudder to 90
+000000:10373 Winch to 115
+000000:15728 Acquiring GPS...
+214632:35203 Done. System ready.
+ trim
+214633:36417 New winch position of 103 is more than 10 off from 115. Adjusting trim.
+214633:36505 Winch to 103
+214633:38418 Rudder to 90
+214633:38623 AHRS (y,p,r): 93, 4, -12
+214637:40214 Position: 4155.40N, 08737.90W (0ms old), Speed (x10): 0, Direction: 0, Wind: 97, Battery 1142
+214637:40267 Checking sail trim
+214637:40300 New winch position of 80 is more than 10 off from 103. Adjusting trim.
+214637:40388 Winch to 80
+214637:42248 AHRS (y,p,r): 63, 4, -19
+214641:44210 Position: 4155.40N, 08737.89W (0ms old), Speed (x10): 0, Direction: 0, Wind: 130, Battery 1142
+214641:44263 GPS heading: 0, GPS speed (x10): 0kts, HTW: 0, DTW: 94m
+214641:44335 Rudder to 90
+214641:44363 Checking sail trim
+214641:44398 New winch position of 67 is more than 10 off from 80. Adjusting trim.
+214641:44484 Winch to 67
+214641:44947 Off course by 30
+214641:44949 When corrected, new wind direction will be 99
+214641:44980 Adjusting by -30
+214641:45012 Rudder to 120
+214641:45955 Rudder to 75
+214641:46553 Rudder to 90
+214641:46788 AHRS (y,p,r): 68, 5, -9
+214645:48197 Position: 4155.40N, 08737.89W (0ms old), Speed (x10): 0, Direction: 0, Wind: 108, Battery 1142
+214645:48248 Checking sail trim
+214645:48283 No trim adjustment needed
+214645:49436 AHRS (y,p,r): 72, 6, -11
+214648:51185 Position: 4155.40N, 08737.89W (0ms old), Speed (x10): 0, Direction: 0, Wind: 117, Battery 1142
+214648:51238 GPS heading: 0, GPS speed (x10): 0kts, HTW: 0, DTW: 94m
+214648:51312 Rudder to 90
+214648:51339 Checking sail trim
+214648:51374 No trim adjustment needed
+214648:51415 Off course by 21
+214648:51447 When corrected, new wind direction will be 95
+214648:51509 Adjusting by -21
+214648:51542 Rudder to 111
+214648:52455 Rudder to 80
+214648:53004 Rudder to 90
+214648:53219 AHRS (y,p,r): 126, 2, -7
+214652:55177 Position: 4155.40N, 08737.89W (0ms old), Speed (x10): 0, Direction: 30, Wind: 39, Battery 1142
+214652:55230 Checking sail trim
+214652:55265 New winch position of 103 is more than 10 off from 67. Adjusting trim.
+214652:55353 Winch to 103
+214652:57579 AHRS (y,p,r): 113, 1, -9
+214656:59164 Position: 4155.40N, 08737.90W (0ms old), Speed (x10): 0, Direction: 30, Wind: 49, Battery 1140
+214656:59217 GPS heading: 30, GPS speed (x10): 0kts, HTW: 0, DTW: 91m
+214656:59291 Rudder to 90
+214656:59318 Checking sail trim
+214656:59353 No trim adjustment needed
+214656:59394 Off course by -21
+214656:59428 When corrected, new wind direction will be 70
+214656:59490 Adjusting by 21
+214656:59521 Rudder to 69
+214656:60434 Rudder to 100
+214656:60983 Rudder to 90
+214656:61204 AHRS (y,p,r): 102, 5, -13
+214700:63145 Position: 4155.40N, 08737.89W (0ms old), Speed (x10): 0, Direction: 30, Wind: 51, Battery 1142
+214700:63199 Checking sail trim
+214700:63234 No trim adjustment needed
+214700:64370 AHRS (y,p,r): 117, 4, -11
+214703:66131 Position: 4155.40N, 08737.89W (0ms old), Speed (x10): 0, Direction: 30, Wind: 45, Battery 1140
+214703:66185 GPS heading: 30, GPS speed (x10): 0kts, HTW: 0, DTW: 94m
+214703:66258 Rudder to 90
+214703:66287 Checking sail trim
+214703:66322 No trim adjustment needed
+214703:66363 Off course by -22
+214703:66396 When corrected, new wind direction will be 67
+214703:66459 Adjusting by 22
+214703:66490 Rudder to 68
+214703:67405 Rudder to 101
+214703:67960 Rudder to 90
+214703:68173 AHRS (y,p,r): 116, 4, -10
+214707:70121 Position: 4155.40N, 08737.89W (0ms old), Speed (x10): 0, Direction: 30, Wind: 47, Battery 1140
+214707:70174 Checking sail trim
+214707:70209 No trim adjustment needed
+214707:71360 AHRS (y,p,r): 113, 2, -20
+il trim
+214710:73302 No trim adjustment needed
+214710:73342 Off course by -13
+214710:73375 When corrected, new wind direction will be 60
+214710:73439 Adjusting by 13
+214710:73469 Rudder to 77
+214710:74354 Rudder to 96
+on: 30, Wind: 52, Battery 1140
+214714:77156 Checking sail trim
+214714:77191 No trim adjustment needed
+214714:78329 AHRS (y,p,r): 110, 3, -15
+il trim
+214717:80281 No trim adjustment needed
+214717:80322 Off course by -10
+214717:80357 When corrected, new wind direction will be 60
+214717:80418 Adjusting by 10
+214717:80449 Rudder to 80
+214717:81324 Rudder to 95
+214717:81821 Rudder to 90
+214717:82014 AHRS (y,p,r): 120, 4, -10
+on: 30, Wind: 43, Battery 1140
+214721:84142 Checking sail trim
+214721:84176 No trim adjustment needed
+214721:85319 AHRS (y,p,r): 117, 1, -10
+ail trim
+214724:87267 No trim adjustment needed
+214724:87310 Off course by -16
+214724:87343 When corrected, new wind direction will be 62
+214724:87404 Adjusting by 16
+214724:87435 Rudder to 74
+214724:88330 Rudder to 98
+214724:88856 Rudder to 90
+214724:89063 AHRS (y,p,r): 116, 2, -17
+on: 30, Wind: 55, Battery 1140
+214728:91129 Checking sail trim
+214728:91164 No trim adjustment needed
+214728:92309 AHRS (y,p,r): 113, 4, -13
+214731:95819 Rudder to 90
+214731:96012 AHRS (y,p,r): 110, 4, -24
+on: 30, Wind: 47, Battery 1142
+214735:98107 Checking sail trim
+214735:98140 No trim adjustment needed
+214735:99278 AHRS (y,p,r): 108, 3, -20
+214738:101048 Position: 4155.40N, 08737.89W (0ms old), Speed (x10): 0, Direction: 30, Wind: 47, Battery 1140
+214738:101103 GPS heading: 30, GPS speed (x10): 0kts, HTW: 0, DTW: 99m
+214738:101177 Rudder to 90
+214738:101206 Checking sail trim
+214738:101242 No trim adjustment needed
+214738:101283 Off cours101382 Adjusting by 8
+214738:101412 Rudder to 82
+214738:102281 Rudder to 94
+214738:102768 Rudder to 90
+214738:102963 AHRS (y,p,r): 111, 6, -32
+214742:105033 Position: 4155.40N, 08737.89W (0ms old), Speed (x10): 0, Direction: 30, Wind: 47, Battery 1140
+214742:105086 Checking sail trim
+214742:105123 No trim adjustment needed
+214742:106268 AHRS (y,p,r): 73, 5, -38
+ng sail trim
+214745:108210 New winch position of 69 is more than 10 off from 103. Adjusting trim.
+214745:108300 Winch to 69
+ion will be 100
+214745:109400 Adjusting by -26
+214745:109432 Rudder to 116
+ion: 30, Wind: 133, Battery 1142
+214750:113059 Checking sail trim
+214750:113096 No trim adjustment needed
+214750:114233 AHRS (y,p,r): 67, 5, -15
+se by 32
+214753:116260 When corrected, new wind direction will be 91
+214753:116324 Adjusting by -32
+214753:116357 Rudder to 122
+214753:118157 AHRS (y,p,r): 62, 6, -13
+214757:121223 AHRS (y,p,r): 79, 4, -15
+se by 20
+214800:123238 When corrected, new wind direction will be 88
+214800:123301 Adjusting by -20
+214800:123334 Rudder to 110
+214800:124243 Rudder to 80
+214800:124790 Rudder to 90
+214800:125005 AHRS (y,p,r): 115, 5, -11
+214808:132669 Rudder to 90
+214808:132872 AHRS (y,p,r): 120, 4, -10
+016 No trim adjustment needed
+ion: 30, Wind: 64, Battery 1140
+214853:175943 AHRS (y,p,r): 82, 3, -10

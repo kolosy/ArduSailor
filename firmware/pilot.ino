@@ -12,7 +12,7 @@
 #define WP2_LON -87.628885
 
 // how close you have to get to the waypoint to consider it hit
-#define GET_WITHIN 5
+#define GET_WITHIN 25
 
 // how much to move tiller by when making slight adjustments
 #define FEATHER 3
@@ -44,7 +44,7 @@
 // if the course requires zig-zags, turn every x millis
 #define TURN_EVERY 90000
 #define CAN_TURN() ((last_turn + TURN_EVERY) < millis())
-#define COURSE_CORRECTION_TIME 750
+#define COURSE_CORRECTION_TIME 3000
 
 #define SERVO_ORIENTATION -1
 #define TO_PORT(amt) rudderTo(current_rudder + (SERVO_ORIENTATION * amt))
@@ -182,7 +182,7 @@ void steer_with_cs(int amount) {
     delay(COURSE_CORRECTION_TIME);
     
     rudderTo(c_rudder - corrected/2);
-    delay(COURSE_CORRECTION_TIME/2);
+    delay(COURSE_CORRECTION_TIME/4);
     
     rudderTo(c_rudder);
 }
@@ -309,7 +309,7 @@ void doPilot() {
 
     logln("GPS heading: %d, GPS speed (x10): %dkts, HTW: %d, DTW: %dm", 
             ((int16_t) gps_course), 
-            ((int16_t) gps_speed * 10.0),
+            ((int16_t) (gps_speed * 10.0)),
             ((int16_t) wp_heading), 
             ((int16_t) wp_distance));
 

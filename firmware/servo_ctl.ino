@@ -39,7 +39,7 @@ void centerWinch() {
 }
 
 void centerRudder() {
-    rudderTo(90);
+    rudderTo(90 + heel_offset);
 }
 
 void winchTo(int value) {
@@ -62,10 +62,14 @@ void winchTo(int value) {
     current_winch = v;
 }
 
+void rudderFromCenter(int value) {
+  rudderTo(90 + value);
+}
+
 void rudderTo(int value) {
     logln("Rudder to %d", value);
 
-    int v = constrain(value, RUDDER_MIN, RUDDER_MAX);
+    int v = constrain(value + heel_offset, RUDDER_MIN, RUDDER_MAX);
     
     if (current_rudder == v)
       return;

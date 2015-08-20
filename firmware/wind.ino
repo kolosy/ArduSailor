@@ -3,7 +3,7 @@
 #define WIND_EN 33 // p-channel
 
 #define SIGN_SHIFT 500
-#define SENSOR_OFFSET 209.0
+#define SENSOR_OFFSET 180.0
 
 #define WIND_ITERATIONS 5
 #define WIND_PAUSES 50

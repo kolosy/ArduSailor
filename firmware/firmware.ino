@@ -35,6 +35,7 @@ float gps_altitude = 0;
 float ahrs_heading = 0;
 uint16_t wind = 0;
 
+int16_t heel_offset = 0;
 uint8_t current_rudder = 0;
 uint8_t current_winch = 0;
 boolean adjustment_made = false;
@@ -131,7 +132,7 @@ void loop()
         checkInput();
         doPilot();
 
-        sleepMillis(adjustment_made ? SCAN_RATE_FAST : SCAN_RATE_NORMAL);
+        sleepMillis(SCAN_RATE_FAST);
     } else
         doPilot();
 #endif

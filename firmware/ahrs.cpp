@@ -14,7 +14,7 @@
 MPU6050 mpu;
 HMC58X3 magn;
 
-#define MPU_LOOPS 5
+#define MPU_LOOPS 2
 #define MPU_PAUSES 1
 
 // MPU control/status vars

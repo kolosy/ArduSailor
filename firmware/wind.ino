@@ -5,8 +5,8 @@
 #define SIGN_SHIFT 500
 #define SENSOR_OFFSET 180.0
 
-#define WIND_ITERATIONS 5
-#define WIND_PAUSES 50
+#define WIND_ITERATIONS 2
+#define WIND_PAUSES 5
 
 void windInit() {
     pinMode(WIND_EN, OUTPUT);

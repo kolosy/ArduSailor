@@ -10,10 +10,10 @@ void batteryInit() {
 
 float measureVoltage() {
     digitalWrite(BATT_V_EN, HIGH);
-    delay(50);
+    delay(10);
 
     float voltage = ((float)analogRead(BATT_VAL)) / 1023.0 * 3.3;
 
-    digitalWrite(BATT_V_EN, HIGH);
+    digitalWrite(BATT_V_EN, LOW);
     return voltage / R2 * (R1+R2);
 }

@@ -18,10 +18,11 @@
 #define STATUS_LED 32
 
 #define SCAN_RATE_NORMAL 30000
-#define SCAN_RATE_FAST 1000
+#define SCAN_RATE_FAST 500
 
-#define GPS_REFRESH 10000
-#define GPS_WARNING 7000
+#define GPS_REFRESH 30000
+#define GPS_WARNING 20000
+#define HIGH_RES_GPS_DEFAULT false
 
 // Public (extern) variables, readable from other modules
 uint16_t last_gps_time = 0;
@@ -36,10 +37,11 @@ float ahrs_heading = 0;
 uint16_t wind = 0;
 
 int16_t heel_offset = 0;
+uint32_t cycle = 0;
 uint8_t current_rudder = 0;
 uint8_t current_winch = 0;
 boolean adjustment_made = false;
-boolean high_res_gps = true;
+boolean high_res_gps = HIGH_RES_GPS_DEFAULT;
 boolean gps_updated = false;
 boolean manual_override = false;
 
@@ -103,7 +105,7 @@ void updateSensors() {
                 gps_aprs_lat, 
                 gps_aprs_lon, 
                 gps_elapsed,
-                (int16_t) (gps_speed * 10),
+                (int16_t) (gps_speed * 10.0),
                 (int16_t)gps_course,
                 wind, 
                 voltage);
@@ -128,11 +130,14 @@ void loop()
     delay(10);
 #else
     if (!manual_override) {
+        logln("#################### Cycle %d start ####################", cycle);
+        cycle++;
         updateSensors();
         checkInput();
         doPilot();
 
-        sleepMillis(SCAN_RATE_FAST);
+// no sleep for the wicked.
+//        sleepMillis(SCAN_RATE_FAST);
     } else
         doPilot();
 #endif

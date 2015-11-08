@@ -5,26 +5,29 @@
 #define MIN_SPEED 1.0
 
 // how close you have to get to the waypoint to consider it hit
-#define GET_WITHIN 25
+#define GET_WITHIN 5
 
 // how much to move tiller by when making slight adjustments
-#define FEATHER 5
+#define FEATHER 5.0
+
+// how to equate two requested rudder positions (i.e. if the new one is less than this from the old one, don't do it)
+#define RUDDER_TOLERANCE 1
 
 // adjust course when we're more than this much off-course
-#define COURSE_ADJUST_ON 7
+#define COURSE_ADJUST_ON 7.0
 
-#define COURSE_ADJUST_SPEED 7
+#define COURSE_ADJUST_SPEED 7.0
 
 // adjust the rudder by this amount to end up at turn of v
-#define ADJUST_BY(v) ((v/(FEATHER * COURSE_ADJUST_SPEED)+1) * FEATHER)
+#define ADJUST_BY(v) ((v/(FEATHER * COURSE_ADJUST_SPEED)+1.) * FEATHER)
 
 // adjust sails when we're more than this much off-plan
 #define SAIL_ADJUST_ON 10
 
 // either side of 0 for "in irons"
-#define IRONS 35
+#define IRONS 40
 #define IN_IRONS(v) (((v) < IRONS || (v) > (360 - IRONS)))
-#define TACK_TIMEOUT 30000
+#define TACK_TIMEOUT 10000
 
 // either side of 180 for "running"
 #define ON_RUN 20
@@ -36,6 +39,8 @@
 // straighten rudder when we make this much of a turn
 #define TACK_START_STRAIGHT 50
 #define GYBE_START_STRAIGHT 50
+
+#define STALL_SPEED 0.5
 
 // have sails at this position for a gybe
 #define GYBE_SAIL_POS 80
@@ -55,10 +60,22 @@
 #define WINCH_MAX 115
 
 // # of waypoints below
-#define WP_COUNT 2
+#define WP_COUNT 7
+
+// how close we can get to our waypoint before we switch to High Res GPS
+#define HRG_THRESHOLD 50
 
 // lat,lon pairs
-float wp_list[] = {41.923374, -87.631205, 41.916709, -87.628885};
+float wp_list[] = 
+  {
+    41.923331, -87.631606, 
+    41.923374, -87.631205, 
+    41.922975, -87.631393, 
+    41.923218, -87.631557,
+    41.922693, -87.631189,
+    41.919746, -87.630085,
+    41.916709, -87.628885 // end of circuit
+  };
 int8_t direction = 1;
 
 // current lat,lon
@@ -79,6 +96,7 @@ float fused_heading = 0;
 int16_t turning_by = 0;
 boolean turning = false;
 boolean tacking = false;
+boolean stalled = true;
 
 inline void fuseHeading() {
     // no fusion for now. todo: add gps-based mag calibration compensation
@@ -130,76 +148,6 @@ void tack() {
     // sails are set as is
 }
 
-// void gybe() {
-//     logln("Gybing...");
-// 
-//     float start_heading = fused_heading;
-//     int start_winch = current_winch;
-//     
-//     // move sail to safer position
-//     winchTo(GYBE_SAIL_POS);
-// 
-//     // yank the tiller, sails are fine
-//     if (wind > 180) {
-//         // gybe to starboard
-//         TO_SBRD(25);
-//         while (!isPast(start_heading, GYBE_START_STRAIGHT, fused_heading, true)) {
-//             updateSensors();
-//             fuseHeading();
-//         }
-//     } else {
-//         TO_PORT(25);
-//         while (!isPast(start_heading, GYBE_START_STRAIGHT, fused_heading, false)) {
-//             updateSensors();
-//             fuseHeading();
-//         }
-//     }
-//     
-//     centerRudder();
-//     winchTo(start_winch);
-// 
-//     logln("Finished gybe");
-// }
-// 
-// void safetyCheck() {
-//     if (IN_IRONS(wind)) {
-//         logln("wind direction of %d has put us in irons. falling off...", wind);
-//         // todo: this should be a steer_with_cs call
-//         if (wind < 180) TO_PORT(15); else TO_SBRD(15);
-//         sleepMillis(1000);
-//         adjustment_made = true;
-//         updateSensors();
-//         fuseHeading();
-//     }
-//     
-//     // i don't think we really care about a gybe for our specific boat.
-//     
-//     //  else if (MIGHT_GYBE(wind)) {
-//     //  if (wind > 180) TO_PORT(15); else TO_SBRD(15);
-//     //  sleepMillis(1000);
-//     //  adjustment_made = true;
-//     //  updateSensors();
-//     //  fuseHeading();
-//     // }
-//     
-//     centerRudder();
-// }
-
-// // steer with counter steer. port is +, starboard is -
-// void steer_with_cs(int amount) {
-//     int corrected = amount * SERVO_ORIENTATION;
-//     
-//     int c_rudder = current_rudder;
-//     
-//     rudderTo(c_rudder + corrected);
-//     delay(COURSE_CORRECTION_TIME);
-//     
-//     rudderTo(c_rudder - corrected/2);
-//     delay(COURSE_CORRECTION_TIME/4);
-//     
-//     rudderTo(c_rudder);
-// }
-
 void adjustTo(int amount) {
     int corrected = amount * SERVO_ORIENTATION;
     turning_by = amount;
@@ -223,6 +171,14 @@ void adjustSails() {
 void adjustHeading() {
     float off_course = angleDiff(fused_heading, wp_heading, true);
     
+    if (stalled) {
+      off_course = wind > 180 ? 270.0 - wind : 90.0 - wind;
+      logln("Stalled. Setting course to beam reach.");
+    } else if (IN_IRONS(wind)) {
+      off_course = wind > 180 ? 360 - IRONS - wind : IRONS - wind;
+      logln("In irons. Setting course for close reach.");
+    }
+    
     logln("Off course by %d", (int16_t) off_course);
     if (turning) 
       logln("Currently turning by %d, rudder is at %d", turning_by, current_rudder);
@@ -232,17 +188,22 @@ void adjustHeading() {
     if (fabs(off_course) > COURSE_ADJUST_ON) {
         logln("Current course is more than %d off target. Trying to adjust", COURSE_ADJUST_ON);
 
-        // new wind if we turn the direction that we want to
-        int new_wind = DEG(toCircle(RAD(wind - (off_course < 0 ? -1:1))));
+        // new wind if we turn the direction that we want to. The +/-1 is to account for the fact that 
+        // rotated rudder will keep us turning
+        int new_wind = toCircleDeg(wind - (off_course < 0 ? -1:1));
         
         // if adjusting any more puts us in irons
         if (IN_IRONS(new_wind)) {
-            logln("Requested course unsafe, requires tack/gybe");
+            logln("Requested course unsafe, requires tack");
             // and if we're allowed to tack, we tack
             if (CAN_TURN()) {
                 logln("Tack change allowed. Turning.");
                 tack();
                 last_turn = millis();
+                
+                // tack() centers the rudder, and we should re-evaluate where we are at that point.
+                turning_by = 0;
+                turning = false;
                 adjustment_made = true;
             // if we aren't allowed to tack, but are currently turning, we stop turning
             } else if (turning) {
@@ -253,12 +214,14 @@ void adjustHeading() {
                 centerRudder();
             }
         } else {
-            int new_rudder = ADJUST_BY(-off_course);
-            if (new_rudder != turning_by) {
+            // todo: there's something in ADJUST_BY that's misbehaving with negative off-course values. being lazy here.
+            int new_rudder = ADJUST_BY(abs(off_course)) * (off_course >= 0 ? -1 : 1);
+            if (abs(new_rudder - turning_by) > RUDDER_TOLERANCE) {
                 logln("Adjusting rudder by %d", new_rudder);
                 adjustTo(new_rudder);
                 adjustment_made = true;
-            }
+            } else
+              logln("New rudder position of %d is close to current rudder position of %d. Not adjusting", new_rudder, turning_by);
         }
     } else if (turning) {
         logln("Current course is not more than %d off target. Centering.", COURSE_ADJUST_ON);
@@ -268,54 +231,6 @@ void adjustHeading() {
         centerRudder();
     }
 }
-
-// void adjustHeading() {
-//     // we wouldn't be here without a magnitude of error check. don't need one here.
-//     float off_course = angleDiff(fused_heading, wp_heading, true);
-//     
-//     logln("Off course by %d", (int16_t) off_course);
-//     
-//     int new_wind = DEG(toCircle(RAD(wind - off_course)));
-//     
-//     logln("When corrected, new wind direction will be %d", new_wind);
-//     
-//     if (IN_IRONS(new_wind) || MIGHT_GYBE(new_wind)) {
-//         logln("Requested course unsafe, requires tack/gybe");
-//         if (CAN_TURN()) {
-//             logln("Tack change allowed. Turning.");
-//             IN_IRONS(new_wind) ? tack() : gybe();
-//             last_turn = millis();
-//             adjustment_made = true;
-//         }
-//         else {
-//             if (off_course < 0)
-//                 new_wind = wind > 270 ? 360 - IRONS : 180 - ON_RUN;
-//             else
-//                 new_wind = wind < 90 ? IRONS : 180 + ON_RUN;
-// 
-//             float max_adjust = angleDiff(new_wind, wind, true);
-//             logln("Tack change not yet allowed. Adjusting by %d", (int16_t) -max_adjust);
-//             
-//             if (abs(max_adjust) > COURSE_ADJUST_ON) {
-//                 int new_rudder = ADJUST_BY(max_adjust);
-//                 if (new_rudder != turning_by) {
-//                     turning_by = new_rudder;
-//                     adjust_by(turning_by);
-// 
-//                     adjustment_made = true;
-//                     turning = true;
-//                 }
-//             }
-//         }
-//     } else {
-//         logln("Adjusting by %d", (int16_t) -off_course);
-//         steer_with_cs(-off_course);
-//         updateSensors();
-//         fuseHeading();
-//         adjustSails();
-//         adjustment_made = true;
-//     }
-// }
 
 void pilotInit() {
     centerRudder();
@@ -375,7 +290,11 @@ void setNextWaypoint() {
     
     // wp changed, need to recompute
     wp_distance = computeDistance(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon));
-    wp_heading = computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon)) * 180 / PI;
+    wp_heading = DEG(toCircle(computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon))));
+    
+    // we should allow tacks now, as this mechanism is just to space out zig zags
+    // also can just zero it out as there's no inherent value in the time
+    last_turn = 0;
 
     logln("Waypoint %d selected, HTW: %d, DTW: %dm", 
             target_wp,
@@ -389,6 +308,8 @@ void doPilot() {
         
         return;
     }
+    
+    stalled = gps_speed < STALL_SPEED;
 
     // still want to check this
     if ((gps_speed > MIN_SPEED) && gps_updated) {
@@ -411,6 +332,13 @@ void doPilot() {
 
     if (wp_distance < GET_WITHIN)
         setNextWaypoint();
+    
+    if (wp_distance < HRG_THRESHOLD) {
+      high_res_gps = true;
+      logln("Within high-res gps threshold. Switching to HRG");
+    }
+    else
+      high_res_gps = HIGH_RES_GPS_DEFAULT;
 
     adjustHeading();
     adjustSails();

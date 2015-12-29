@@ -20,12 +20,17 @@
 #define SCAN_RATE_NORMAL 30000
 #define SCAN_RATE_FAST 500
 
-#define GPS_REFRESH 30000
-#define GPS_WARNING 20000
+#define GPS_WARNING 15000
 #define HIGH_RES_GPS_DEFAULT false
 
+#define WAIT_FOR_COMMAND_EVERY 10
+#define WAIT_FOR_COMMAND_FOR 1000
+
+#define DATA_FREQ 1500
+#define SERIAL_LOGGING_DEFAULT false;
+
 // Public (extern) variables, readable from other modules
-uint16_t last_gps_time = 0;
+uint32_t last_gps_time = 0;
 float gps_lat = 0;
 float gps_lon = 0;
 char gps_aprs_lat[9];
@@ -42,8 +47,15 @@ uint8_t current_rudder = 0;
 uint8_t current_winch = 0;
 boolean adjustment_made = false;
 boolean high_res_gps = HIGH_RES_GPS_DEFAULT;
-boolean gps_updated = false;
+//boolean gps_updated = false;
 boolean manual_override = false;
+boolean serial_logging = true;
+uint32_t last_data_update = 0;
+float voltage = 0;
+
+// here so we can log easier
+float wp_heading = 0;
+float wp_distance = 0;
 
 void setup() 
 { 
@@ -71,36 +83,38 @@ void setup()
     pilotInit();
     
     blink(STATUS_LED, 100, 10, HIGH);
-    logln("Acquiring GPS...");
+    logln("Enabling GPS...");
     
-    updateGPS();
-    last_gps_time = millis();
-    gps_updated = true;
+//    updateGPS();
+    warnGPS();
+//    last_gps_time = millis();
+//    gps_updated = true;
 #endif
 
     logln("Done. System ready.");
     
     digitalWrite(STATUS_LED, LOW);
+    serial_logging = SERIAL_LOGGING_DEFAULT;
 } 
 
-void updateSensors() {
+void updateSensors(boolean skip_gps) {
     // most of this will be used in human comparison stuff, no need to keep in radians.
     ahrs_heading = readSteadyHeading() * 180.0 / PI;
     wind = readSteadyWind() * 180.0 / PI;
     
-    if (high_res_gps || (last_gps_time == 0) || ((millis() - last_gps_time) > GPS_REFRESH)) {
-        updateGPS();
-            
-        last_gps_time = millis();
-        gps_updated = true;
-    } else
-        gps_updated = false;
+//    if (!skip_gps && (high_res_gps || (last_gps_time == 0) || ((millis() - last_gps_time) > GPS_REFRESH))) {
+//        updateGPS();
+//            
+//        last_gps_time = millis();
+//        gps_updated = true;
+//    } else
+//        gps_updated = false;
         
     if (!high_res_gps && (millis() - last_gps_time > GPS_WARNING))
         warnGPS();
 
     uint16_t gps_elapsed = millis() - last_gps_time;
-    int16_t voltage = ((int16_t)(measureVoltage() * 100.0));
+    voltage = measureVoltage();
     logln("Position: %s, %s (%dms old), Speed (x10): %d, Direction: %d, Wind: %d, Battery %d", 
                 gps_aprs_lat, 
                 gps_aprs_lon, 
@@ -112,12 +126,23 @@ void updateSensors() {
 }
 
 void checkInput() {
-    while (Serial.available())
-        if (Serial.read() == 'o') {
+    // in case we're going too fast. only needed when serial_logging is on
+    if (serial_logging && (cycle % WAIT_FOR_COMMAND_EVERY == 0))
+      delay(WAIT_FOR_COMMAND_FOR);
+  
+    while (Serial.available()) {
+        switch ((char)Serial.read()) {
+          case 'o':
             logln("Entering manual override");
             manual_override = true;
+            serial_logging = true;
+            break;
+            
+          case 'l':
+            serial_logging = !serial_logging;
             break;
         }
+    }
 }
 
 void loop() 
@@ -132,7 +157,7 @@ void loop()
     if (!manual_override) {
         logln("#################### Cycle %d start ####################", cycle);
         cycle++;
-        updateSensors();
+        updateSensors(false);
         checkInput();
         doPilot();
 
@@ -140,5 +165,26 @@ void loop()
 //        sleepMillis(SCAN_RATE_FAST);
     } else
         doPilot();
+        
+    if (!serial_logging && (millis() - last_data_update > DATA_FREQ)) {
+      Serial.print(gps_aprs_lat); Serial.print(", ");
+      Serial.print(gps_aprs_lon); Serial.print(", "); 
+      Serial.print(gps_lat, 6); Serial.print(", ");
+      Serial.print(gps_lon, 6); Serial.print(", "); 
+      Serial.print(millis() - last_gps_time); Serial.print(", ");
+      Serial.print(gps_speed); Serial.print(", ");
+      Serial.print(gps_course); Serial.print(", ");
+
+      Serial.print(ahrs_heading); Serial.print(", ");
+      Serial.print(wind); Serial.print(", ");
+      Serial.print(wp_heading); Serial.print(", ");
+      Serial.print(wp_distance); Serial.print(", ");
+      Serial.print(current_rudder); Serial.print(", ");
+      Serial.print(current_winch); Serial.print(", ");
+      Serial.print(voltage); Serial.print(", ");
+      Serial.print(cycle); Serial.println();
+      
+      last_data_update = millis();
+    }
 #endif
 } 

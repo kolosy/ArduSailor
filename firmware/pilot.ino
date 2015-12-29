@@ -24,6 +24,9 @@
 // adjust sails when we're more than this much off-plan
 #define SAIL_ADJUST_ON 10
 
+// when we're turning, how far ahead are we looking to check if we're going to fall in irons
+#define WIND_LOOKAHEAD 5
+
 // either side of 0 for "in irons"
 #define IRONS 40
 #define IN_IRONS(v) (((v) < IRONS || (v) > (360 - IRONS)))
@@ -57,7 +60,7 @@
 #define DEG(v) ((v) * 180.0 / PI)
 
 #define WINCH_MIN 60
-#define WINCH_MAX 115
+#define WINCH_MAX 110
 
 // # of waypoints below
 #define WP_COUNT 7
@@ -83,9 +86,6 @@ float wp_lat, wp_lon;
 int target_wp = 0;
 
 uint32_t last_turn = 0;
-
-float wp_heading = 0;
-float wp_distance = 0;
 
 float ahrs_offset = 0;
 uint8_t offset_set = 0;
@@ -132,13 +132,13 @@ void tack() {
         // todo: what's the servo direction here?
         TO_PORT(25);
         while (!isPast(start_heading, TACK_START_STRAIGHT, fused_heading, false) && ((millis() - tack_start_time) < TACK_TIMEOUT)) {
-            updateSensors();
+            updateSensors(true);
             fuseHeading();
         }
     } else {
         TO_SBRD(25);
         while (!isPast(start_heading, TACK_START_STRAIGHT, fused_heading, true) && ((millis() - tack_start_time) < TACK_TIMEOUT)) {
-            updateSensors();
+            updateSensors(true);
             fuseHeading();
         }
     }
@@ -170,12 +170,21 @@ void adjustSails() {
 
 void adjustHeading() {
     float off_course = angleDiff(fused_heading, wp_heading, true);
+    boolean skip_irons_check = false;
+
+    // testing. remove later.    
+    stalled = false;
+    // + off_course == will turn to starboard
     
     if (stalled) {
-      off_course = wind > 180 ? 270.0 - wind : 90.0 - wind;
+      off_course = -(wind > 180 ? 270.0 - wind : 90.0 - wind);
+      skip_irons_check = true;
       logln("Stalled. Setting course to beam reach.");
     } else if (IN_IRONS(wind)) {
-      off_course = wind > 180 ? 360 - IRONS - wind : IRONS - wind;
+      // wind > 180 == port tack, want to turn to starboard to fix
+      // wind < 180 == starboard tack, want to turn to port to fix
+      off_course = -(wind > 180 ? 360 - IRONS - wind : IRONS - wind);
+      skip_irons_check = true;
       logln("In irons. Setting course for close reach.");
     }
     
@@ -188,13 +197,13 @@ void adjustHeading() {
     if (fabs(off_course) > COURSE_ADJUST_ON) {
         logln("Current course is more than %d off target. Trying to adjust", COURSE_ADJUST_ON);
 
-        // new wind if we turn the direction that we want to. The +/-1 is to account for the fact that 
+        // new wind if we turn the direction that we want to. The +/- is to account for the fact that 
         // rotated rudder will keep us turning
-        int new_wind = toCircleDeg(wind - (off_course < 0 ? -1:1));
+        int new_wind = toCircleDeg(wind - (off_course < 0 ? -WIND_LOOKAHEAD:WIND_LOOKAHEAD));
         
         // if adjusting any more puts us in irons
-        if (IN_IRONS(new_wind)) {
-            logln("Requested course unsafe, requires tack");
+        if (!skip_irons_check && IN_IRONS(new_wind)) {
+            logln("Requested (new wind %d) course unsafe, requires tack", new_wind);
             // and if we're allowed to tack, we tack
             if (CAN_TURN()) {
                 logln("Tack change allowed. Turning.");
@@ -215,6 +224,7 @@ void adjustHeading() {
             }
         } else {
             // todo: there's something in ADJUST_BY that's misbehaving with negative off-course values. being lazy here.
+            logln("Projected new wind is %d", new_wind);
             int new_rudder = ADJUST_BY(abs(off_course)) * (off_course >= 0 ? -1 : 1);
             if (abs(new_rudder - turning_by) > RUDDER_TOLERANCE) {
                 logln("Adjusting rudder by %d", new_rudder);
@@ -240,11 +250,18 @@ void pilotInit() {
     wp_lon = wp_list[1];
 }
 
+void resetRudder() {
+    turning = false;
+    turning_by = 0;
+    adjustment_made = false;
+    centerRudder();
+}
+
 void processManualCommands() {
     while (Serial.available()) {
         switch ((char)Serial.read()) {
             case 'i':
-                updateSensors();
+                updateSensors(false);
                 break;
             case 'a':
                 TO_PORT(10);
@@ -272,6 +289,7 @@ void processManualCommands() {
                 break;
             case 'x':
                 manual_override = false;
+                resetRudder();
                 logln("End manual override");
                 break;
         }
@@ -312,7 +330,7 @@ void doPilot() {
     stalled = gps_speed < STALL_SPEED;
 
     // still want to check this
-    if ((gps_speed > MIN_SPEED) && gps_updated) {
+    if ((gps_speed > MIN_SPEED)) {
         ahrs_offset = angleDiff(ahrs_heading, gps_course, true);
         logln("GPS vs AHRS difference is %d", (int16_t) ahrs_offset * 10);
     }
@@ -335,10 +353,15 @@ void doPilot() {
     
     if (wp_distance < HRG_THRESHOLD) {
       high_res_gps = true;
+      warnGPS();
       logln("Within high-res gps threshold. Switching to HRG");
     }
-    else
+    else {
+      if (!high_res_gps && HIGH_RES_GPS_DEFAULT)
+        warnGPS();
+        
       high_res_gps = HIGH_RES_GPS_DEFAULT;
+    }
 
     adjustHeading();
     adjustSails();

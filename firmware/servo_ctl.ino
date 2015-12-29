@@ -9,7 +9,7 @@
 #define RUDDER_MIN 50
 #define RUDDER_MAX 125
 #define WINCH_MIN 60
-#define WINCH_MAX 115
+#define WINCH_MAX 110
 
 // degrees per second
 #define RUDDER_SPEED 300.0

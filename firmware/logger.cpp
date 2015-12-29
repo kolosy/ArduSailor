@@ -63,11 +63,14 @@ void logln(char *fmt, ... ) {
     vsnprintf(buf, 128, fmt, args);
     va_end (args);
 
-    Serial.print(gps_time);
-    Serial.print(':');
-    Serial.print(millis());
-    Serial.print(' ');
-    Serial.println(buf);
+    if (serial_logging) {
+      Serial.print(gps_time);
+      Serial.print(':');
+      Serial.print(millis());
+      Serial.print(' ');
+      Serial.println(buf);
+    }
+    
     if (fileReady) {
         file.print(gps_time);
         file.print(':');
@@ -85,11 +88,14 @@ void log(char *fmt, ... ) {
     vsnprintf(buf, 128, fmt, args);
     va_end (args);
 
-    Serial.print(gps_time);
-    Serial.print(':');
-    Serial.print(millis());
-    Serial.print(' ');
-    Serial.print(buf);
+    if (serial_logging) {
+      Serial.print(gps_time);
+      Serial.print(':');
+      Serial.print(millis());
+      Serial.print(' ');
+      Serial.print(buf);
+    }
+    
     if (fileReady) {
         file.print(gps_time);
         file.print(':');

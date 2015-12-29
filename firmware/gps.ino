@@ -331,16 +331,29 @@ void warnGPS() {
     gps_on = true;
 }
 
-void updateGPS() {
-    if (!gps_on)
-        warnGPS();
-    
-    do {
-        while (Serial2.available() == 0);
-    } while (! gps_decode(Serial2.read()));
+void serialEvent2() {
+  while (Serial2.available()) {
+    if (gps_decode(Serial2.read())) {
+      last_gps_time = millis();
 
-    if (!high_res_gps) {
+      if (!high_res_gps) {
         digitalWrite(GPS_EN, HIGH);
         gps_on = false;
+      }
     }
+  }
 }
+//
+//void updateGPS() {
+//    if (!gps_on)
+//        warnGPS();
+//    
+//    do {
+//        while (Serial2.available() == 0);
+//    } while (! gps_decode(Serial2.read()));
+//
+//    if (!high_res_gps) {
+//        digitalWrite(GPS_EN, HIGH);
+//        gps_on = false;
+//    }
+//}

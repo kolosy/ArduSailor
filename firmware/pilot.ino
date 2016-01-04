@@ -25,7 +25,7 @@
 #define SAIL_ADJUST_ON 10
 
 // when we're turning, how far ahead are we looking to check if we're going to fall in irons
-#define WIND_LOOKAHEAD 5
+#define WIND_LOOKAHEAD 10
 
 // either side of 0 for "in irons"
 #define IRONS 40
@@ -62,6 +62,10 @@
 #define WINCH_MIN 60
 #define WINCH_MAX 110
 
+// if we're at more than this heel, start easing the mainsheet
+#define START_HEEL_COMP 30
+#define MAX_HEEL_COMP 30
+
 // # of waypoints below
 #define WP_COUNT 7
 
@@ -71,13 +75,13 @@
 // lat,lon pairs
 float wp_list[] = 
   {
-    41.923331, -87.631606, 
-    41.923374, -87.631205, 
-    41.922975, -87.631393, 
-    41.923218, -87.631557,
-    41.922693, -87.631189,
-    41.919746, -87.630085,
-    41.916709, -87.628885 // end of circuit
+    41.9207923576838 ,-87.63011004661024,
+    41.92040355439754,-87.63045132003815,
+    41.92024341159895,-87.63004258543924,
+    41.91948366250413,-87.62996748502381,
+    41.91848868180579,-87.62960748575088,
+    41.91771524159618,-87.62928507512221,
+    41.91665396400703,-87.62889035219517 // end of circuit
   };
 int8_t direction = 1;
 
@@ -158,7 +162,10 @@ void adjustTo(int amount) {
 
 void adjustSails() {
     logln("Checking sail trim");
-    float new_winch = map(abs(wind - 180), 30, 170, WINCH_MIN, WINCH_MAX);
+    if (abs(current_roll) > START_HEEL_COMP)
+      heel_adjust = min(MAX_HEEL_COMP, 2 * (abs(current_roll) - START_HEEL_COMP));
+
+    float new_winch = map(abs(wind - 180), 30, 170, WINCH_MIN, WINCH_MAX) - heel_adjust;
     
     if (abs(new_winch - current_winch) > SAIL_ADJUST_ON) {
         logln("New winch position of %d is more than %d off from %d. Adjusting trim.", (int16_t) new_winch, SAIL_ADJUST_ON, current_winch);
@@ -172,9 +179,11 @@ void adjustHeading() {
     float off_course = angleDiff(fused_heading, wp_heading, true);
     boolean skip_irons_check = false;
 
-    // testing. remove later.    
-    stalled = false;
     // + off_course == will turn to starboard
+    // rudder values: 
+    //       90: center. 
+    //      100: turning to sbrd, pointing to port
+    //       80: turning to port, pointing to sbrd
     
     if (stalled) {
       off_course = -(wind > 180 ? 270.0 - wind : 90.0 - wind);

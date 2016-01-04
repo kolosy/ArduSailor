@@ -331,6 +331,12 @@ void warnGPS() {
     gps_on = true;
 }
 
+// NOTE: This works well enough on an ATMega2560, with HardwareSerial.cpp hacked to increase the SERIAL_BUFFER_SIZE to 512 (up from 64).
+//       This implies that serial buffers now take up half the RAM of a mega (4 serial ports x 2 buffers per port x 512 = 3072). For now, 
+//       we seem to be ok with the remaining ram. If that changes, the un-lazy thing to do is modify the HarwareSerial code to only 
+//       increase the rx_buffer size, and only for serial2. 
+//
+//       Not increasing the buffer size can lead to overflows which would either degrade GPS read performance, or kill it entirely.
 void serialEvent2() {
   while (Serial2.available()) {
     if (gps_decode(Serial2.read())) {

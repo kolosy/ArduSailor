@@ -25,6 +25,9 @@ uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
 uint16_t fifoCount;     // count of all bytes currently in FIFO
 uint8_t fifoBuffer[64]; // FIFO storage buffer
 
+float current_pitch = 0;
+float current_roll = 0;
+
 // orientation/motion vars
 Quaternion q;           // [w, x, y, z]         quaternion container
 VectorFloat gravity;    // [x, y, z]            gravity vector
@@ -220,11 +223,15 @@ float readSteadyHeading() {
     
     heading /= ((float)MPU_LOOPS);
     heading = toCircle(-heading);
+    
+    current_pitch = f_ypr[1] * 180.0 / PI;
+    current_roll = f_ypr[2] * 180.0 / PI;
     // heading = (-heading) - (PI / 2.0);
     logln("AHRS (y,p,r): %d, %d, %d", 
         ((int16_t) (heading * 180.0 / PI)),
-        ((int16_t) (f_ypr[1] * 180.0 / PI)),
-        ((int16_t) (f_ypr[2] * 180.0 / PI)));
+        ((int16_t) (current_pitch)),
+        ((int16_t) (current_roll))
+    );
         
     return heading;
 }

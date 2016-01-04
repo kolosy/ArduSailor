@@ -27,6 +27,7 @@ boolean isPast(int start, int amount, int check, boolean clockwise) {
 
 // if sign is true, then the value returned will be signed. the sign will be negative if a1 is > a2
 float angleDiff(float a1, float a2, boolean sign) {
+  // 232, 163
     float larger, smaller, mult;
     if (a1 > a2) {
       larger = a1;
@@ -37,7 +38,7 @@ float angleDiff(float a1, float a2, boolean sign) {
       smaller = a1;
           mult = 1;
     }
-    
+    // 69
     float d = larger - smaller;
     if (d > 180.0) {
         d = 360.0 - d;

@@ -21,7 +21,7 @@
 #define SCAN_RATE_FAST 500
 
 #define GPS_WARNING 15000
-#define HIGH_RES_GPS_DEFAULT false
+#define HIGH_RES_GPS_DEFAULT true
 
 #define WAIT_FOR_COMMAND_EVERY 10
 #define WAIT_FOR_COMMAND_FOR 1000
@@ -39,6 +39,8 @@ float gps_course = 0;
 float gps_speed = 0;
 float gps_altitude = 0;
 float ahrs_heading = 0;
+float heel_adjust = 0;
+
 uint16_t wind = 0;
 
 int16_t heel_offset = 0;
@@ -176,6 +178,8 @@ void loop()
       Serial.print(gps_course); Serial.print(", ");
 
       Serial.print(ahrs_heading); Serial.print(", ");
+      Serial.print(current_roll); Serial.print(", ");
+      Serial.print(heel_adjust); Serial.print(", ");
       Serial.print(wind); Serial.print(", ");
       Serial.print(wp_heading); Serial.print(", ");
       Serial.print(wp_distance); Serial.print(", ");

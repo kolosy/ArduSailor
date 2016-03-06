@@ -3,6 +3,7 @@
 
 // minimum speed needed to establish course (knots)
 #define MIN_SPEED 1.0
+#define MIN_TACK_SPEED 1.0
 
 // how close you have to get to the waypoint to consider it hit
 #define GET_WITHIN 5
@@ -28,7 +29,7 @@
 #define WIND_LOOKAHEAD 10
 
 // either side of 0 for "in irons"
-#define IRONS 40
+#define IRONS 45
 #define IN_IRONS(v) (((v) < IRONS || (v) > (360 - IRONS)))
 #define TACK_TIMEOUT 10000
 
@@ -65,6 +66,12 @@
 // if we're at more than this heel, start easing the mainsheet
 #define START_HEEL_COMP 30
 #define MAX_HEEL_COMP 30
+
+// if heel compensation drops below this amount, zero it out
+#define MIN_HEEL_COMP 5
+
+// we're going decrease the amount of heel adjust by this factor to bring things back slowly
+#define HEEL_COMP_DECAY 0.1
 
 // # of waypoints below
 #define WP_COUNT 7
@@ -164,6 +171,10 @@ void adjustSails() {
     logln("Checking sail trim");
     if (abs(current_roll) > START_HEEL_COMP)
       heel_adjust = min(MAX_HEEL_COMP, 2 * (abs(current_roll) - START_HEEL_COMP));
+    else if (heel_adjust > MIN_HEEL_COMP)
+      heel_adjust = heel_adjust * HEEL_COMP_DECAY;
+    else
+      heel_adjust = 0;
 
     float new_winch = map(abs(wind - 180), 30, 170, WINCH_MIN, WINCH_MAX) - heel_adjust;
     
@@ -214,7 +225,7 @@ void adjustHeading() {
         if (!skip_irons_check && IN_IRONS(new_wind)) {
             logln("Requested (new wind %d) course unsafe, requires tack", new_wind);
             // and if we're allowed to tack, we tack
-            if (CAN_TURN()) {
+            if (CAN_TURN() && gps_speed > MIN_TACK_SPEED) {
                 logln("Tack change allowed. Turning.");
                 tack();
                 last_turn = millis();

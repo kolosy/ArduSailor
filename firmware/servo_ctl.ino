@@ -8,8 +8,12 @@
 
 #define RUDDER_MIN 50
 #define RUDDER_MAX 125
-#define WINCH_MIN 60
-#define WINCH_MAX 110
+
+// absolute max: 155
+// absolute min: 20
+
+#define WINCH_MIN 80
+#define WINCH_MAX 117
 
 // degrees per second
 #define RUDDER_SPEED 300.0
@@ -35,7 +39,7 @@ void servoInit() {
 }
 
 void centerWinch() {
-    winchTo(115);
+    winchTo(WINCH_MAX);
 }
 
 void centerRudder() {

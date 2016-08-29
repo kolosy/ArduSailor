@@ -16,6 +16,7 @@ HMC58X3 magn;
 
 #define MPU_LOOPS 2
 #define MPU_PAUSES 1
+#define DEVICE_ORIENTATION 1.0
 
 // MPU control/status vars
 bool dmpReady = false;  // set true if DMP init was successful
@@ -222,7 +223,7 @@ float readSteadyHeading() {
     }
     
     heading /= ((float)MPU_LOOPS);
-    heading = toCircle(-heading);
+    heading = toCircle(-heading + (DEVICE_ORIENTATION * PI));
     
     current_pitch = f_ypr[1] * 180.0 / PI;
     current_roll = f_ypr[2] * 180.0 / PI;

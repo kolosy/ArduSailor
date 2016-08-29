@@ -29,6 +29,9 @@
 #define DATA_FREQ 1500
 #define SERIAL_LOGGING_DEFAULT false;
 
+#define WINCH_MAX 60
+#define WINCH_MIN 130
+
 // Public (extern) variables, readable from other modules
 uint32_t last_gps_time = 0;
 float gps_lat = 0;

@@ -1,0 +1,132 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    xmlns:gauge="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btnReset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reset"
+        />
+
+    <Button
+        android:id="@+id/btnResend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:text="Resend"
+        />
+
+    <TextView
+        android:id="@+id/lblDTW"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_alignBaseline="@id/btnReset"
+        android:text="0m"/>
+
+    <LinearLayout
+        android:id="@+id/llSeekBars"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="5dp">
+
+        <SeekBar
+            android:id="@+id/sbRudder"
+            android:layout_width="0dip"
+            android:layout_weight=".5"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            />
+
+        <SeekBar
+            android:id="@+id/sbWinch"
+            android:layout_width="0dip"
+            android:layout_weight=".5"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/lblRudder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/llSeekBars"
+        android:text="Rudder"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/llSeekBars"
+        android:layout_alignParentRight="true"
+        android:text="Winch"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnReset"
+        android:layout_above="@id/lblRudder"
+        >
+
+        <com.kolosy.ardusailorcontroller.GaugeView
+            android:id="@+id/gvWind"
+            android:layout_height="match_parent"
+            android:layout_width="0dip"
+            gauge:showOuterRim="false"
+            gauge:showInnerRim="false"
+            gauge:scaleStartValue="0"
+            gauge:scaleEndValue="360"
+            gauge:scaleStartAngle="0"
+            gauge:rangeValues="@array/ranges"
+            gauge:rangeColors="@array/rangeColors"
+            android:layout_weight=".3"
+            android:rotation="180"
+            />
+
+        <com.kolosy.ardusailorcontroller.GaugeView
+            android:id="@+id/gvHTW"
+            android:layout_height="match_parent"
+            android:layout_width="0dip"
+            gauge:showOuterRim="false"
+            gauge:showInnerRim="false"
+            gauge:scaleStartValue="0"
+            gauge:scaleEndValue="360"
+            gauge:scaleStartAngle="0"
+            gauge:rangeValues="@array/ranges"
+            gauge:rangeColors="@array/rangeColors"
+            android:layout_weight=".3"
+            android:rotation="180"
+            />
+
+        <com.kolosy.ardusailorcontroller.GaugeView
+            android:id="@+id/gvHeading"
+            android:layout_height="match_parent"
+            android:layout_width="0dip"
+            gauge:showOuterRim="false"
+            gauge:showInnerRim="false"
+            gauge:scaleStartValue="0"
+            gauge:scaleEndValue="360"
+            gauge:scaleStartAngle="0"
+            gauge:rangeValues="@array/ranges"
+            gauge:rangeColors="@array/rangeColors"
+            android:layout_weight=".3"
+            android:rotation="180"
+            />
+
+
+    </LinearLayout>
+
+</RelativeLayout>

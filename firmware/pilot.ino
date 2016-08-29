@@ -57,11 +57,12 @@
 #define SERVO_ORIENTATION -1
 #define TO_PORT(amt) rudderTo(current_rudder + (SERVO_ORIENTATION * amt))
 #define TO_SBRD(amt) rudderTo(current_rudder - (SERVO_ORIENTATION * amt))
+
+#define ADJUST_TO_PORT(amt) ( SERVO_ORIENTATION * amt)
+#define ADJUST_TO_SBRD(amt) (-SERVO_ORIENTATION * amt)
+
 #define RAD(v) ((v) * PI / 180.0)
 #define DEG(v) ((v) * 180.0 / PI)
-
-#define WINCH_MIN 60
-#define WINCH_MAX 110
 
 // if we're at more than this heel, start easing the mainsheet
 #define START_HEEL_COMP 30
@@ -82,6 +83,7 @@
 // lat,lon pairs
 float wp_list[] = 
   {
+    41.923015, -87.631082,
     41.9207923576838 ,-87.63011004661024,
     41.92040355439754,-87.63045132003815,
     41.92024341159895,-87.63004258543924,
@@ -196,17 +198,17 @@ void adjustHeading() {
     //      100: turning to sbrd, pointing to port
     //       80: turning to port, pointing to sbrd
     
-    if (stalled) {
-      off_course = -(wind > 180 ? 270.0 - wind : 90.0 - wind);
-      skip_irons_check = true;
-      logln("Stalled. Setting course to beam reach.");
-    } else if (IN_IRONS(wind)) {
-      // wind > 180 == port tack, want to turn to starboard to fix
-      // wind < 180 == starboard tack, want to turn to port to fix
-      off_course = -(wind > 180 ? 360 - IRONS - wind : IRONS - wind);
-      skip_irons_check = true;
-      logln("In irons. Setting course for close reach.");
-    }
+//    if (stalled) {
+//      off_course = -(wind > 180 ? 270.0 - wind : 90.0 - wind);
+//      skip_irons_check = true;
+//      logln("Stalled. Setting course to beam reach.");
+//    } else if (IN_IRONS(wind)) {
+//      // wind > 180 == port tack, want to turn to starboard to fix
+//      // wind < 180 == starboard tack, want to turn to port to fix
+//      off_course = -(wind > 180 ? 360 - IRONS - wind : IRONS - wind);
+//      skip_irons_check = true;
+//      logln("In irons. Setting course for close reach.");
+//    }
     
     logln("Off course by %d", (int16_t) off_course);
     if (turning) 
@@ -340,6 +342,15 @@ void setNextWaypoint() {
             ((int16_t) wp_distance));
 }
 
+void getOutOfIrons() {
+  // - roll == rolling to sbord
+  // + roll == rolling to port
+  
+  centerWinch();
+  
+  rudderFromCenter(current_roll < 0 ? ADJUST_TO_PORT(10) : ADJUST_TO_SBRD(10));
+}
+
 void doPilot() {
     if (manual_override) {
         processManualCommands();        
@@ -348,7 +359,7 @@ void doPilot() {
     }
     
     stalled = gps_speed < STALL_SPEED;
-
+    
     // still want to check this
     if ((gps_speed > MIN_SPEED)) {
         ahrs_offset = angleDiff(ahrs_heading, gps_course, true);
@@ -383,6 +394,10 @@ void doPilot() {
       high_res_gps = HIGH_RES_GPS_DEFAULT;
     }
 
-    adjustHeading();
-    adjustSails();
+    if (IN_IRONS(wind) && stalled) {
+      getOutOfIrons();
+    } else {
+      adjustHeading();
+      adjustSails();
+    }
 }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="ranges">
+        <item>90</item>
+        <item>180</item>
+        <item>270</item>
+        <item>360</item>
+    </string-array>
+    
+    <string-array name="rangeColors">
+        <item>#1BCA21</item>
+        <item>#1BCA21</item>
+        <item>#1BCA21</item>
+        <item>#1BCA21</item>
+    </string-array>
+    
+</resources>

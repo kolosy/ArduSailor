@@ -12,12 +12,9 @@
 // absolute max: 155
 // absolute min: 20
 
-#define WINCH_MIN 80
-#define WINCH_MAX 117
-
 // degrees per second
 #define RUDDER_SPEED 300.0
-#define WINCH_SPEED 35.0
+#define WINCH_SPEED 25.0
 
 Servo sv_winch, sv_rudder;
 
@@ -49,7 +46,7 @@ void centerRudder() {
 void winchTo(int value) {
     logln("Winch to %d", value);
   
-    int v = constrain(value, WINCH_MIN, WINCH_MAX);
+    int v = constrain(value, min(WINCH_MIN, WINCH_MAX), max(WINCH_MIN, WINCH_MAX));
     
     if (current_winch == v)
       return;

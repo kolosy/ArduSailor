@@ -1,1 +1,2 @@
 include ':app'
+include ':usb-serial-for-android:usbSerialForAndroid'

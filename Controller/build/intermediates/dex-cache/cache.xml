@@ -1,12 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" >
-
-    <item
-        jar="/Users/kolosy/Development/ArduSailor/Controller/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
-        jumboMode="true"
-        revision="23.0.3"
-        sha1="cf9f2dcee2bef05e7b4a95371d3e5409d28f2899">
-        <dex dex="/Users/kolosy/Development/ArduSailor/Controller/app/build/intermediates/pre-dexed/debug/instant-run-bootstrap_97715bb59a12fa2c8072d02612c21f69c806b6af.jar" />
-    </item>
-
-</items>
+<items version="2" />

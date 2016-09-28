@@ -195,14 +195,14 @@ public class RadioCommunicator {
         if (line.charAt(0) != START_CHAR)
             return null;
 
-        int xor = line.charAt(line.length() - 1);
-        int comp = 0;
-
-        for (int i=1; i<line.length(); i++)
-            comp ^= line.charAt(i);
-
-        if (xor != comp)
-            return null;
+//        int xor = line.charAt(line.length() - 1);
+//        int comp = 0;
+//
+//        for (int i=1; i<line.length(); i++)
+//            comp ^= line.charAt(i);
+//
+//        if (xor != comp)
+//            return null;
 
         return line.substring(1, line.length() - 2);
     }

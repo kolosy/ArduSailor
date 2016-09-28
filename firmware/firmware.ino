@@ -32,6 +32,8 @@
 #define WINCH_MAX 60
 #define WINCH_MIN 130
 
+#define CAPTURE_MODE
+
 // Public (extern) variables, readable from other modules
 uint32_t last_gps_time = 0;
 float gps_lat = 0;
@@ -158,6 +160,31 @@ void loop()
     delay(10);
     digitalWrite(STATUS_LED, LOW);
     delay(10);
+#elseif CAPTURE_MODE
+    updateSensors();
+
+    Serial.print('x');
+      Serial.print(gps_aprs_lat); Serial.print(", ");
+      Serial.print(gps_aprs_lon); Serial.print(", "); 
+      Serial.print(gps_lat, 6); Serial.print(", ");
+      Serial.print(gps_lon, 6); Serial.print(", "); 
+      Serial.print(millis() - last_gps_time); Serial.print(", ");
+      Serial.print(gps_speed); Serial.print(", ");
+      Serial.print(gps_course); Serial.print(", ");
+
+      Serial.print(ahrs_heading); Serial.print(", ");
+      Serial.print(current_roll); Serial.print(", ");
+      Serial.print(heel_adjust); Serial.print(", ");
+      Serial.print(wind); Serial.print(", ");
+      Serial.print(wp_heading); Serial.print(", ");
+      Serial.print(wp_distance); Serial.print(", ");
+      Serial.print(current_rudder); Serial.print(", ");
+      Serial.print(current_winch); Serial.print(", ");
+      Serial.print(voltage); Serial.print(", ");
+      Serial.print(cycle); Serial.print('d');
+      
+      cycle++;
+      
 #else
     if (!manual_override) {
         logln("#################### Cycle %d start ####################", cycle);

@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name "boat6")(type Legacy)(uri "/Users/kolosy/Development/ArduSailor/layout/kicad_export/boat6.mod")(options "")(descr ""))
+)

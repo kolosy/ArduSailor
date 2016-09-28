@@ -1,0 +1,685 @@
+#********** START OF renumber-sheet.ulp ULP Version 4.4.4 05-09-2016 :21:45:09 LOG **********#
+#OldRef				SheetNumber	NewRef
+CAM				1	CAM45
+STATUS				1	STATUS45
+S_RUD				1	S_RUD45
+S_WINCH				1	S_WINCH45
+WIND				1	WIND45
+#********** END OF renumber-sheet.ulp ULP Version 4.4.4 05-09-2016 :21:45:09 LOG **********#
+
+#********** START OF fix_via_hack.ulp ULP Version 4.6.0 05-09-2016 :21:45:46 LOG **********#
+TRACK	WireCount=1		Net=GND				start(X=75950.000000 Y=27750.000000)	end(X=77000.000000 Y=27750.000000 )
+TRACK	WireCount=2		Net=GND				start(X=77000.000000 Y=27750.000000)	end(X=77000.000000 Y=27850.000000 )
+TRACK	WireCount=3		Net=GND				start(X=60000.000000 Y=12000.000000)	end(X=60000.000000 Y=11000.000000 )
+TRACK	WireCount=4		Net=GND				start(X=23850.000000 Y=46100.000000)	end(X=23850.000000 Y=45300.000000 )
+TRACK	WireCount=5		Net=GND				start(X=23850.000000 Y=45300.000000)	end(X=24250.000000 Y=45300.000000 )
+TRACK	WireCount=6		Net=GND				start(X=24250.000000 Y=45300.000000)	end(X=24250.000000 Y=45700.000000 )
+TRACK	WireCount=7		Net=GND				start(X=24250.000000 Y=45700.000000)	end(X=24100.000000 Y=45700.000000 )
+TRACK	WireCount=8		Net=GND				start(X=76000.000000 Y=27750.000000)	end(X=75850.000000 Y=27750.000000 )
+TRACK	WireCount=9		Net=GND				start(X=75600.000000 Y=28000.000000)	end(X=75550.000000 Y=28000.000000 )
+TRACK	WireCount=10		Net=GND				start(X=75550.000000 Y=28000.000000)	end(X=75550.000000 Y=29600.000000 )
+TRACK	WireCount=11		Net=GND				start(X=75550.000000 Y=29600.000000)	end(X=76450.000000 Y=29600.000000 )
+TRACK	WireCount=12		Net=GND				start(X=76450.000000 Y=29600.000000)	end(X=76450.000000 Y=29500.000000 )
+TRACK	WireCount=13		Net=GND				start(X=76450.000000 Y=29500.000000)	end(X=76350.000000 Y=29500.000000 )
+TRACK	WireCount=14		Net=GND				start(X=76350.000000 Y=29500.000000)	end(X=76350.000000 Y=28200.000000 )
+TRACK	WireCount=15		Net=GND				start(X=76350.000000 Y=28200.000000)	end(X=75900.000000 Y=28200.000000 )
+TRACK	WireCount=16		Net=GND				start(X=75900.000000 Y=28200.000000)	end(X=75900.000000 Y=29100.000000 )
+VIA	ViaCount=1		Net=3.3V				(X=70000.000000 Y=36000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=2		Net=GND				(X=17970.000000 Y=10285.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=3		Net=GND				(X=16970.000000 Y=17317.500000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=4		Net=GND				(X=22270.000000 Y=8390.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=5		Net=GND				(X=63000.000000 Y=22000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=6		Net=GND				(X=78000.000000 Y=8000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=7		Net=GND				(X=76000.000000 Y=24000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=8		Net=GND				(X=76000.000000 Y=22000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=9		Net=GND				(X=75000.000000 Y=22000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=10		Net=GND				(X=75450.000000 Y=34400.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=11		Net=GND				(X=41000.000000 Y=11000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=12		Net=GND				(X=53000.000000 Y=41000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=13		Net=GND				(X=32000.000000 Y=39000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=14		Net=GND				(X=4000.000000 Y=26000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=15		Net=GND				(X=10000.000000 Y=21000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=16		Net=GND				(X=4000.000000 Y=21000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=17		Net=GND				(X=34000.000000 Y=6000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=18		Net=GND				(X=40000.000000 Y=27000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=19		Net=GND				(X=30200.000000 Y=30150.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=20		Net=GND				(X=10000.000000 Y=26000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=21		Net=GND				(X=3850.000000 Y=33350.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=22		Net=GND				(X=14000.000000 Y=29000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=23		Net=GND				(X=33450.000000 Y=20700.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=24		Net=GND				(X=65000.000000 Y=41000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=25		Net=GND				(X=63000.000000 Y=27000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=26		Net=GND				(X=57000.000000 Y=35000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=27		Net=GND				(X=63000.000000 Y=17000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=28		Net=GND				(X=76000.000000 Y=33400.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=29		Net=GND				(X=73000.000000 Y=45000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=30		Net=GND				(X=63000.000000 Y=32000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=31		Net=GND				(X=42000.000000 Y=52000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=32		Net=GND				(X=29000.000000 Y=17000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=33		Net=GND				(X=79000.000000 Y=45000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=34		Net=GND				(X=41000.000000 Y=16000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=35		Net=GND				(X=75000.000000 Y=24000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=36		Net=GND				(X=81000.000000 Y=9000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=37		Net=GND				(X=82000.000000 Y=11000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=38		Net=GND				(X=76550.000000 Y=34400.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=39		Net=GND				(X=63000.000000 Y=2000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=40		Net=GND				(X=58000.000000 Y=2000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=41		Net=GND				(X=57650.000000 Y=40550.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=42		Net=GND				(X=53000.000000 Y=2000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=43		Net=GND				(X=53000.000000 Y=6000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=44		Net=GND				(X=35000.000000 Y=41000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=45		Net=GND				(X=65000.000000 Y=45000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=46		Net=GND				(X=73000.000000 Y=50000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=47		Net=GND				(X=15000.000000 Y=21000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=48		Net=GND				(X=25000.000000 Y=30000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=49		Net=GND				(X=27150.000000 Y=30000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=50		Net=GND				(X=24886.000000 Y=46563.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=51		Net=GND				(X=25836.000000 Y=46763.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=52		Net=GND				(X=43000.000000 Y=20000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=53		Net=GND				(X=49000.000000 Y=12000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=54		Net=GND				(X=79000.000000 Y=8000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=55		Net=GND				(X=81000.000000 Y=8000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=56		Net=GND				(X=19000.000000 Y=21000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=57		Net=GND				(X=49000.000000 Y=19900.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=58		Net=GND				(X=10000.000000 Y=35000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=59		Net=GND				(X=13000.000000 Y=4000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=60		Net=GND				(X=29200.000000 Y=36150.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=61		Net=GND				(X=69000.000000 Y=41000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=62		Net=GND				(X=43000.000000 Y=9000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=63		Net=GND				(X=48000.000000 Y=9000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=64		Net=GND				(X=52500.000000 Y=27800.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=65		Net=GND				(X=81000.000000 Y=10000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=66		Net=GND				(X=45900.000000 Y=32250.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=67		Net=GND				(X=77000.000000 Y=8000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=68		Net=GND				(X=76000.000000 Y=8000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=69		Net=GND				(X=76000.000000 Y=25000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=70		Net=GND				(X=40100.000000 Y=36400.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=71		Net=GND				(X=63000.000000 Y=12000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=72		Net=GND				(X=63000.000000 Y=6000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=73		Net=GND				(X=19000.000000 Y=45000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=74		Net=GND				(X=19000.000000 Y=50000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=75		Net=GND				(X=34000.000000 Y=14000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=76		Net=GND				(X=34000.000000 Y=3000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=77		Net=GND				(X=44500.000000 Y=36400.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=78		Net=GND				(X=43800.000000 Y=39800.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=79		Net=GND				(X=44600.000000 Y=39800.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=80		Net=GND				(X=29000.000000 Y=45000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=81		Net=GND				(X=35000.000000 Y=45000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=82		Net=GND				(X=76550.000000 Y=36400.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=83		Net=GND				(X=75450.000000 Y=36400.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=84		Net=GND				(X=47300.000000 Y=41950.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=85		Net=GND				(X=40200.000000 Y=16000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=86		Net=GND				(X=41800.000000 Y=16000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=87		Net=GND				(X=84900.000000 Y=39800.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=88		Net=GND				(X=85800.000000 Y=41850.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=89		Net=GND				(X=32000.000000 Y=38000.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=90		Net=GND				(X=29550.000000 Y=30750.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=91		Net=GND				(X=38250.000000 Y=17550.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=92		Net=GND				(X=37400.000000 Y=17550.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=93		Net=GND				(X=54250.000000 Y=28950.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=94		Net=GND				(X=54250.000000 Y=29750.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=95		Net=GND				(X=48350.000000 Y=29800.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=96		Net=GND				(X=45600.000000 Y=28250.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=97		Net=RFGND				(X=4000.000000 Y=3300.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=98		Net=RFGND				(X=1460.000000 Y=18540.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=99		Net=RFGND				(X=1460.000000 Y=3300.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=100		Net=RFGND				(X=1460.000000 Y=12190.000000)	LayerStart=1	LayerEnd=16
+VIA	ViaCount=101		Net=RFGND				(X=4000.000000 Y=12190.000000)	LayerStart=1	LayerEnd=16
+PADFILL	PadCount=1		Net=3.3V				(X=54200.000000 Y=10280.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=2		Net=GND				(X=54200.000000 Y=11980.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=4		Net=GND				(X=58100.000000 Y=15070.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=5		Net=3.3V				(X=60780.000000 Y=8470.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=6		Net=GND				(X=62480.000000 Y=8470.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=8		Net=GND				(X=57910.000000 Y=4570.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=10		Net=GND				(X=21930.000000 Y=11770.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=12		Net=GND				(X=19875.000000 Y=12320.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=14		Net=GND				(X=20492.500000 Y=7007.500000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=16		Net=RFGND				(X=7479.000000 Y=4735.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=20		Net=GND				(X=19025.000000 Y=16476.100000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=22		Net=GND				(X=36900.000000 Y=41289.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=23		Net=3.3V				(X=51511.000000 Y=29350.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=24		Net=GND				(X=53289.000000 Y=29350.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=27		Net=3.3V				(X=32539.000000 Y=31850.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=28		Net=GND				(X=30761.000000 Y=31850.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=29		Net=3.3V				(X=35089.000000 Y=38250.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=30		Net=GND				(X=33311.000000 Y=38250.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=32		Net=GND				(X=37750.000000 Y=18711.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=33		Net=V_BATT				(X=85400.000000 Y=8850.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=34		Net=GND				(X=82600.000000 Y=8850.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=35		Net=5V				(X=83100.000000 Y=21050.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=39		Net=5V				(X=76000.000000 Y=3600.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=40		Net=GND				(X=76000.000000 Y=6400.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=41		Net=V_BATT				(X=77900.000000 Y=26700.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=42		Net=GND				(X=76100.000000 Y=26700.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=43		Net=3.3V				(X=74100.000000 Y=31450.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=44		Net=GND				(X=75900.000000 Y=31450.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=45		Net=GND				(X=26350.000000 Y=27900.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=46		Net=3.3V				(X=26350.000000 Y=38100.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=49		Net=3.3V				(X=23840.000000 Y=41010.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=50		Net=GND				(X=25540.000000 Y=41010.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=54		Net=GND				(X=25320.000000 Y=48191.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=55		Net=3.3V				(X=46100.000000 Y=39550.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=56		Net=GND				(X=46100.000000 Y=41250.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=59		Net=GND				(X=26700.000000 Y=4200.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=61		Net=5V				(X=78000.000000 Y=3600.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=62		Net=GND				(X=78000.000000 Y=6400.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=63		Net=V_BATT				(X=84900.000000 Y=10600.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=64		Net=GND				(X=83100.000000 Y=10600.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=65		Net=3.3V				(X=78500.000000 Y=33400.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=74		Net=5V				(X=50300.000000 Y=47000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=76		Net=5V				(X=61950.000000 Y=47000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=80		Net=3.3V				(X=46300.000000 Y=14000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=90		Net=3.3V				(X=34000.000000 Y=31500.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=91		Net=GND				(X=34000.000000 Y=31000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=111		Net=3.3V				(X=38500.000000 Y=22000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=112		Net=GND				(X=39000.000000 Y=22000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=141		Net=3.3V				(X=50000.000000 Y=29000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=142		Net=GND				(X=50000.000000 Y=29500.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=160		Net=3.3V				(X=46000.000000 Y=38000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=161		Net=GND				(X=45500.000000 Y=38000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=179		Net=GND				(X=36500.000000 Y=38000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=180		Net=3.3V				(X=36000.000000 Y=38000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=196		Net=RFGND				(X=2323.600000 Y=10259.600000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=197		Net=RFGND				(X=2323.600000 Y=5179.600000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=198		Net=RFGND				(X=2323.600000 Y=10259.600000)	LayerStart=16	LayerEnd=16
+PADFILL	PadCount=199		Net=RFGND				(X=2323.600000 Y=5179.600000)	LayerStart=16	LayerEnd=16
+PADFILL	PadCount=204		Net=3.3V				(X=71950.000000 Y=29370.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=206		Net=5V				(X=80000.000000 Y=4150.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=208		Net=GND				(X=85050.000000 Y=41100.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=211		Net=3.3V				(X=6050.000000 Y=46000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=214		Net=3.3V				(X=33000.000000 Y=11950.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=217		Net=3.3V				(X=17250.000000 Y=39100.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=220		Net=GND				(X=68100.000000 Y=48950.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=223		Net=GND				(X=57100.000000 Y=48950.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=226		Net=GND				(X=82950.000000 Y=40900.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=229		Net=V_BATT				(X=82950.000000 Y=45050.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=231		Net=V_BATT				(X=80000.000000 Y=26150.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=233		Net=3.3V				(X=6150.000000 Y=48000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=237		Net=GND				(X=20725.000000 Y=15215.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=243		Net=GND				(X=8762.500000 Y=7720.000000)	LayerStart=16	LayerEnd=16
+PADFILL	PadCount=244		Net=RFGND				(X=7492.500000 Y=7720.000000)	LayerStart=16	LayerEnd=16
+PADFILL	PadCount=251		Net=GND				(X=85150.000000 Y=48300.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=258		Net=5V				(X=83150.000000 Y=19500.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=259		Net=GND				(X=83150.000000 Y=18000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=262		Net=3.3V				(X=78650.000000 Y=31900.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=263		Net=GND				(X=80700.000000 Y=31900.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=265		Net=3.3V				(X=71150.000000 Y=24000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=267		Net=V_BATT				(X=86850.000000 Y=45000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=269		Net=3.3V				(X=8900.000000 Y=41450.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=271		Net=3.3V				(X=35000.000000 Y=11850.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=280		Net=GND				(X=53050.000000 Y=21200.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=283		Net=GND				(X=82850.000000 Y=39000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=290		Net=3.3V				(X=43325.000000 Y=17400.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=291		Net=3.3V				(X=43325.000000 Y=16600.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=292		Net=3.3V				(X=43325.000000 Y=15800.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=301		Net=GND				(X=77060.000000 Y=28250.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=302		Net=V_BATT				(X=77060.000000 Y=28750.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=306		Net=3.3V				(X=74950.000000 Y=29250.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=309		Net=GND				(X=76000.000000 Y=29000.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=312		Net=GND				(X=83050.000000 Y=12850.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=314		Net=V_BATT				(X=84950.000000 Y=12850.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=318		Net=GND				(X=55510.000000 Y=11270.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=320		Net=3.3V				(X=55510.000000 Y=10270.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=325		Net=3.3V				(X=56760.000000 Y=8020.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=326		Net=GND				(X=57260.000000 Y=8020.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=328		Net=GND				(X=58260.000000 Y=8020.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=330		Net=3.3V				(X=59510.000000 Y=8770.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=332		Net=GND				(X=59510.000000 Y=9770.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=334		Net=GND				(X=59510.000000 Y=10770.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=335		Net=GND				(X=59510.000000 Y=11270.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=349		Net=GND				(X=16520.000000 Y=12520.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=351		Net=GND				(X=16520.000000 Y=14120.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=352		Net=GND				(X=16520.000000 Y=14920.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=356		Net=GND				(X=13220.000000 Y=15820.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=360		Net=GND				(X=10020.000000 Y=15820.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=362		Net=RFGND				(X=8420.000000 Y=15820.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=363		Net=RFGND				(X=7620.000000 Y=15820.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=365		Net=RFGND				(X=6720.000000 Y=14120.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=366		Net=RFGND				(X=6720.000000 Y=13320.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=368		Net=RFGND				(X=6720.000000 Y=11720.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=369		Net=RFGND				(X=6720.000000 Y=10920.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=370		Net=RFGND				(X=6720.000000 Y=10120.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=372		Net=RFGND				(X=6720.000000 Y=8520.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=374		Net=RFGND				(X=6720.000000 Y=6920.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=390		Net=GND				(X=14620.000000 Y=13920.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=401		Net=GND				(X=10120.000000 Y=7920.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=402		Net=RFGND				(X=10120.000000 Y=9420.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=403		Net=RFGND				(X=10120.000000 Y=10920.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=405		Net=GND				(X=10120.000000 Y=13920.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=406		Net=RFGND				(X=8620.000000 Y=7920.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=410		Net=RFGND				(X=8620.000000 Y=13920.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=414		Net=3.3V				(X=5230.000000 Y=31870.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=416		Net=GND				(X=5230.000000 Y=34070.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=419		Net=GND				(X=15730.000000 Y=35460.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=420		Net=GND				(X=15730.000000 Y=29760.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=421		Net=GND				(X=1580.000000 Y=23910.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=422		Net=GND				(X=2580.000000 Y=37060.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=424		Net=3.3V				(X=22750.000000 Y=42630.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=426		Net=3.3V				(X=23750.000000 Y=42630.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=431		Net=GND				(X=23750.000000 Y=45370.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=433		Net=GND				(X=22750.000000 Y=45370.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=435		Net=3.3V				(X=21630.000000 Y=44750.000000)	LayerStart=1	LayerEnd=1
+PADFILL	PadCount=444		Net=GND				(X=40800.000000 Y=17700.000000)	LayerStart=1	LayerEnd=1
+#********** END OF fix_via_hack.ulp ULP Version 4.6.0 05-09-2016 :21:45:46 LOG **********#
+
+#********** START OF eagle6xx-sch-to-kicad-sch.ulp 1.9 05-09-2016 :21:46:51 LOG **********#
+Package Name Conflict: Package=C0402 from Internal SCH lib=SmartPrj  With Package=C0402 from LIB=SparkFun
+Package Name Conflict: Package=R2010 from Internal SCH lib=SmartPrj  With Package=R2010 from LIB=SparkFun
+Package Name Conflict: Package=R2010 from Internal SCH lib=SmartPrj  With Package=R2010 from LIB=SparkFun-Passives
+Package Name Conflict: Package=R2010 from Internal SCH lib=SmartPrj  With Package=R2010 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=R2512 from Internal SCH lib=SmartPrj  With Package=R2512 from LIB=SparkFun
+Package Name Conflict: Package=R2512 from Internal SCH lib=SmartPrj  With Package=R2512 from LIB=SparkFun-Passives
+Package Name Conflict: Package=R2512 from Internal SCH lib=SmartPrj  With Package=R2512 from LIB=SparkFun-Resistors
+Device Name Conflict: Device=CAP0402-CAP from Internal SCH lib=SparkFun  With Device=CAP0402-CAP from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAP0402-CAP from Internal SCH lib=SparkFun  With Device=CAP0402-CAP from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAP0603-CAP from Internal SCH lib=SparkFun  With Device=CAP0603-CAP from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAP0603-CAP from Internal SCH lib=SparkFun  With Device=CAP0603-CAP from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAP0805 from Internal SCH lib=SparkFun  With Device=CAP0805 from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAP0805 from Internal SCH lib=SparkFun  With Device=CAP0805 from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAP1206 from Internal SCH lib=SparkFun  With Device=CAP1206 from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAP1206 from Internal SCH lib=SparkFun  With Device=CAP1206 from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAP1210 from Internal SCH lib=SparkFun  With Device=CAP1210 from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAP1210 from Internal SCH lib=SparkFun  With Device=CAP1210 from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAPASMD from Internal SCH lib=SparkFun  With Device=CAPASMD from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAPASMD from Internal SCH lib=SparkFun  With Device=CAPASMD from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAPPTH from Internal SCH lib=SparkFun  With Device=CAPPTH from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAPPTH from Internal SCH lib=SparkFun  With Device=CAPPTH from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAPPTH1 from Internal SCH lib=SparkFun  With Device=CAPPTH1 from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAPPTH1 from Internal SCH lib=SparkFun  With Device=CAPPTH1 from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAPPTH2 from Internal SCH lib=SparkFun  With Device=CAPPTH2 from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAPPTH2 from Internal SCH lib=SparkFun  With Device=CAPPTH2 from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAPPTH3 from Internal SCH lib=SparkFun  With Device=CAPPTH3 from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAPPTH3 from Internal SCH lib=SparkFun  With Device=CAPPTH3 from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAPSMD from Internal SCH lib=SparkFun  With Device=CAPSMD from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAPSMD from Internal SCH lib=SparkFun  With Device=CAPSMD from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAP_ from Internal SCH lib=SparkFun  With Device=CAP_ from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAP_ from Internal SCH lib=SparkFun  With Device=CAP_ from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAP_POL1206 from Internal SCH lib=SparkFun  With Device=CAP_POL1206 from LIB=kolosy
+Device Name Conflict: Device=CAP_POL1206-KIT from Internal SCH lib=SparkFun  With Device=CAP_POL1206-KIT from LIB=kolosy
+Device Name Conflict: Device=CAP_POL3528 from Internal SCH lib=SparkFun  With Device=CAP_POL3528 from LIB=kolosy
+Device Name Conflict: Device=CAP_POL3528-KIT from Internal SCH lib=SparkFun  With Device=CAP_POL3528-KIT from LIB=kolosy
+Device Name Conflict: Device=CAP_POL6032 from Internal SCH lib=SparkFun  With Device=CAP_POL6032 from LIB=kolosy
+Device Name Conflict: Device=CAP_POL7343 from Internal SCH lib=SparkFun  With Device=CAP_POL7343 from LIB=kolosy
+Device Name Conflict: Device=CAP_POLC from Internal SCH lib=SparkFun  With Device=CAP_POLC from LIB=kolosy
+Device Name Conflict: Device=CAP_POLD from Internal SCH lib=SparkFun  With Device=CAP_POLD from LIB=kolosy
+Device Name Conflict: Device=CAP_POLE from Internal SCH lib=SparkFun  With Device=CAP_POLE from LIB=kolosy
+Device Name Conflict: Device=CAP_POLEN_J2 from Internal SCH lib=SparkFun  With Device=CAP_POLEN_J2 from LIB=kolosy
+Device Name Conflict: Device=CAP_POLF80 from Internal SCH lib=SparkFun  With Device=CAP_POLF80 from LIB=kolosy
+Device Name Conflict: Device=CAP_POLG from Internal SCH lib=SparkFun  With Device=CAP_POLG from LIB=kolosy
+Device Name Conflict: Device=CAP_POLH13 from Internal SCH lib=SparkFun  With Device=CAP_POLH13 from LIB=kolosy
+Device Name Conflict: Device=CAP_POLPTH1 from Internal SCH lib=SparkFun  With Device=CAP_POLPTH1 from LIB=kolosy
+Device Name Conflict: Device=CAP_POLPTH2 from Internal SCH lib=SparkFun  With Device=CAP_POLPTH2 from LIB=kolosy
+Device Name Conflict: Device=CAP_POLPTH3 from Internal SCH lib=SparkFun  With Device=CAP_POLPTH3 from LIB=kolosy
+Device Name Conflict: Device=CAP_POLPTH4 from Internal SCH lib=SparkFun  With Device=CAP_POLPTH4 from LIB=kolosy
+Device Name Conflict: Device=CAP_POLSMD from Internal SCH lib=SparkFun  With Device=CAP_POLSMD from LIB=kolosy
+Device Name Conflict: Device=GND from Internal SCH lib=SparkFun  With Device=GND from LIB=SparkFun-Aesthetics
+Device Name Conflict: Device=GND from Internal SCH lib=SparkFun  With Device=GND from LIB=supply1
+Device Name Conflict: Device=RESISTOR0402-RES from Internal SCH lib=SparkFun  With Device=RESISTOR0402-RES from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTOR0603-RES from Internal SCH lib=SparkFun  With Device=RESISTOR0603-RES from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTOR0603-RES from Internal SCH lib=SparkFun  With Device=RESISTOR0603-RES from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTOR0805-RES from Internal SCH lib=SparkFun  With Device=RESISTOR0805-RES from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTOR0805-RES from Internal SCH lib=SparkFun  With Device=RESISTOR0805-RES from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTOR1206 from Internal SCH lib=SparkFun  With Device=RESISTOR1206 from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTOR1206 from Internal SCH lib=SparkFun  With Device=RESISTOR1206 from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTOR2010 from Internal SCH lib=SparkFun  With Device=RESISTOR2010 from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTOR2010 from Internal SCH lib=SparkFun  With Device=RESISTOR2010 from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTOR2512 from Internal SCH lib=SparkFun  With Device=RESISTOR2512 from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTOR2512 from Internal SCH lib=SparkFun  With Device=RESISTOR2512 from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTORAXIAL-0.3 from Internal SCH lib=SparkFun  With Device=RESISTORAXIAL-0.3 from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTORAXIAL-0.3 from Internal SCH lib=SparkFun  With Device=RESISTORAXIAL-0.3 from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTORPTH-1/2W from Internal SCH lib=SparkFun  With Device=RESISTORPTH-1/2W from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTORPTH-1/2W from Internal SCH lib=SparkFun  With Device=RESISTORPTH-1/2W from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTORPTH-1/4W from Internal SCH lib=SparkFun  With Device=RESISTORPTH-1/4W from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTORPTH-1/4W from Internal SCH lib=SparkFun  With Device=RESISTORPTH-1/4W from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTORPTH-1/6W from Internal SCH lib=SparkFun  With Device=RESISTORPTH-1/6W from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTORPTH-1/6W from Internal SCH lib=SparkFun  With Device=RESISTORPTH-1/6W from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTORPTH-1W from Internal SCH lib=SparkFun  With Device=RESISTORPTH-1W from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTORPTH-1W from Internal SCH lib=SparkFun  With Device=RESISTORPTH-1W from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTORPTH-2W from Internal SCH lib=SparkFun  With Device=RESISTORPTH-2W from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTORPTH-2W from Internal SCH lib=SparkFun  With Device=RESISTORPTH-2W from LIB=SparkFun-Resistors
+Symbol Name Conflict: Symbol=CAP from Internal SCH lib=SparkFun  With Symbol=CAP from LIB=SparkFun-Capacitors
+Symbol Name Conflict: Symbol=CAP from Internal SCH lib=SparkFun  With Symbol=CAP from LIB=SparkFun-Passives
+Symbol Name Conflict: Symbol=CAP_POL from Internal SCH lib=SparkFun  With Symbol=CAP_POL from LIB=kolosy
+Symbol Name Conflict: Symbol=GND from Internal SCH lib=SparkFun  With Symbol=GND from LIB=supply1
+Symbol Name Conflict: Symbol=RESISTOR from Internal SCH lib=SparkFun  With Symbol=RESISTOR from LIB=SparkFun-Passives
+Symbol Name Conflict: Symbol=RESISTOR from Internal SCH lib=SparkFun  With Symbol=RESISTOR from LIB=SparkFun-Resistors
+Package Name Conflict: Package=1/6W-RES from Internal SCH lib=SparkFun  With Package=1/6W-RES from LIB=SparkFun-Passives
+Package Name Conflict: Package=1/6W-RES from Internal SCH lib=SparkFun  With Package=1/6W-RES from LIB=SparkFun-Resistors
+Package Name Conflict: Package=0402-CAP from Internal SCH lib=SparkFun  With Package=0402-CAP from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=0402-CAP from Internal SCH lib=SparkFun  With Package=0402-CAP from LIB=SparkFun-Passives
+Package Name Conflict: Package=0402-RES from Internal SCH lib=SparkFun  With Package=0402-RES from LIB=SparkFun-Passives
+Package Name Conflict: Package=0603-CAP from Internal SCH lib=SparkFun  With Package=0603-CAP from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=0603-CAP from Internal SCH lib=SparkFun  With Package=0603-CAP from LIB=SparkFun-Passives
+Package Name Conflict: Package=0603-RES from Internal SCH lib=SparkFun  With Package=0603-RES from LIB=SparkFun-Passives
+Package Name Conflict: Package=0603-RES from Internal SCH lib=SparkFun  With Package=0603-RES from LIB=SparkFun-Resistors
+Package Name Conflict: Package=0805 from Internal SCH lib=SparkFun  With Package=0805 from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=0805 from Internal SCH lib=SparkFun  With Package=0805 from LIB=SparkFun-Passives
+Package Name Conflict: Package=0805 from Internal SCH lib=SparkFun  With Package=0805 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=1206 from Internal SCH lib=SparkFun  With Package=1206 from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=1206 from Internal SCH lib=SparkFun  With Package=1206 from LIB=SparkFun-Passives
+Package Name Conflict: Package=1206 from Internal SCH lib=SparkFun  With Package=1206 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=1210 from Internal SCH lib=SparkFun  With Package=1210 from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=1210 from Internal SCH lib=SparkFun  With Package=1210 from LIB=SparkFun-Passives
+Package Name Conflict: Package=AXIAL-0.3 from Internal SCH lib=SparkFun  With Package=AXIAL-0.3 from LIB=SparkFun-Passives
+Package Name Conflict: Package=AXIAL-0.3 from Internal SCH lib=SparkFun  With Package=AXIAL-0.3 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=AXIAL-0.4 from Internal SCH lib=SparkFun  With Package=AXIAL-0.4 from LIB=SparkFun-Passives
+Package Name Conflict: Package=AXIAL-0.4 from Internal SCH lib=SparkFun  With Package=AXIAL-0.4 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=AXIAL-0.5 from Internal SCH lib=SparkFun  With Package=AXIAL-0.5 from LIB=SparkFun-Passives
+Package Name Conflict: Package=AXIAL-0.5 from Internal SCH lib=SparkFun  With Package=AXIAL-0.5 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=AXIAL-0.6 from Internal SCH lib=SparkFun  With Package=AXIAL-0.6 from LIB=SparkFun-Passives
+Package Name Conflict: Package=AXIAL-0.6 from Internal SCH lib=SparkFun  With Package=AXIAL-0.6 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=AXIAL-0.8 from Internal SCH lib=SparkFun  With Package=AXIAL-0.8 from LIB=SparkFun-Passives
+Package Name Conflict: Package=AXIAL-0.8 from Internal SCH lib=SparkFun  With Package=AXIAL-0.8 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=AXIAL-5MM from Internal SCH lib=SparkFun  With Package=AXIAL-5MM from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=AXIAL-5MM from Internal SCH lib=SparkFun  With Package=AXIAL-5MM from LIB=SparkFun-Passives
+Package Name Conflict: Package=C0402 from Internal SCH lib=SparkFun  With Package=C0402 from LIB=SmartPrj
+Package Name Conflict: Package=CAP-PTH-5MM from Internal SCH lib=SparkFun  With Package=CAP-PTH-5MM from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=CAP-PTH-5MM from Internal SCH lib=SparkFun  With Package=CAP-PTH-5MM from LIB=SparkFun-Passives
+Package Name Conflict: Package=CAP-PTH-LARGE from Internal SCH lib=SparkFun  With Package=CAP-PTH-LARGE from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=CAP-PTH-LARGE from Internal SCH lib=SparkFun  With Package=CAP-PTH-LARGE from LIB=SparkFun-Passives
+Package Name Conflict: Package=CAP-PTH-SMALL from Internal SCH lib=SparkFun  With Package=CAP-PTH-SMALL from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=CAP-PTH-SMALL from Internal SCH lib=SparkFun  With Package=CAP-PTH-SMALL from LIB=SparkFun-Passives
+Package Name Conflict: Package=CAP-PTH-SMALL2 from Internal SCH lib=SparkFun  With Package=CAP-PTH-SMALL2 from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=CAP-PTH-SMALL2 from Internal SCH lib=SparkFun  With Package=CAP-PTH-SMALL2 from LIB=SparkFun-Passives
+Package Name Conflict: Package=CPOL-RADIAL-10UF-25V from Internal SCH lib=SparkFun  With Package=CPOL-RADIAL-10UF-25V from LIB=kolosy
+Package Name Conflict: Package=CPOL-RADIAL-100UF-25V from Internal SCH lib=SparkFun  With Package=CPOL-RADIAL-100UF-25V from LIB=kolosy
+Package Name Conflict: Package=CPOL-RADIAL-1000UF-25V from Internal SCH lib=SparkFun  With Package=CPOL-RADIAL-1000UF-25V from LIB=kolosy
+Package Name Conflict: Package=CPOL-RADIAL-1000UF-63V from Internal SCH lib=SparkFun  With Package=CPOL-RADIAL-1000UF-63V from LIB=kolosy
+Package Name Conflict: Package=CTZ3 from Internal SCH lib=SparkFun  With Package=CTZ3 from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=CTZ3 from Internal SCH lib=SparkFun  With Package=CTZ3 from LIB=SparkFun-Passives
+Package Name Conflict: Package=EIA3216 from Internal SCH lib=SparkFun  With Package=EIA3216 from LIB=kolosy
+Package Name Conflict: Package=EIA3216-KIT from Internal SCH lib=SparkFun  With Package=EIA3216-KIT from LIB=kolosy
+Package Name Conflict: Package=EIA3528 from Internal SCH lib=SparkFun  With Package=EIA3528 from LIB=kolosy
+Package Name Conflict: Package=EIA3528-KIT from Internal SCH lib=SparkFun  With Package=EIA3528-KIT from LIB=kolosy
+Package Name Conflict: Package=EIA6032 from Internal SCH lib=SparkFun  With Package=EIA6032 from LIB=kolosy
+Package Name Conflict: Package=EIA7343 from Internal SCH lib=SparkFun  With Package=EIA7343 from LIB=kolosy
+Package Name Conflict: Package=EN_J2 from Internal SCH lib=SparkFun  With Package=EN_J2 from LIB=kolosy
+Package Name Conflict: Package=GRM43D from Internal SCH lib=SparkFun  With Package=GRM43D from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=GRM43D from Internal SCH lib=SparkFun  With Package=GRM43D from LIB=SparkFun-Passives
+Package Name Conflict: Package=NIPPON_F80 from Internal SCH lib=SparkFun  With Package=NIPPON_F80 from LIB=kolosy
+Package Name Conflict: Package=PANASONIC_C from Internal SCH lib=SparkFun  With Package=PANASONIC_C from LIB=kolosy
+Package Name Conflict: Package=PANASONIC_D from Internal SCH lib=SparkFun  With Package=PANASONIC_D from LIB=kolosy
+Package Name Conflict: Package=PANASONIC_E from Internal SCH lib=SparkFun  With Package=PANASONIC_E from LIB=kolosy
+Package Name Conflict: Package=PANASONIC_G from Internal SCH lib=SparkFun  With Package=PANASONIC_G from LIB=kolosy
+Package Name Conflict: Package=PANASONIC_H13 from Internal SCH lib=SparkFun  With Package=PANASONIC_H13 from LIB=kolosy
+Package Name Conflict: Package=R2010 from Internal SCH lib=SparkFun  With Package=R2010 from LIB=SmartPrj
+Package Name Conflict: Package=R2010 from Internal SCH lib=SparkFun  With Package=R2010 from LIB=SparkFun-Passives
+Package Name Conflict: Package=R2010 from Internal SCH lib=SparkFun  With Package=R2010 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=R2512 from Internal SCH lib=SparkFun  With Package=R2512 from LIB=SmartPrj
+Package Name Conflict: Package=R2512 from Internal SCH lib=SparkFun  With Package=R2512 from LIB=SparkFun-Passives
+Package Name Conflict: Package=R2512 from Internal SCH lib=SparkFun  With Package=R2512 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=SOT23-3 from Internal SCH lib=SparkFun  With Package=SOT23-3 from LIB=SparkFun-DiscreteSemi
+Package Name Conflict: Package=VISHAY_C from Internal SCH lib=SparkFun  With Package=VISHAY_C from LIB=kolosy
+Device Name Conflict: Device=GND from Internal SCH lib=SparkFun-Aesthetics  With Device=GND from LIB=SparkFun
+Device Name Conflict: Device=GND from Internal SCH lib=SparkFun-Aesthetics  With Device=GND from LIB=supply1
+Device Name Conflict: Device=CAP0402-CAP from Internal SCH lib=SparkFun-Capacitors  With Device=CAP0402-CAP from LIB=SparkFun
+Device Name Conflict: Device=CAP0402-CAP from Internal SCH lib=SparkFun-Capacitors  With Device=CAP0402-CAP from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAP0603-CAP from Internal SCH lib=SparkFun-Capacitors  With Device=CAP0603-CAP from LIB=SparkFun
+Device Name Conflict: Device=CAP0603-CAP from Internal SCH lib=SparkFun-Capacitors  With Device=CAP0603-CAP from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAP0805 from Internal SCH lib=SparkFun-Capacitors  With Device=CAP0805 from LIB=SparkFun
+Device Name Conflict: Device=CAP0805 from Internal SCH lib=SparkFun-Capacitors  With Device=CAP0805 from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAP1206 from Internal SCH lib=SparkFun-Capacitors  With Device=CAP1206 from LIB=SparkFun
+Device Name Conflict: Device=CAP1206 from Internal SCH lib=SparkFun-Capacitors  With Device=CAP1206 from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAP1210 from Internal SCH lib=SparkFun-Capacitors  With Device=CAP1210 from LIB=SparkFun
+Device Name Conflict: Device=CAP1210 from Internal SCH lib=SparkFun-Capacitors  With Device=CAP1210 from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAPASMD from Internal SCH lib=SparkFun-Capacitors  With Device=CAPASMD from LIB=SparkFun
+Device Name Conflict: Device=CAPASMD from Internal SCH lib=SparkFun-Capacitors  With Device=CAPASMD from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAPKIT from Internal SCH lib=SparkFun-Capacitors  With Device=CAPKIT from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAPPTH from Internal SCH lib=SparkFun-Capacitors  With Device=CAPPTH from LIB=SparkFun
+Device Name Conflict: Device=CAPPTH from Internal SCH lib=SparkFun-Capacitors  With Device=CAPPTH from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAPPTH1 from Internal SCH lib=SparkFun-Capacitors  With Device=CAPPTH1 from LIB=SparkFun
+Device Name Conflict: Device=CAPPTH1 from Internal SCH lib=SparkFun-Capacitors  With Device=CAPPTH1 from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAPPTH2 from Internal SCH lib=SparkFun-Capacitors  With Device=CAPPTH2 from LIB=SparkFun
+Device Name Conflict: Device=CAPPTH2 from Internal SCH lib=SparkFun-Capacitors  With Device=CAPPTH2 from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAPPTH3 from Internal SCH lib=SparkFun-Capacitors  With Device=CAPPTH3 from LIB=SparkFun
+Device Name Conflict: Device=CAPPTH3 from Internal SCH lib=SparkFun-Capacitors  With Device=CAPPTH3 from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAPSMD from Internal SCH lib=SparkFun-Capacitors  With Device=CAPSMD from LIB=SparkFun
+Device Name Conflict: Device=CAPSMD from Internal SCH lib=SparkFun-Capacitors  With Device=CAPSMD from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAP_ from Internal SCH lib=SparkFun-Capacitors  With Device=CAP_ from LIB=SparkFun
+Device Name Conflict: Device=CAP_ from Internal SCH lib=SparkFun-Capacitors  With Device=CAP_ from LIB=SparkFun-Passives
+Symbol Name Conflict: Symbol=CAP from Internal SCH lib=SparkFun-Capacitors  With Symbol=CAP from LIB=SparkFun
+Symbol Name Conflict: Symbol=CAP from Internal SCH lib=SparkFun-Capacitors  With Symbol=CAP from LIB=SparkFun-Passives
+Package Name Conflict: Package=0402-CAP from Internal SCH lib=SparkFun-Capacitors  With Package=0402-CAP from LIB=SparkFun
+Package Name Conflict: Package=0402-CAP from Internal SCH lib=SparkFun-Capacitors  With Package=0402-CAP from LIB=SparkFun-Passives
+Package Name Conflict: Package=0603-CAP from Internal SCH lib=SparkFun-Capacitors  With Package=0603-CAP from LIB=SparkFun
+Package Name Conflict: Package=0603-CAP from Internal SCH lib=SparkFun-Capacitors  With Package=0603-CAP from LIB=SparkFun-Passives
+Package Name Conflict: Package=0805 from Internal SCH lib=SparkFun-Capacitors  With Package=0805 from LIB=SparkFun
+Package Name Conflict: Package=0805 from Internal SCH lib=SparkFun-Capacitors  With Package=0805 from LIB=SparkFun-Passives
+Package Name Conflict: Package=0805 from Internal SCH lib=SparkFun-Capacitors  With Package=0805 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=1206 from Internal SCH lib=SparkFun-Capacitors  With Package=1206 from LIB=SparkFun
+Package Name Conflict: Package=1206 from Internal SCH lib=SparkFun-Capacitors  With Package=1206 from LIB=SparkFun-Passives
+Package Name Conflict: Package=1206 from Internal SCH lib=SparkFun-Capacitors  With Package=1206 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=1210 from Internal SCH lib=SparkFun-Capacitors  With Package=1210 from LIB=SparkFun
+Package Name Conflict: Package=1210 from Internal SCH lib=SparkFun-Capacitors  With Package=1210 from LIB=SparkFun-Passives
+Package Name Conflict: Package=AXIAL-5MM from Internal SCH lib=SparkFun-Capacitors  With Package=AXIAL-5MM from LIB=SparkFun
+Package Name Conflict: Package=AXIAL-5MM from Internal SCH lib=SparkFun-Capacitors  With Package=AXIAL-5MM from LIB=SparkFun-Passives
+Package Name Conflict: Package=CAP-PTH-5MM from Internal SCH lib=SparkFun-Capacitors  With Package=CAP-PTH-5MM from LIB=SparkFun
+Package Name Conflict: Package=CAP-PTH-5MM from Internal SCH lib=SparkFun-Capacitors  With Package=CAP-PTH-5MM from LIB=SparkFun-Passives
+Package Name Conflict: Package=CAP-PTH-LARGE from Internal SCH lib=SparkFun-Capacitors  With Package=CAP-PTH-LARGE from LIB=SparkFun
+Package Name Conflict: Package=CAP-PTH-LARGE from Internal SCH lib=SparkFun-Capacitors  With Package=CAP-PTH-LARGE from LIB=SparkFun-Passives
+Package Name Conflict: Package=CAP-PTH-SMALL from Internal SCH lib=SparkFun-Capacitors  With Package=CAP-PTH-SMALL from LIB=SparkFun
+Package Name Conflict: Package=CAP-PTH-SMALL from Internal SCH lib=SparkFun-Capacitors  With Package=CAP-PTH-SMALL from LIB=SparkFun-Passives
+Package Name Conflict: Package=CAP-PTH-SMALL-KIT from Internal SCH lib=SparkFun-Capacitors  With Package=CAP-PTH-SMALL-KIT from LIB=SparkFun-Passives
+Package Name Conflict: Package=CAP-PTH-SMALL2 from Internal SCH lib=SparkFun-Capacitors  With Package=CAP-PTH-SMALL2 from LIB=SparkFun
+Package Name Conflict: Package=CAP-PTH-SMALL2 from Internal SCH lib=SparkFun-Capacitors  With Package=CAP-PTH-SMALL2 from LIB=SparkFun-Passives
+Package Name Conflict: Package=CTZ3 from Internal SCH lib=SparkFun-Capacitors  With Package=CTZ3 from LIB=SparkFun
+Package Name Conflict: Package=CTZ3 from Internal SCH lib=SparkFun-Capacitors  With Package=CTZ3 from LIB=SparkFun-Passives
+Package Name Conflict: Package=GRM43D from Internal SCH lib=SparkFun-Capacitors  With Package=GRM43D from LIB=SparkFun
+Package Name Conflict: Package=GRM43D from Internal SCH lib=SparkFun-Capacitors  With Package=GRM43D from LIB=SparkFun-Passives
+Package Name Conflict: Package=SOT23-3 from Internal SCH lib=SparkFun-DiscreteSemi  With Package=SOT23-3 from LIB=SparkFun
+Device Name Conflict: Device=CAP0402-CAP from Internal SCH lib=SparkFun-Passives  With Device=CAP0402-CAP from LIB=SparkFun
+Device Name Conflict: Device=CAP0402-CAP from Internal SCH lib=SparkFun-Passives  With Device=CAP0402-CAP from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAP0603-CAP from Internal SCH lib=SparkFun-Passives  With Device=CAP0603-CAP from LIB=SparkFun
+Device Name Conflict: Device=CAP0603-CAP from Internal SCH lib=SparkFun-Passives  With Device=CAP0603-CAP from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAP0805 from Internal SCH lib=SparkFun-Passives  With Device=CAP0805 from LIB=SparkFun
+Device Name Conflict: Device=CAP0805 from Internal SCH lib=SparkFun-Passives  With Device=CAP0805 from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAP1206 from Internal SCH lib=SparkFun-Passives  With Device=CAP1206 from LIB=SparkFun
+Device Name Conflict: Device=CAP1206 from Internal SCH lib=SparkFun-Passives  With Device=CAP1206 from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAP1210 from Internal SCH lib=SparkFun-Passives  With Device=CAP1210 from LIB=SparkFun
+Device Name Conflict: Device=CAP1210 from Internal SCH lib=SparkFun-Passives  With Device=CAP1210 from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAPASMD from Internal SCH lib=SparkFun-Passives  With Device=CAPASMD from LIB=SparkFun
+Device Name Conflict: Device=CAPASMD from Internal SCH lib=SparkFun-Passives  With Device=CAPASMD from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAPKIT from Internal SCH lib=SparkFun-Passives  With Device=CAPKIT from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAPPTH from Internal SCH lib=SparkFun-Passives  With Device=CAPPTH from LIB=SparkFun
+Device Name Conflict: Device=CAPPTH from Internal SCH lib=SparkFun-Passives  With Device=CAPPTH from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAPPTH1 from Internal SCH lib=SparkFun-Passives  With Device=CAPPTH1 from LIB=SparkFun
+Device Name Conflict: Device=CAPPTH1 from Internal SCH lib=SparkFun-Passives  With Device=CAPPTH1 from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAPPTH2 from Internal SCH lib=SparkFun-Passives  With Device=CAPPTH2 from LIB=SparkFun
+Device Name Conflict: Device=CAPPTH2 from Internal SCH lib=SparkFun-Passives  With Device=CAPPTH2 from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAPPTH3 from Internal SCH lib=SparkFun-Passives  With Device=CAPPTH3 from LIB=SparkFun
+Device Name Conflict: Device=CAPPTH3 from Internal SCH lib=SparkFun-Passives  With Device=CAPPTH3 from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAPSMD from Internal SCH lib=SparkFun-Passives  With Device=CAPSMD from LIB=SparkFun
+Device Name Conflict: Device=CAPSMD from Internal SCH lib=SparkFun-Passives  With Device=CAPSMD from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=CAP_ from Internal SCH lib=SparkFun-Passives  With Device=CAP_ from LIB=SparkFun
+Device Name Conflict: Device=CAP_ from Internal SCH lib=SparkFun-Passives  With Device=CAP_ from LIB=SparkFun-Capacitors
+Device Name Conflict: Device=RESISTOR0402-RES from Internal SCH lib=SparkFun-Passives  With Device=RESISTOR0402-RES from LIB=SparkFun
+Device Name Conflict: Device=RESISTOR0603-RES from Internal SCH lib=SparkFun-Passives  With Device=RESISTOR0603-RES from LIB=SparkFun
+Device Name Conflict: Device=RESISTOR0603-RES from Internal SCH lib=SparkFun-Passives  With Device=RESISTOR0603-RES from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTOR0805-RES from Internal SCH lib=SparkFun-Passives  With Device=RESISTOR0805-RES from LIB=SparkFun
+Device Name Conflict: Device=RESISTOR0805-RES from Internal SCH lib=SparkFun-Passives  With Device=RESISTOR0805-RES from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTOR1206 from Internal SCH lib=SparkFun-Passives  With Device=RESISTOR1206 from LIB=SparkFun
+Device Name Conflict: Device=RESISTOR1206 from Internal SCH lib=SparkFun-Passives  With Device=RESISTOR1206 from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTOR2010 from Internal SCH lib=SparkFun-Passives  With Device=RESISTOR2010 from LIB=SparkFun
+Device Name Conflict: Device=RESISTOR2010 from Internal SCH lib=SparkFun-Passives  With Device=RESISTOR2010 from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTOR2512 from Internal SCH lib=SparkFun-Passives  With Device=RESISTOR2512 from LIB=SparkFun
+Device Name Conflict: Device=RESISTOR2512 from Internal SCH lib=SparkFun-Passives  With Device=RESISTOR2512 from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTORAXIAL-0.3 from Internal SCH lib=SparkFun-Passives  With Device=RESISTORAXIAL-0.3 from LIB=SparkFun
+Device Name Conflict: Device=RESISTORAXIAL-0.3 from Internal SCH lib=SparkFun-Passives  With Device=RESISTORAXIAL-0.3 from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTOREZ from Internal SCH lib=SparkFun-Passives  With Device=RESISTOREZ from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTORKIT from Internal SCH lib=SparkFun-Passives  With Device=RESISTORKIT from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTORPTH-1/2W from Internal SCH lib=SparkFun-Passives  With Device=RESISTORPTH-1/2W from LIB=SparkFun
+Device Name Conflict: Device=RESISTORPTH-1/2W from Internal SCH lib=SparkFun-Passives  With Device=RESISTORPTH-1/2W from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTORPTH-1/4W from Internal SCH lib=SparkFun-Passives  With Device=RESISTORPTH-1/4W from LIB=SparkFun
+Device Name Conflict: Device=RESISTORPTH-1/4W from Internal SCH lib=SparkFun-Passives  With Device=RESISTORPTH-1/4W from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTORPTH-1/6W from Internal SCH lib=SparkFun-Passives  With Device=RESISTORPTH-1/6W from LIB=SparkFun
+Device Name Conflict: Device=RESISTORPTH-1/6W from Internal SCH lib=SparkFun-Passives  With Device=RESISTORPTH-1/6W from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTORPTH-1W from Internal SCH lib=SparkFun-Passives  With Device=RESISTORPTH-1W from LIB=SparkFun
+Device Name Conflict: Device=RESISTORPTH-1W from Internal SCH lib=SparkFun-Passives  With Device=RESISTORPTH-1W from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTORPTH-2W from Internal SCH lib=SparkFun-Passives  With Device=RESISTORPTH-2W from LIB=SparkFun
+Device Name Conflict: Device=RESISTORPTH-2W from Internal SCH lib=SparkFun-Passives  With Device=RESISTORPTH-2W from LIB=SparkFun-Resistors
+Symbol Name Conflict: Symbol=CAP from Internal SCH lib=SparkFun-Passives  With Symbol=CAP from LIB=SparkFun
+Symbol Name Conflict: Symbol=CAP from Internal SCH lib=SparkFun-Passives  With Symbol=CAP from LIB=SparkFun-Capacitors
+Symbol Name Conflict: Symbol=RESISTOR from Internal SCH lib=SparkFun-Passives  With Symbol=RESISTOR from LIB=SparkFun
+Symbol Name Conflict: Symbol=RESISTOR from Internal SCH lib=SparkFun-Passives  With Symbol=RESISTOR from LIB=SparkFun-Resistors
+Package Name Conflict: Package=1/6W-RES from Internal SCH lib=SparkFun-Passives  With Package=1/6W-RES from LIB=SparkFun
+Package Name Conflict: Package=1/6W-RES from Internal SCH lib=SparkFun-Passives  With Package=1/6W-RES from LIB=SparkFun-Resistors
+Package Name Conflict: Package=0402-CAP from Internal SCH lib=SparkFun-Passives  With Package=0402-CAP from LIB=SparkFun
+Package Name Conflict: Package=0402-CAP from Internal SCH lib=SparkFun-Passives  With Package=0402-CAP from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=0402-RES from Internal SCH lib=SparkFun-Passives  With Package=0402-RES from LIB=SparkFun
+Package Name Conflict: Package=0603-CAP from Internal SCH lib=SparkFun-Passives  With Package=0603-CAP from LIB=SparkFun
+Package Name Conflict: Package=0603-CAP from Internal SCH lib=SparkFun-Passives  With Package=0603-CAP from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=0603-RES from Internal SCH lib=SparkFun-Passives  With Package=0603-RES from LIB=SparkFun
+Package Name Conflict: Package=0603-RES from Internal SCH lib=SparkFun-Passives  With Package=0603-RES from LIB=SparkFun-Resistors
+Package Name Conflict: Package=0805 from Internal SCH lib=SparkFun-Passives  With Package=0805 from LIB=SparkFun
+Package Name Conflict: Package=0805 from Internal SCH lib=SparkFun-Passives  With Package=0805 from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=0805 from Internal SCH lib=SparkFun-Passives  With Package=0805 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=1206 from Internal SCH lib=SparkFun-Passives  With Package=1206 from LIB=SparkFun
+Package Name Conflict: Package=1206 from Internal SCH lib=SparkFun-Passives  With Package=1206 from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=1206 from Internal SCH lib=SparkFun-Passives  With Package=1206 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=1210 from Internal SCH lib=SparkFun-Passives  With Package=1210 from LIB=SparkFun
+Package Name Conflict: Package=1210 from Internal SCH lib=SparkFun-Passives  With Package=1210 from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=AXIAL-0.3 from Internal SCH lib=SparkFun-Passives  With Package=AXIAL-0.3 from LIB=SparkFun
+Package Name Conflict: Package=AXIAL-0.3 from Internal SCH lib=SparkFun-Passives  With Package=AXIAL-0.3 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=AXIAL-0.3-KIT from Internal SCH lib=SparkFun-Passives  With Package=AXIAL-0.3-KIT from LIB=SparkFun-Resistors
+Package Name Conflict: Package=AXIAL-0.3EZ from Internal SCH lib=SparkFun-Passives  With Package=AXIAL-0.3EZ from LIB=SparkFun-Resistors
+Package Name Conflict: Package=AXIAL-0.4 from Internal SCH lib=SparkFun-Passives  With Package=AXIAL-0.4 from LIB=SparkFun
+Package Name Conflict: Package=AXIAL-0.4 from Internal SCH lib=SparkFun-Passives  With Package=AXIAL-0.4 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=AXIAL-0.5 from Internal SCH lib=SparkFun-Passives  With Package=AXIAL-0.5 from LIB=SparkFun
+Package Name Conflict: Package=AXIAL-0.5 from Internal SCH lib=SparkFun-Passives  With Package=AXIAL-0.5 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=AXIAL-0.6 from Internal SCH lib=SparkFun-Passives  With Package=AXIAL-0.6 from LIB=SparkFun
+Package Name Conflict: Package=AXIAL-0.6 from Internal SCH lib=SparkFun-Passives  With Package=AXIAL-0.6 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=AXIAL-0.8 from Internal SCH lib=SparkFun-Passives  With Package=AXIAL-0.8 from LIB=SparkFun
+Package Name Conflict: Package=AXIAL-0.8 from Internal SCH lib=SparkFun-Passives  With Package=AXIAL-0.8 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=AXIAL-5MM from Internal SCH lib=SparkFun-Passives  With Package=AXIAL-5MM from LIB=SparkFun
+Package Name Conflict: Package=AXIAL-5MM from Internal SCH lib=SparkFun-Passives  With Package=AXIAL-5MM from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=CAP-PTH-5MM from Internal SCH lib=SparkFun-Passives  With Package=CAP-PTH-5MM from LIB=SparkFun
+Package Name Conflict: Package=CAP-PTH-5MM from Internal SCH lib=SparkFun-Passives  With Package=CAP-PTH-5MM from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=CAP-PTH-LARGE from Internal SCH lib=SparkFun-Passives  With Package=CAP-PTH-LARGE from LIB=SparkFun
+Package Name Conflict: Package=CAP-PTH-LARGE from Internal SCH lib=SparkFun-Passives  With Package=CAP-PTH-LARGE from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=CAP-PTH-SMALL from Internal SCH lib=SparkFun-Passives  With Package=CAP-PTH-SMALL from LIB=SparkFun
+Package Name Conflict: Package=CAP-PTH-SMALL from Internal SCH lib=SparkFun-Passives  With Package=CAP-PTH-SMALL from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=CAP-PTH-SMALL-KIT from Internal SCH lib=SparkFun-Passives  With Package=CAP-PTH-SMALL-KIT from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=CAP-PTH-SMALL2 from Internal SCH lib=SparkFun-Passives  With Package=CAP-PTH-SMALL2 from LIB=SparkFun
+Package Name Conflict: Package=CAP-PTH-SMALL2 from Internal SCH lib=SparkFun-Passives  With Package=CAP-PTH-SMALL2 from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=CTZ3 from Internal SCH lib=SparkFun-Passives  With Package=CTZ3 from LIB=SparkFun
+Package Name Conflict: Package=CTZ3 from Internal SCH lib=SparkFun-Passives  With Package=CTZ3 from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=GRM43D from Internal SCH lib=SparkFun-Passives  With Package=GRM43D from LIB=SparkFun
+Package Name Conflict: Package=GRM43D from Internal SCH lib=SparkFun-Passives  With Package=GRM43D from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=R2010 from Internal SCH lib=SparkFun-Passives  With Package=R2010 from LIB=SmartPrj
+Package Name Conflict: Package=R2010 from Internal SCH lib=SparkFun-Passives  With Package=R2010 from LIB=SparkFun
+Package Name Conflict: Package=R2010 from Internal SCH lib=SparkFun-Passives  With Package=R2010 from LIB=SparkFun-Resistors
+Package Name Conflict: Package=R2512 from Internal SCH lib=SparkFun-Passives  With Package=R2512 from LIB=SmartPrj
+Package Name Conflict: Package=R2512 from Internal SCH lib=SparkFun-Passives  With Package=R2512 from LIB=SparkFun
+Package Name Conflict: Package=R2512 from Internal SCH lib=SparkFun-Passives  With Package=R2512 from LIB=SparkFun-Resistors
+Device Name Conflict: Device=RESISTOR0603-RES from Internal SCH lib=SparkFun-Resistors  With Device=RESISTOR0603-RES from LIB=SparkFun
+Device Name Conflict: Device=RESISTOR0603-RES from Internal SCH lib=SparkFun-Resistors  With Device=RESISTOR0603-RES from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTOR0805-RES from Internal SCH lib=SparkFun-Resistors  With Device=RESISTOR0805-RES from LIB=SparkFun
+Device Name Conflict: Device=RESISTOR0805-RES from Internal SCH lib=SparkFun-Resistors  With Device=RESISTOR0805-RES from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTOR1206 from Internal SCH lib=SparkFun-Resistors  With Device=RESISTOR1206 from LIB=SparkFun
+Device Name Conflict: Device=RESISTOR1206 from Internal SCH lib=SparkFun-Resistors  With Device=RESISTOR1206 from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTOR2010 from Internal SCH lib=SparkFun-Resistors  With Device=RESISTOR2010 from LIB=SparkFun
+Device Name Conflict: Device=RESISTOR2010 from Internal SCH lib=SparkFun-Resistors  With Device=RESISTOR2010 from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTOR2512 from Internal SCH lib=SparkFun-Resistors  With Device=RESISTOR2512 from LIB=SparkFun
+Device Name Conflict: Device=RESISTOR2512 from Internal SCH lib=SparkFun-Resistors  With Device=RESISTOR2512 from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTORAXIAL-0.3 from Internal SCH lib=SparkFun-Resistors  With Device=RESISTORAXIAL-0.3 from LIB=SparkFun
+Device Name Conflict: Device=RESISTORAXIAL-0.3 from Internal SCH lib=SparkFun-Resistors  With Device=RESISTORAXIAL-0.3 from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTOREZ from Internal SCH lib=SparkFun-Resistors  With Device=RESISTOREZ from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTORKIT from Internal SCH lib=SparkFun-Resistors  With Device=RESISTORKIT from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTORPTH-1/2W from Internal SCH lib=SparkFun-Resistors  With Device=RESISTORPTH-1/2W from LIB=SparkFun
+Device Name Conflict: Device=RESISTORPTH-1/2W from Internal SCH lib=SparkFun-Resistors  With Device=RESISTORPTH-1/2W from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTORPTH-1/4W from Internal SCH lib=SparkFun-Resistors  With Device=RESISTORPTH-1/4W from LIB=SparkFun
+Device Name Conflict: Device=RESISTORPTH-1/4W from Internal SCH lib=SparkFun-Resistors  With Device=RESISTORPTH-1/4W from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTORPTH-1/6W from Internal SCH lib=SparkFun-Resistors  With Device=RESISTORPTH-1/6W from LIB=SparkFun
+Device Name Conflict: Device=RESISTORPTH-1/6W from Internal SCH lib=SparkFun-Resistors  With Device=RESISTORPTH-1/6W from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTORPTH-1W from Internal SCH lib=SparkFun-Resistors  With Device=RESISTORPTH-1W from LIB=SparkFun
+Device Name Conflict: Device=RESISTORPTH-1W from Internal SCH lib=SparkFun-Resistors  With Device=RESISTORPTH-1W from LIB=SparkFun-Passives
+Device Name Conflict: Device=RESISTORPTH-2W from Internal SCH lib=SparkFun-Resistors  With Device=RESISTORPTH-2W from LIB=SparkFun
+Device Name Conflict: Device=RESISTORPTH-2W from Internal SCH lib=SparkFun-Resistors  With Device=RESISTORPTH-2W from LIB=SparkFun-Passives
+Symbol Name Conflict: Symbol=RESISTOR from Internal SCH lib=SparkFun-Resistors  With Symbol=RESISTOR from LIB=SparkFun
+Symbol Name Conflict: Symbol=RESISTOR from Internal SCH lib=SparkFun-Resistors  With Symbol=RESISTOR from LIB=SparkFun-Passives
+Package Name Conflict: Package=1/6W-RES from Internal SCH lib=SparkFun-Resistors  With Package=1/6W-RES from LIB=SparkFun
+Package Name Conflict: Package=1/6W-RES from Internal SCH lib=SparkFun-Resistors  With Package=1/6W-RES from LIB=SparkFun-Passives
+Package Name Conflict: Package=0603-RES from Internal SCH lib=SparkFun-Resistors  With Package=0603-RES from LIB=SparkFun
+Package Name Conflict: Package=0603-RES from Internal SCH lib=SparkFun-Resistors  With Package=0603-RES from LIB=SparkFun-Passives
+Package Name Conflict: Package=0805 from Internal SCH lib=SparkFun-Resistors  With Package=0805 from LIB=SparkFun
+Package Name Conflict: Package=0805 from Internal SCH lib=SparkFun-Resistors  With Package=0805 from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=0805 from Internal SCH lib=SparkFun-Resistors  With Package=0805 from LIB=SparkFun-Passives
+Package Name Conflict: Package=1206 from Internal SCH lib=SparkFun-Resistors  With Package=1206 from LIB=SparkFun
+Package Name Conflict: Package=1206 from Internal SCH lib=SparkFun-Resistors  With Package=1206 from LIB=SparkFun-Capacitors
+Package Name Conflict: Package=1206 from Internal SCH lib=SparkFun-Resistors  With Package=1206 from LIB=SparkFun-Passives
+Package Name Conflict: Package=AXIAL-0.3 from Internal SCH lib=SparkFun-Resistors  With Package=AXIAL-0.3 from LIB=SparkFun
+Package Name Conflict: Package=AXIAL-0.3 from Internal SCH lib=SparkFun-Resistors  With Package=AXIAL-0.3 from LIB=SparkFun-Passives
+Package Name Conflict: Package=AXIAL-0.3-KIT from Internal SCH lib=SparkFun-Resistors  With Package=AXIAL-0.3-KIT from LIB=SparkFun-Passives
+Package Name Conflict: Package=AXIAL-0.3EZ from Internal SCH lib=SparkFun-Resistors  With Package=AXIAL-0.3EZ from LIB=SparkFun-Passives
+Package Name Conflict: Package=AXIAL-0.4 from Internal SCH lib=SparkFun-Resistors  With Package=AXIAL-0.4 from LIB=SparkFun
+Package Name Conflict: Package=AXIAL-0.4 from Internal SCH lib=SparkFun-Resistors  With Package=AXIAL-0.4 from LIB=SparkFun-Passives
+Package Name Conflict: Package=AXIAL-0.5 from Internal SCH lib=SparkFun-Resistors  With Package=AXIAL-0.5 from LIB=SparkFun
+Package Name Conflict: Package=AXIAL-0.5 from Internal SCH lib=SparkFun-Resistors  With Package=AXIAL-0.5 from LIB=SparkFun-Passives
+Package Name Conflict: Package=AXIAL-0.6 from Internal SCH lib=SparkFun-Resistors  With Package=AXIAL-0.6 from LIB=SparkFun
+Package Name Conflict: Package=AXIAL-0.6 from Internal SCH lib=SparkFun-Resistors  With Package=AXIAL-0.6 from LIB=SparkFun-Passives
+Package Name Conflict: Package=AXIAL-0.8 from Internal SCH lib=SparkFun-Resistors  With Package=AXIAL-0.8 from LIB=SparkFun
+Package Name Conflict: Package=AXIAL-0.8 from Internal SCH lib=SparkFun-Resistors  With Package=AXIAL-0.8 from LIB=SparkFun-Passives
+Package Name Conflict: Package=R2010 from Internal SCH lib=SparkFun-Resistors  With Package=R2010 from LIB=SmartPrj
+Package Name Conflict: Package=R2010 from Internal SCH lib=SparkFun-Resistors  With Package=R2010 from LIB=SparkFun
+Package Name Conflict: Package=R2010 from Internal SCH lib=SparkFun-Resistors  With Package=R2010 from LIB=SparkFun-Passives
+Package Name Conflict: Package=R2512 from Internal SCH lib=SparkFun-Resistors  With Package=R2512 from LIB=SmartPrj
+Package Name Conflict: Package=R2512 from Internal SCH lib=SparkFun-Resistors  With Package=R2512 from LIB=SparkFun
+Package Name Conflict: Package=R2512 from Internal SCH lib=SparkFun-Resistors  With Package=R2512 from LIB=SparkFun-Passives
+Device Name Conflict: Device=CAP_POL1206 from Internal SCH lib=kolosy  With Device=CAP_POL1206 from LIB=SparkFun
+Device Name Conflict: Device=CAP_POL1206-KIT from Internal SCH lib=kolosy  With Device=CAP_POL1206-KIT from LIB=SparkFun
+Device Name Conflict: Device=CAP_POL3528 from Internal SCH lib=kolosy  With Device=CAP_POL3528 from LIB=SparkFun
+Device Name Conflict: Device=CAP_POL3528-KIT from Internal SCH lib=kolosy  With Device=CAP_POL3528-KIT from LIB=SparkFun
+Device Name Conflict: Device=CAP_POL6032 from Internal SCH lib=kolosy  With Device=CAP_POL6032 from LIB=SparkFun
+Device Name Conflict: Device=CAP_POL7343 from Internal SCH lib=kolosy  With Device=CAP_POL7343 from LIB=SparkFun
+Device Name Conflict: Device=CAP_POLC from Internal SCH lib=kolosy  With Device=CAP_POLC from LIB=SparkFun
+Device Name Conflict: Device=CAP_POLD from Internal SCH lib=kolosy  With Device=CAP_POLD from LIB=SparkFun
+Device Name Conflict: Device=CAP_POLE from Internal SCH lib=kolosy  With Device=CAP_POLE from LIB=SparkFun
+Device Name Conflict: Device=CAP_POLEN_J2 from Internal SCH lib=kolosy  With Device=CAP_POLEN_J2 from LIB=SparkFun
+Device Name Conflict: Device=CAP_POLF80 from Internal SCH lib=kolosy  With Device=CAP_POLF80 from LIB=SparkFun
+Device Name Conflict: Device=CAP_POLG from Internal SCH lib=kolosy  With Device=CAP_POLG from LIB=SparkFun
+Device Name Conflict: Device=CAP_POLH13 from Internal SCH lib=kolosy  With Device=CAP_POLH13 from LIB=SparkFun
+Device Name Conflict: Device=CAP_POLPTH1 from Internal SCH lib=kolosy  With Device=CAP_POLPTH1 from LIB=SparkFun
+Device Name Conflict: Device=CAP_POLPTH2 from Internal SCH lib=kolosy  With Device=CAP_POLPTH2 from LIB=SparkFun
+Device Name Conflict: Device=CAP_POLPTH3 from Internal SCH lib=kolosy  With Device=CAP_POLPTH3 from LIB=SparkFun
+Device Name Conflict: Device=CAP_POLPTH4 from Internal SCH lib=kolosy  With Device=CAP_POLPTH4 from LIB=SparkFun
+Device Name Conflict: Device=CAP_POLSMD from Internal SCH lib=kolosy  With Device=CAP_POLSMD from LIB=SparkFun
+Symbol Name Conflict: Symbol=CAP_POL from Internal SCH lib=kolosy  With Symbol=CAP_POL from LIB=SparkFun
+Package Name Conflict: Package=CPOL-RADIAL-10UF-25V from Internal SCH lib=kolosy  With Package=CPOL-RADIAL-10UF-25V from LIB=SparkFun
+Package Name Conflict: Package=CPOL-RADIAL-100UF-25V from Internal SCH lib=kolosy  With Package=CPOL-RADIAL-100UF-25V from LIB=SparkFun
+Package Name Conflict: Package=CPOL-RADIAL-1000UF-25V from Internal SCH lib=kolosy  With Package=CPOL-RADIAL-1000UF-25V from LIB=SparkFun
+Package Name Conflict: Package=CPOL-RADIAL-1000UF-63V from Internal SCH lib=kolosy  With Package=CPOL-RADIAL-1000UF-63V from LIB=SparkFun
+Package Name Conflict: Package=EIA3216 from Internal SCH lib=kolosy  With Package=EIA3216 from LIB=SparkFun
+Package Name Conflict: Package=EIA3216-KIT from Internal SCH lib=kolosy  With Package=EIA3216-KIT from LIB=SparkFun
+Package Name Conflict: Package=EIA3528 from Internal SCH lib=kolosy  With Package=EIA3528 from LIB=SparkFun
+Package Name Conflict: Package=EIA3528-KIT from Internal SCH lib=kolosy  With Package=EIA3528-KIT from LIB=SparkFun
+Package Name Conflict: Package=EIA6032 from Internal SCH lib=kolosy  With Package=EIA6032 from LIB=SparkFun
+Package Name Conflict: Package=EIA7343 from Internal SCH lib=kolosy  With Package=EIA7343 from LIB=SparkFun
+Package Name Conflict: Package=EN_J2 from Internal SCH lib=kolosy  With Package=EN_J2 from LIB=SparkFun
+Package Name Conflict: Package=NIPPON_F80 from Internal SCH lib=kolosy  With Package=NIPPON_F80 from LIB=SparkFun
+Package Name Conflict: Package=PANASONIC_C from Internal SCH lib=kolosy  With Package=PANASONIC_C from LIB=SparkFun
+Package Name Conflict: Package=PANASONIC_D from Internal SCH lib=kolosy  With Package=PANASONIC_D from LIB=SparkFun
+Package Name Conflict: Package=PANASONIC_E from Internal SCH lib=kolosy  With Package=PANASONIC_E from LIB=SparkFun
+Package Name Conflict: Package=PANASONIC_G from Internal SCH lib=kolosy  With Package=PANASONIC_G from LIB=SparkFun
+Package Name Conflict: Package=PANASONIC_H13 from Internal SCH lib=kolosy  With Package=PANASONIC_H13 from LIB=SparkFun
+Package Name Conflict: Package=VISHAY_C from Internal SCH lib=kolosy  With Package=VISHAY_C from LIB=SparkFun
+Device Name Conflict: Device=GND from Internal SCH lib=supply1  With Device=GND from LIB=SparkFun
+Device Name Conflict: Device=GND from Internal SCH lib=supply1  With Device=GND from LIB=SparkFun-Aesthetics
+Symbol Name Conflict: Symbol=GND from Internal SCH lib=supply1  With Symbol=GND from LIB=SparkFun
+#********** END OF eagle6xx-sch-to-kicad-sch.ulp 1.9 05-09-2016 :21:46:51 LOG **********#
+
+#********** START OF exp-lbrs.ulp 6.6 05-09-2016 :21:47:15 LOG **********#
+OK: Eagle lib export from SCH/PCB OK
+    Conversion completed with no Messages
+#********** END OF exp-lbrs.ulp 6.6 05-09-2016 :21:47:15 LOG **********#
+
+
+#********** START OF eagle-lbr2kicad-1.0.ulp 2.3 05-09-2016 :21:48:16 LOG **********#
+Missing Prefix Part =''				KOLOSY_MICROSMP					boat6		M
+Missing Prefix Part =''				KOLOSY_SOT23-6					boat6		M
+Missing Prefix Part =''				KOLOSY_S-PWSON-N8					boat6		M
+Missing Prefix Part =SMD				SPARKFUN_16LPCC					boat6		M
+Missing Prefix Part =L				SPARKFUN_OSHW-LOGO-L					boat6		M
+Missing Prefix Part =M				SPARKFUN_OSHW-LOGO-M					boat6		M
+Missing Prefix Part =S				SPARKFUN_OSHW-LOGO-S					boat6		M
+#********** END OF eagle-lbr2kicad-1.0.ulp 2.3 05-09-2016 :21:48:16 LOG **********#
+

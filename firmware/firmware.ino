@@ -32,8 +32,6 @@
 #define WINCH_MAX 60
 #define WINCH_MIN 130
 
-#define CAPTURE_MODE
-
 // Public (extern) variables, readable from other modules
 uint32_t last_gps_time = 0;
 float gps_lat = 0;
@@ -163,13 +161,14 @@ void checkInput() {
 void loop() 
 { 
 #ifdef CALIBRATE_ONLY
+    serial_logging = true;
     writeCalibrationLine();
     digitalWrite(STATUS_LED, HIGH);
     delay(10);
     digitalWrite(STATUS_LED, LOW);
     delay(10);
-#elseif CAPTURE_MODE
-    updateSensors();
+#elif CAPTURE_MODE
+    updateSensors(true);
 
     Serial.print('x');
       Serial.print(gps_aprs_lat); Serial.print(", ");

@@ -37,3 +37,8 @@ eagle.epf
 *.eps
 *.csv
 
+# Occasional screen log files
+screenlog.*
+
+# Excel lock files
+~$*.xlsx

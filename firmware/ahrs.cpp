@@ -9,10 +9,10 @@
 #include "I2Cdev.h"
 
 #include "MPU6050_9Axis_MotionApps41.h"
-#include "HMC58X3.h"
+//#include "HMC58X3.h"
 
 MPU6050 mpu;
-HMC58X3 magn;
+//HMC58X3 magn;
 
 #define MPU_LOOPS 2
 #define MPU_PAUSES 1
@@ -39,12 +39,6 @@ int16_t mag[3];
 int mpuInit() {
     // initialize device
     logln("Initializing I2C devices...");
-    // no delay needed as we have already a delay(5) in HMC5843::init()
-    magn.init(false); // Dont set mode yet, we'll do that later on.
-    // Calibrate HMC using self test, not recommended to change the gain after calibration.
-    magn.calibrate(1, 32); // Use gain 1=default, valid 0-7, 7 not recommended.
-    // Single mode conversion was used in calibration, now set continuous mode
-    magn.setMode(0);
   
     mpu.initialize();
 
@@ -82,25 +76,15 @@ int mpuInit() {
     }
 }
 
-void normalize_hmc(int16_t mag_val[3], float normalized[3]) {
-  float xn = mag_val[0] - 27.6279;
-  float yn = mag_val[1] + 109.8952;
-  float zn = mag_val[2] - 26.3622;
-  
-  normalized[0] = (0.9527 * xn + 0.0124 * yn + 0.0098 * zn) / 603.6086;
-  normalized[1] = (0.0124 * xn + 1.0796 * yn + 0.0012 * zn) / 603.6086;
-  normalized[2] = (0.0098 * xn + 0.0012 * yn + 0.9726 * zn) / 603.6086;
-}
-
 void normalize_mpu(int16_t mag_val[3], float normalized[3]) {
-  float xn = mag_val[0] - 30.2675;
-  float yn = mag_val[1] + 9.4344;
-  float zn = mag_val[2] - 30.0818;
+  float xn = mag_val[0] - 3.5854;
+  float yn = mag_val[1] - 29.6630;
+  float zn = mag_val[2] + 25.9492;
   
   // normalize *and* re-align axes (because, you know, having all sensors be the same is too much to ask for).
-  normalized[1] =   ( 0.9984 * xn + 0.0037 * yn - 0.0008 * zn) / 144.4383;
-  normalized[0] =   ( 0.0037 * xn + 0.9736 * yn - 0.0012 * zn) / 144.4383;
-  normalized[2] = - (-0.0008 * xn - 0.0012 * yn + 1.0287 * zn) / 144.4383;
+  normalized[1] =   ( 1.0488 * xn + 0.0072 * yn + 0.0076 * zn) / 68.3994;
+  normalized[0] =   ( 0.0072 * xn + 0.9744 * yn + 0.0080 * zn) / 68.3994;
+  normalized[2] = - ( 0.0076 * xn + 0.0080 * yn + 0.9787 * zn) / 68.3994;
 }
 
 //void normalize_hmc(int16_t mag_val[3], float normalized[3]) {
@@ -124,9 +108,9 @@ void normalize_mpu(int16_t mag_val[3], float normalized[3]) {
 //  normalized[2] = - (-0.0040 * xn - 0.0024 * yn + 1.0526 * zn) / 146.4961;
 //}
 //
-void readHeading(float f_ypr[3]) {
+int readHeading(float f_ypr[3]) {
     // if programming failed, don't try to do anything
-    if (!dmpReady) return;
+    if (!dmpReady) return 0;
 
     // reset interrupt flag and get INT_STATUS byte
     mpuIntStatus = mpu.getIntStatus();
@@ -163,30 +147,25 @@ void readHeading(float f_ypr[3]) {
     // track FIFO count here in case there is > 1 packet available
     // (this lets us immediately read more without waiting for an interrupt)
     fifoCount -= packetSize;
-
-    int ix,iy,iz;
-    // Get values, as ints and floats.
-    magn.getValues(&ix,&iy,&iz);
     
     mpu.dmpGetMag(mag, fifoBuffer);
+
+    if (abs(mag[0] > 255) || abs(mag[0] > 255) || abs(mag[0] > 255))
+      return 0;
     
 #ifdef CALIBRATE_ONLY
-    logln("%d, %d, %d, %d, %d, %d", mag[0], mag[1], mag[2], ix, iy, iz);
+    logln(", %d, %d, %d", mag[0], mag[1], mag[2]);
 #else
     mpu.dmpGetQuaternion(&q, fifoBuffer);
     mpu.dmpGetGravity(&gravity, &q);
     mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-    
-    int hmc_mag_in[3] = { ix, iy, iz };
-    float hmc_mag_out[3];
-    normalize_hmc(hmc_mag_in, hmc_mag_out);
     
     float mpu_mag_out[3];
     normalize_mpu(mag, mpu_mag_out);
 
     float magnetom[3];
     for (int i=0; i<3; i++)
-      magnetom[i] = (hmc_mag_out[i] + mpu_mag_out[i]) / 2.0;
+      magnetom[i] = mpu_mag_out[i];
 
     float magComp[3];
     float cos_pitch = cos(-ypr[1]);
@@ -205,6 +184,7 @@ void readHeading(float f_ypr[3]) {
     f_ypr[1] = -ypr[1];
     f_ypr[2] = ypr[2];
 #endif
+    return 1;
 }
 
 void writeCalibrationLine() {
@@ -216,8 +196,8 @@ float readSteadyHeading() {
     float f_ypr[3];
     float heading = 0;
     
-    for (uint8_t i=0; i<MPU_LOOPS; i++) {
-        readHeading(f_ypr);
+    for (uint8_t i=0; i<MPU_LOOPS;) {
+        i += readHeading(f_ypr);
         heading += f_ypr[0];
         delay(MPU_PAUSES);
     }

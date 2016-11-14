@@ -79,18 +79,9 @@ void setup()
     mpuInit();
 #else
     servoInit();
-    blink(STATUS_LED, 100, 2, HIGH);
-    delay(500);
-
     windInit();
-    blink(STATUS_LED, 100, 3, HIGH);
-    delay(500);
     mpuInit();
-    blink(STATUS_LED, 100, 4, HIGH);
-    delay(500);
     gpsInit();
-    blink(STATUS_LED, 100, 5, HIGH);
-    delay(500);
     batteryInit();
     
     pilotInit();
@@ -98,10 +89,7 @@ void setup()
     blink(STATUS_LED, 100, 10, HIGH);
     logln("Enabling GPS...");
     
-//    updateGPS();
     warnGPS();
-//    last_gps_time = millis();
-//    gps_updated = true;
 #endif
 
     logln("Done. System ready.");

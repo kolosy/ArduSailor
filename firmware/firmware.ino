@@ -92,7 +92,6 @@ void setup()
     warnGPS();
 #endif
 
-
     logln("Done. System ready.");
     
     digitalWrite(STATUS_LED, LOW);

@@ -4,11 +4,11 @@ ArduSailor is an autonomous sail boat project based on the Arduino platform. Usi
 
 The platform is built around a simple, two-servo sail boat design, with a winch servo for sail plan control and a rudder servo for steering. The circuit layout included is for a modified Arduino Mega 2560, which includes:
 
-* A 9DOF IMU (an Invensense MPU9150 and a Honeywell HMC 5883L)
+* A 9DOF IMU (an Invensense MPU9250)
 * A break-out for a weather vane (this circuit is also included)
 * A microSD card
 * Two servo breakouts
-* Two power regulators (one to provide 6V for the servos, one to provide 3.3V for the rest)
+* Three power regulators (one to provide 6V for the servos, one to provide 3.3V for the rest and one MPPT solar charger for the LiPo)
 * A GPS chip (Venus 638FPLx)
 * A breakout for a UART-based camera module (currently unused)
 * A battery input (currently running from a 3S LiPo battery pack)
@@ -34,7 +34,6 @@ Longer-term
 -----------
 * Improve the navigation algorithm to include no-go zones
 * Add wind speed sensor (hw)
-* Add solar charging (hw)
 
 Pie-in-the-sky
 --------

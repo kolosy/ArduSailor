@@ -40,5 +40,3 @@ Pie-in-the-sky
 I'd like to replace the pilot code entirely with AI. This should be reduce-able to an optimization problem... but that's a bit beyond me right now.
 
 Enjoy!
-
-test

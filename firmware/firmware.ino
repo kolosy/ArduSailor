@@ -32,6 +32,12 @@
 #define WINCH_MAX 60
 #define WINCH_MIN 130
 
+#define REMOTE_CONTROLLED
+
+#ifdef REMOTE_CONTROLLED
+#define DATA_FREQ 500
+#endif
+
 // Public (extern) variables, readable from other modules
 uint32_t last_gps_time = 0;
 float gps_lat = 0;
@@ -184,7 +190,9 @@ void loop()
     if (!manual_override) {
         logln("#################### Cycle %d start ####################", cycle);
         cycle++;
+#ifndef REMOTE_CONTROLLED
         updateSensors(false);
+#endif
         checkInput();
         doPilot();
 

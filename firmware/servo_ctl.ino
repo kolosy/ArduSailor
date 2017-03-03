@@ -56,11 +56,15 @@ void winchTo(int value) {
     digitalWrite(WINCH_EN, HIGH);
     delay(10);
     sv_winch.write(v);
-    delay(1000 * (abs((current_winch - v))/WINCH_SPEED) + 50);
+    delay(1000 * (abs((current_winch - v))/WINCH_SPEED) + 150);
     digitalWrite(WINCH_EN, LOW);
     digitalWrite(SP_EN, LOW);
     
     current_winch = v;
+}
+
+void normalizedWinchTo(int value) {
+  winchTo(map(value, 0, 90, WINCH_MIN, WINCH_MAX));
 }
 
 void rudderFromCenter(int value) {
@@ -80,7 +84,7 @@ void rudderTo(int value) {
     digitalWrite(RUDDER_EN, HIGH);
     delay(10);
     sv_rudder.write(v);
-    delay(1000 * (abs((current_rudder - v))/RUDDER_SPEED) + 50);
+    delay(1000 * (abs((current_rudder - v))/RUDDER_SPEED) + 150);
     digitalWrite(RUDDER_EN, LOW);
     digitalWrite(SP_EN, LOW);
     

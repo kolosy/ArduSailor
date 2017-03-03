@@ -80,6 +80,9 @@
 // how close we can get to our waypoint before we switch to High Res GPS
 #define HRG_THRESHOLD 50
 
+// how long to wait for a complete RC command before we ditch it
+#define RC_TIMEOUT 10000
+
 // lat,lon pairs
 float wp_list[] = 
   {
@@ -351,13 +354,7 @@ void getOutOfIrons() {
   rudderFromCenter(current_roll < 0 ? ADJUST_TO_PORT(10) : ADJUST_TO_SBRD(10));
 }
 
-void doPilot() {
-    if (manual_override) {
-        processManualCommands();        
-        
-        return;
-    }
-    
+void updateSituation() {
     stalled = gps_speed < STALL_SPEED;
     
     // still want to check this
@@ -393,11 +390,54 @@ void doPilot() {
         
       high_res_gps = HIGH_RES_GPS_DEFAULT;
     }
+}
 
+void processRCCommands() {
+  if (!Serial.available())
+    return;
+  
+  Serial.println("Input data present");  
+  
+  char c = 0;
+  
+  // read out the buffer until we get a command start
+  while (Serial.available() && c != '[')
+    c = (char)Serial.read();
+    
+  // command format : "[RRR;WW]" where RR is a signed two digit rudder position and WW is a two-digit winch position
+
+  if (c != '[')
+    return;
+
+  Serial.println("Command received");
+
+  int rudder = Serial.parseInt();
+  int winch = Serial.parseInt();
+  
+  Serial.println(rudder);
+  Serial.println(winch);
+
+  rudderFromCenter(rudder);
+  normalizedWinchTo(winch);  
+}
+
+void doPilot() {
+    if (manual_override) {
+        processManualCommands();        
+        
+        return;
+    }
+
+    updateSituation();    
+
+#ifdef REMOTE_CONTROLLED
+    processRCCommands();
+#else
     if (IN_IRONS(wind) && stalled) {
       getOutOfIrons();
     } else {
       adjustHeading();
       adjustSails();
     }
+#endif
 }

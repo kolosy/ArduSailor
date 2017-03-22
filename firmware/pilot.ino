@@ -396,8 +396,6 @@ void processRCCommands() {
   if (!Serial.available())
     return;
   
-  Serial.println("Input data present");  
-  
   char c = 0;
   
   // read out the buffer until we get a command start
@@ -409,13 +407,8 @@ void processRCCommands() {
   if (c != '[')
     return;
 
-  Serial.println("Command received");
-
   int rudder = Serial.parseInt();
   int winch = Serial.parseInt();
-  
-  Serial.println(rudder);
-  Serial.println(winch);
 
   rudderFromCenter(rudder);
   normalizedWinchTo(winch);  

@@ -42,8 +42,8 @@ public class MainActivity extends ActionBarActivity {
 
                     RadioCommunicator.State state = communicator.getState();
 
-                    gvHeading.setTargetValue(state.heading);
-                    gvWind.setTargetValue(state.wind);
+                    gvHeading.setTargetValue(Math.round(state.heading));
+                    gvWind.setTargetValue(Math.round(state.wind));
                     gvHTW.setTargetValue((float) state.htw);
 
                     lblDTW.setText(String.valueOf(state.dtw));

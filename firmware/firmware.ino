@@ -12,7 +12,6 @@
 
 #include "SoftwareSerial.h"
 #include "MPU6050.h"
-#include "HMC58X3.h"
 
 #define GPS_BAUDRATE 9600
 #define STATUS_LED 32
@@ -27,7 +26,12 @@
 #define WAIT_FOR_COMMAND_FOR 1000
 
 #define DATA_FREQ 1500
-#define SERIAL_LOGGING_DEFAULT false;
+
+#ifdef CALIBRATE_ONLY
+#define SERIAL_LOGGING_DEFAULT true
+#else
+#define SERIAL_LOGGING_DEFAULT false
+#endif
 
 #define WINCH_MAX 60
 #define WINCH_MIN 130
@@ -155,12 +159,7 @@ void checkInput() {
 void loop() 
 { 
 #ifdef CALIBRATE_ONLY
-    serial_logging = true;
     writeCalibrationLine();
-    digitalWrite(STATUS_LED, HIGH);
-    delay(10);
-    digitalWrite(STATUS_LED, LOW);
-    delay(10);
 #elif CAPTURE_MODE
     updateSensors(true);
 
@@ -190,10 +189,10 @@ void loop()
     if (!manual_override) {
         logln("#################### Cycle %d start ####################", cycle);
         cycle++;
-#ifndef REMOTE_CONTROLLED
         updateSensors(false);
-#endif
+#ifndef REMOTE_CONTROLLED
         checkInput();
+#endif
         doPilot();
 
 // no sleep for the wicked.

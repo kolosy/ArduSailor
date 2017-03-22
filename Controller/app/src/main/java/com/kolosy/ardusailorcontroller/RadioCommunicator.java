@@ -15,6 +15,7 @@ import android.util.Log;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
+import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,12 +28,9 @@ import java.util.List;
 public class RadioCommunicator {
 
     public class State {
-        public int wind;
-        public double htw;
-        public int heading;
-        public double dtw;
+        public double htw, heading, dtw, wind;
 
-        public State (int wind, double htw, int heading, double dtw) {
+        public State (double wind, double htw, double heading, double dtw) {
             this.wind = wind;
             this.htw = htw;
             this.heading = heading;
@@ -40,8 +38,8 @@ public class RadioCommunicator {
         }
     }
 
-    public synchronized void setState(int winch, int rudder) {
-        radioCommand = new byte[] { START_CHAR, (byte)winch, (byte)rudder, END_CHAR };
+    public synchronized void setState(int rudder, int winch) {
+        radioCommand = String.format("[%d;%d]", rudder - 50, (int)(winch * 0.9)).getBytes();
     }
 
     public synchronized State getState() {
@@ -49,8 +47,8 @@ public class RadioCommunicator {
     }
 
     private String gps_aprs_lat, gps_aprs_lon;
-    private int gps_course, ahrs_heading, current_rudder, current_winch, wind;
-    private double gps_lat, gps_lon, gps_speed, current_roll, heel_adjust, wp_heading, wp_distance, voltage;
+    private int current_rudder, current_winch, wind;
+    private double gps_course, ahrs_heading, gps_lat, gps_lon, gps_speed, current_roll, heel_adjust, wp_heading, wp_distance, voltage;
     private long millis, cycle;
 
     private String lastLine;
@@ -58,8 +56,7 @@ public class RadioCommunicator {
     private long lastLineTime;
     private int failLineCount;
 
-    private static final char START_CHAR = 'x';
-    private static final char END_CHAR = 'd';
+    private static final char END_CHAR = '\n';
 
     private int rudderPos;
     private int winchPos;
@@ -78,6 +75,33 @@ public class RadioCommunicator {
 
     private UsbManager manager;
     private UsbSerialDriver driver;
+
+    private SerialInputOutputManager mSerialIoManager;
+
+    private final Object newDataFlag = new Object();
+    private byte[] newData = null;
+
+    private final SerialInputOutputManager.Listener mListener =
+            new SerialInputOutputManager.Listener() {
+
+                @Override
+                public void onRunError(Exception e) {
+                    Log.d(TAG, "Runner stopped.");
+                }
+
+                @Override
+                public void onNewData(final byte[] data) {
+                    RadioCommunicator.this.pushNewData(data);
+                }
+            };
+
+    private void pushNewData(byte[] data) {
+        synchronized (newDataFlag) {
+            newData = data;
+
+            newDataFlag.notifyAll();
+        }
+    }
 
     public RadioCommunicator(Context ctx, PendingIntent intent) {
         File path = Environment.getExternalStoragePublicDirectory(
@@ -105,29 +129,43 @@ public class RadioCommunicator {
     }
 
     public void start() {
-        UsbDeviceConnection connection = manager.openDevice(driver.getDevice());
-        if (connection == null) {
-            Log.d(TAG, "Unable to connect");
-            // You probably need to call UsbManager.requestPermission(driver.getDevice(), ..)
-            return;
-        }
-
         terminated = false;
 
-        synchronized (this) {
-            port = driver.getPorts().get(0);
-            try {
-                port.open(connection);
-                port.setParameters(9600, 8, 1, 0);
-            } catch (IOException e) {
-                Log.e(TAG, "Exception while connecting to device", e);
-            }
+        try {
+            UsbDeviceConnection connection = manager.openDevice(driver.getDevice());
+            if (connection == null) {
+                Log.d(TAG, "Unable to connect");
+                // You probably need to call UsbManager.requestPermission(driver.getDevice(), ..)
 
+                terminated = true;
+
+                return;
+            }
+            port = driver.getPorts().get(0);
+            port.open(connection);
+            port.setParameters(9600, 8, 1, 0);
+            port.setDTR(true);
+        } catch (Exception e) {
+            Log.e(TAG, "Exception while connecting to device", e);
+            terminated = true;
+        }
+
+        startIoManager();
+
+        synchronized (this) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        read();
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSerialIoManager.run();
+                            }
+                        }).start();
+
+                                read();
                     } catch (IOException e) {
                         Log.e(TAG, "Exception while reading", e);
                     }
@@ -142,10 +180,31 @@ public class RadioCommunicator {
                 dataOut.close();
             if (port != null)
                 port.close();
-            terminated = true;
         } catch (IOException ex) {
             Log.e(TAG, "Exception while shutting down", ex);
+        } finally {
+            terminated = true;
         }
+    }
+
+    private void stopIoManager() {
+        if (mSerialIoManager != null) {
+            Log.i(TAG, "Stopping io manager ..");
+            mSerialIoManager.stop();
+            mSerialIoManager = null;
+        }
+    }
+
+    private void startIoManager() {
+        if (port != null) {
+            Log.i(TAG, "Starting io manager ..");
+            mSerialIoManager = new SerialInputOutputManager(port, mListener);
+        }
+    }
+
+    private void onDeviceStateChange() {
+        stopIoManager();
+        startIoManager();
     }
 
     private void read() throws IOException {
@@ -153,65 +212,61 @@ public class RadioCommunicator {
 
         long lastTransmit = 0;
 
-        byte[] buffer = new byte[1];
+        byte[] buffer = null;
 
         while (!terminated) {
-            if (port.read(buffer, 100) < 1)
-                continue;
 
-            char current = (char) buffer[0];
+            synchronized (newDataFlag) {
 
-            if (current != START_CHAR)
-                continue;
+                try {
+                    newDataFlag.wait();
+                } catch (InterruptedException e) {
+                    Log.e(TAG, "Exception waiting for data", e);
+                }
 
-            while (current != END_CHAR) {
-                if (port.read(buffer, 100) < 1)
-                    break;
-
-                current = (char) buffer[0];
-                sb.append(current);
+                if (newData != null)
+                    buffer = newData.clone();
             }
 
-            synchronized (this) {
-                processLine(sb.toString());
+            for (int i=0; i<buffer.length; i++) {
+                if (buffer[i] != END_CHAR)
+                    sb.append((char)buffer[i]);
+                else {
+                    synchronized (this) {
+                        processLine(sb.toString());
 
-                if (System.currentTimeMillis() - lastTransmit > TRANSMIT_EVERY) {
-                    transmit();
-                    lastTransmit = System.currentTimeMillis();
+                        if (System.currentTimeMillis() - lastTransmit > TRANSMIT_EVERY) {
+                            transmit();
+                            lastTransmit = System.currentTimeMillis();
+                        }
+                    }
+
+                    sb = new StringBuilder();
                 }
             }
-
-            sb = new StringBuilder();
         }
     }
 
     private void transmit() throws IOException {
-        port.write(radioCommand, 200);
+        if (radioCommand != null)
+            port.write(radioCommand, 200);
     }
 
-    private String validate(String line) {
-        // first byte is 'x', last byte is XOR byte, without the x
+    /*
+4155.62N, 08739.22W, 41.927066, -87.653717, 1042, 0.00, 7.60, 113.78, 3.88, 0.00, 4, 103.52, 1926.04, 90, 60, 12.23, 2800
+4155.62N, 08739.22W, 41.927066, -87.653717, 569, 0.00, 7.60, 110.37, 3.88, 0.00, 4, 103.52, 1926.04, 90, 60, 12.25, 2805
+4155.62N, 08739.22W, 41.927066, -87.653717, 250, 0.00, 7.60, 117.42, 3.89, 0.00, 4, 103.52, 1926.04, 90, 60, 12.25, 2810
+4155.62N, 08739.22W, 41.927066, -87.653717, 860, 0.00, 7.60, 113.69, 3.89, 0.00, 4, 103.52, 1926.04, 90, 60, 12.24, 2815
+4155.62N, 08739.22W, 41.927066, -87.653717, 344, 0.00, 7.60, 113.36, 3.90, 0.00, 4, 103.52, 1926.04, 90, 60, 12.24, 2820
+4155.62N, 08739.22W, 41.927066, -87.653717, 936, 0.00, 7.60, 113.04, 3.90, 0.00, 4, 103.52, 1926.04, 90, 60, 12.24, 2825
 
-        if (line.charAt(0) != START_CHAR)
-            return null;
+     */
+    private void processLine(String lineIn) throws IOException {
+//        Log.d(TAG, lineIn);
 
-//        int xor = line.charAt(line.length() - 1);
-//        int comp = 0;
-//
-//        for (int i=1; i<line.length(); i++)
-//            comp ^= line.charAt(i);
-//
-//        if (xor != comp)
-//            return null;
+        String[] parts = lineIn.split(",");
 
-        return line.substring(1, line.length() - 2);
-    }
-
-    private void processLine(String lineIn) {
-
-        String validated = validate(lineIn);
-
-        if (validated == null) {
+        if (parts.length != 17) {
             failLineCount++;
             return;
         }
@@ -219,29 +274,29 @@ public class RadioCommunicator {
         lastLineTime = System.currentTimeMillis();
         failLineCount = 0;
 
-        String[] parts = lineIn.split(",");
-
         int i = 0;
 
-        gps_aprs_lat = parts[++i];
-        gps_aprs_lon = parts[++i];
-        gps_lat = Double.parseDouble(parts[++i]);
-        gps_lon = Double.parseDouble(parts[++i]);
-        millis = Integer.parseInt(parts[++i]);
-        gps_speed = Double.parseDouble(parts[++i]);
-        gps_course = Integer.parseInt(parts[++i]);
-        ahrs_heading = Integer.parseInt(parts[++i]);
-        current_roll = Double.parseDouble(parts[++i]);
-        heel_adjust = Double.parseDouble(parts[++i]);
-        wind = Integer.parseInt(parts[++i]);
-        wp_heading = Double.parseDouble(parts[++i]);
-        wp_distance = Double.parseDouble(parts[++i]);
-        current_rudder = Integer.parseInt(parts[++i]);
-        current_winch = Integer.parseInt(parts[++i]);
-        voltage = Double.parseDouble(parts[++i]);
-        cycle = Integer.parseInt(parts[++i]);
+        gps_aprs_lat = parts[i++].trim();
+        gps_aprs_lon = parts[i++].trim();
+        gps_lat = Double.parseDouble(parts[i++].trim());
+        gps_lon = Double.parseDouble(parts[i++].trim());
+        millis = Integer.parseInt(parts[i++].trim());
+        gps_speed = Double.parseDouble(parts[i++].trim());
+        gps_course = Double.parseDouble(parts[i++].trim());
+        ahrs_heading = Double.parseDouble(parts[i++].trim());
+        current_roll = Double.parseDouble(parts[i++].trim());
+        heel_adjust = Double.parseDouble(parts[i++].trim());
+        wind = Integer.parseInt(parts[i++].trim());
+        wp_heading = Double.parseDouble(parts[i++].trim());
+        wp_distance = Double.parseDouble(parts[i++].trim());
+        current_rudder = Integer.parseInt(parts[i++].trim());
+        current_winch = Integer.parseInt(parts[i++].trim());
+        voltage = Double.parseDouble(parts[i++].trim());
+        cycle = Integer.parseInt(parts[i++].trim());
 
         lastLine = lineIn;
+
+        dataOut.write(lineIn.getBytes());
     }
 
     public synchronized boolean isRunning() { return !terminated; }

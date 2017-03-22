@@ -9,10 +9,8 @@
 #include "I2Cdev.h"
 
 #include "MPU6050_9Axis_MotionApps41.h"
-//#include "HMC58X3.h"
 
 MPU6050 mpu;
-//HMC58X3 magn;
 
 #define MPU_LOOPS 2
 #define MPU_PAUSES 1
@@ -150,11 +148,15 @@ int readHeading(float f_ypr[3]) {
     
     mpu.dmpGetMag(mag, fifoBuffer);
 
-    if (abs(mag[0] > 255) || abs(mag[0] > 255) || abs(mag[0] > 255))
-      return 0;
+//    if (abs(mag[0] > 255) || abs(mag[0] > 255) || abs(mag[0] > 255))
+//      return 0;
     
 #ifdef CALIBRATE_ONLY
-    logln(", %d, %d, %d", mag[0], mag[1], mag[2]);
+    mpu.dmpGetQuaternion(&q, fifoBuffer);
+    mpu.dmpGetGravity(&gravity, &q);
+    mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
+
+    logln("%d, %d, %d; %d, %d, %d", mag[0], mag[1], mag[2], round(ypr[0] * 180.0 / PI), round(ypr[1] * 180.0 / PI), round(ypr[2] * 180.0 / PI));
 #else
     mpu.dmpGetQuaternion(&q, fifoBuffer);
     mpu.dmpGetGravity(&gravity, &q);

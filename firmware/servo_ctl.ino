@@ -44,7 +44,7 @@ void centerRudder() {
 }
 
 void winchTo(int value) {
-    logln("Winch to %d", value);
+    logln(PSTR("Winch to %d"), value);
   
     int v = constrain(value, min(WINCH_MIN, WINCH_MAX), max(WINCH_MIN, WINCH_MAX));
     
@@ -72,7 +72,7 @@ void rudderFromCenter(int value) {
 }
 
 void rudderTo(int value) {
-    logln("Rudder to %d", value);
+    logln(PSTR("Rudder to %d"), value);
 
     int v = constrain(value + heel_offset, RUDDER_MIN, RUDDER_MAX);
     

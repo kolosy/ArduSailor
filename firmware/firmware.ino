@@ -42,8 +42,22 @@
 #define DATA_FREQ 500
 #endif
 
+// seconds
+#define MENU_TIMEOUT 10
+
+// lets you do a logln of a float like so -> logln("blah %d.%d", FP(d))
+#define FP(f) (int16_t)f, fracPart(f)
+#define FP32(f) (int32_t)f, fracPart(f)
+
+// glancing ahead at the util sketch. todo: make that a c file
+int fracPart(float f, int precision = 2);
+
 // Public (extern) variables, readable from other modules
+
+// last time we got a gps update
 uint32_t last_gps_time = 0;
+
+// self-explanatory
 float gps_lat = 0;
 float gps_lon = 0;
 char gps_aprs_lat[9];
@@ -52,19 +66,23 @@ float gps_course = 0;
 float gps_speed = 0;
 float gps_altitude = 0;
 float ahrs_heading = 0;
+
+// winch adjustment to spill extra air if we're heeling too much
 float heel_adjust = 0;
+// rudder adjustment to compensate for excessive heel. todo: clarify naming
+float heel_offset = 0;
 
+// wind direction
 uint16_t wind = 0;
-
-int16_t heel_offset = 0;
+// current loop() count
 uint32_t cycle = 0;
 uint8_t current_rudder = 0;
 uint8_t current_winch = 0;
+// whether the pilot made any changes
 boolean adjustment_made = false;
+// whether we need high-res gps (drives refresh frequency)
 boolean high_res_gps = HIGH_RES_GPS_DEFAULT;
-//boolean gps_updated = false;
-boolean manual_override = false;
-boolean serial_logging = true;
+
 uint32_t last_data_update = 0;
 float voltage = 0;
 
@@ -72,155 +90,187 @@ float voltage = 0;
 float wp_heading = 0;
 float wp_distance = 0;
 
+// mode variables
+boolean manual_override = false;
+boolean serial_logging = SERIAL_LOGGING_DEFAULT;
+boolean remote_control = false;
+boolean calibration = false;
+
 void setup() 
 { 
-    pinMode(STATUS_LED, OUTPUT);
-    digitalWrite(STATUS_LED, HIGH);
+	pinMode(STATUS_LED, OUTPUT);
+	digitalWrite(STATUS_LED, HIGH);
     
-    Wire.begin();
+	Wire.begin();
 
-    Serial.begin(9600);
-    logInit();
+	Serial.begin(9600);
+	logInit();
 
-    logln("ArduSailor Starting...");
-    Serial2.begin(GPS_BAUDRATE);
+	logln(PSTR("ArduSailor Starting..."));
+	Serial2.begin(GPS_BAUDRATE);
 
-#ifdef CALIBRATE_ONLY
-    mpuInit();
-#else
-    servoInit();
-    windInit();
-    mpuInit();
-    gpsInit();
-    batteryInit();
+	servoInit();
+	windInit();
+	mpuInit();
+	gpsInit();
+	batteryInit();
     
-    pilotInit();
+	pilotInit();
     
-    blink(STATUS_LED, 100, 10, HIGH);
-    logln("Enabling GPS...");
+	blink(STATUS_LED, 100, 10, HIGH);
+	logln(PSTR("Enabling GPS..."));
     
-    warnGPS();
-#endif
+	warnGPS();
 
-    logln("Done. System ready.");
+	logln(PSTR("Done. System ready."));
     
-    digitalWrite(STATUS_LED, LOW);
-    serial_logging = SERIAL_LOGGING_DEFAULT;
+	digitalWrite(STATUS_LED, LOW);
 } 
 
 void updateSensors(boolean skip_gps) {
-    // most of this will be used in human comparison stuff, no need to keep in radians.
-    ahrs_heading = readSteadyHeading() * 180.0 / PI;
-    wind = readSteadyWind() * 180.0 / PI;
+	// most of this will be used in human comparison stuff, no need to keep in radians.
+	ahrs_heading = readSteadyHeading() * 180.0 / PI;
+	wind = readSteadyWind() * 180.0 / PI;
     
-//    if (!skip_gps && (high_res_gps || (last_gps_time == 0) || ((millis() - last_gps_time) > GPS_REFRESH))) {
-//        updateGPS();
-//            
-//        last_gps_time = millis();
-//        gps_updated = true;
-//    } else
-//        gps_updated = false;
-        
-    if (!high_res_gps && (millis() - last_gps_time > GPS_WARNING))
-        warnGPS();
+#ifdef SLEEP_GPS
+	if (!skip_gps && (high_res_gps || (last_gps_time == 0) || ((millis() - last_gps_time) > GPS_REFRESH))) {
+		updateGPS();
 
-    uint16_t gps_elapsed = millis() - last_gps_time;
-    voltage = measureVoltage();
-    logln("Position: %s, %s (%dms old), Speed (x10): %d, Direction: %d, Wind: %d, Battery %d", 
-                gps_aprs_lat, 
-                gps_aprs_lon, 
-                gps_elapsed,
-                (int16_t) (gps_speed * 10.0),
-                (int16_t)gps_course,
-                wind, 
-                voltage);
+		last_gps_time = millis();
+		gps_updated = true;
+	} else
+		gps_updated = false;
+#endif
+        
+	if (!high_res_gps && (millis() - last_gps_time > GPS_WARNING))
+		warnGPS();
+
+	uint16_t gps_elapsed = millis() - last_gps_time;
+	voltage = measureVoltage();
+	logln(PSTR("Position: %s, %s (%dms old), Speed: %d.%d, Direction: %d.%d, Wind: %d, Battery %d.%d"), 
+	gps_aprs_lat, 
+	gps_aprs_lon, 
+	gps_elapsed,
+	FP(gps_speed),
+	FP(gps_course),
+	wind, 
+	FP(voltage));
+}
+
+void printDataLine() {
+	Serial.print(gps_aprs_lat); Serial.print(", ");
+	Serial.print(gps_aprs_lon); Serial.print(", "); 
+	Serial.print(gps_lat, 6); Serial.print(", ");
+	Serial.print(gps_lon, 6); Serial.print(", "); 
+	Serial.print(millis() - last_gps_time); Serial.print(", ");
+	Serial.print(gps_speed); Serial.print(", ");
+	Serial.print(gps_course); Serial.print(", ");
+
+	Serial.print(ahrs_heading); Serial.print(", ");
+	Serial.print(current_roll); Serial.print(", ");
+	Serial.print(heel_adjust); Serial.print(", ");
+	Serial.print(wind); Serial.print(", ");
+	Serial.print(wp_heading); Serial.print(", ");
+	Serial.print(wp_distance); Serial.print(", ");
+	Serial.print(current_rudder); Serial.print(", ");
+	Serial.print(current_winch); Serial.print(", ");
+	Serial.print(voltage); Serial.print(", ");
+	Serial.print(cycle); Serial.println();
+}
+
+void doMenu() {
+	Serial.print(PSTR("Welcome to ArduSailor. Please select a menu option. Menu timeout is "));
+	Serial.println(MENU_TIMEOUT); 
+	Serial.println();
+	
+	Serial.println(PSTR("(a) Automate."));
+	Serial.println(PSTR("(c) Calibrate."));
+	Serial.println(PSTR("(r) Remote Control."));
+	Serial.println(PSTR("(w) Change waypoints."));
+	Serial.print(PSTR("\n>"));
+	
+	long t = millis();
+	
+	while ((millis() - t < MENU_TIMEOUT) && !Serial.available());
+	
+	if (Serial.available()) {
+		switch ((char) Serial.read()) {
+			case 'a':
+			calibration = false;
+			remote_control = false;
+			manual_override = false;
+			break;
+
+			case 'c':
+			calibration = true;
+			remote_control = false;
+			manual_override = false;
+			break;
+
+			case 'r':
+			calibration = false;
+			remote_control = true;
+			manual_override = false;
+			break;
+
+			case 'w':
+			// todo
+			break;
+		}
+	} else
+		Serial.println(PSTR("Menu timed out."));
+
+	Serial.print(PSTR("calibration: ")); Serial.println(calibration);
+	Serial.print(PSTR("remote control: ")); Serial.println(remote_control);
+	Serial.print(PSTR("manual override: ")); Serial.println(manual_override);
 }
 
 void checkInput() {
-    // in case we're going too fast. only needed when serial_logging is on
-    if (serial_logging && (cycle % WAIT_FOR_COMMAND_EVERY == 0))
-      delay(WAIT_FOR_COMMAND_FOR);
+	// in case we're going too fast. only needed when serial_logging is on
+	if (serial_logging && (cycle % WAIT_FOR_COMMAND_EVERY == 0))
+		delay(WAIT_FOR_COMMAND_FOR);
   
-    while (Serial.available()) {
-        switch ((char)Serial.read()) {
-          case 'o':
-            logln("Entering manual override");
-            manual_override = true;
-            serial_logging = true;
-            break;
+	while (Serial.available()) {
+		switch ((char)Serial.read()) {
+			case 'o':
+			logln(PSTR("Entering manual override"));
+			manual_override = true;
+			serial_logging = true;
+			break;
             
-          case 'l':
-            serial_logging = !serial_logging;
-            break;
-        }
-    }
+			case 'l':
+			serial_logging = !serial_logging;
+			break;
+			
+			case 'm':
+			doMenu();
+			break;
+		}
+	}
 }
 
 void loop() 
 { 
-#ifdef CALIBRATE_ONLY
-    writeCalibrationLine();
-#elif CAPTURE_MODE
-    updateSensors(true);
+	if (calibration) {
+		writeCalibrationLine();
+		return;
+	}
 
-    Serial.print('x');
-      Serial.print(gps_aprs_lat); Serial.print(", ");
-      Serial.print(gps_aprs_lon); Serial.print(", "); 
-      Serial.print(gps_lat, 6); Serial.print(", ");
-      Serial.print(gps_lon, 6); Serial.print(", "); 
-      Serial.print(millis() - last_gps_time); Serial.print(", ");
-      Serial.print(gps_speed); Serial.print(", ");
-      Serial.print(gps_course); Serial.print(", ");
+	if (!manual_override) {
+		logln(PSTR("#################### Cycle %d start ####################"), cycle);
+		cycle++;
+		updateSensors(false);
 
-      Serial.print(ahrs_heading); Serial.print(", ");
-      Serial.print(current_roll); Serial.print(", ");
-      Serial.print(heel_adjust); Serial.print(", ");
-      Serial.print(wind); Serial.print(", ");
-      Serial.print(wp_heading); Serial.print(", ");
-      Serial.print(wp_distance); Serial.print(", ");
-      Serial.print(current_rudder); Serial.print(", ");
-      Serial.print(current_winch); Serial.print(", ");
-      Serial.print(voltage); Serial.print(", ");
-      Serial.print(cycle); Serial.print('d');
-      
-      cycle++;
-      
-#else
-    if (!manual_override) {
-        logln("#################### Cycle %d start ####################", cycle);
-        cycle++;
-        updateSensors(false);
-#ifndef REMOTE_CONTROLLED
-        checkInput();
-#endif
-        doPilot();
-
-// no sleep for the wicked.
-//        sleepMillis(SCAN_RATE_FAST);
-    } else
-        doPilot();
+		if (!remote_control)
+			checkInput();
+		doPilot();
+	} else
+		// the actual steering commands are handled by doPilot for now
+		doPilot();
         
-    if (!serial_logging && (millis() - last_data_update > DATA_FREQ)) {
-      Serial.print(gps_aprs_lat); Serial.print(", ");
-      Serial.print(gps_aprs_lon); Serial.print(", "); 
-      Serial.print(gps_lat, 6); Serial.print(", ");
-      Serial.print(gps_lon, 6); Serial.print(", "); 
-      Serial.print(millis() - last_gps_time); Serial.print(", ");
-      Serial.print(gps_speed); Serial.print(", ");
-      Serial.print(gps_course); Serial.print(", ");
-
-      Serial.print(ahrs_heading); Serial.print(", ");
-      Serial.print(current_roll); Serial.print(", ");
-      Serial.print(heel_adjust); Serial.print(", ");
-      Serial.print(wind); Serial.print(", ");
-      Serial.print(wp_heading); Serial.print(", ");
-      Serial.print(wp_distance); Serial.print(", ");
-      Serial.print(current_rudder); Serial.print(", ");
-      Serial.print(current_winch); Serial.print(", ");
-      Serial.print(voltage); Serial.print(", ");
-      Serial.print(cycle); Serial.println();
+	if (!serial_logging && (millis() - last_data_update > DATA_FREQ)) {
+		printDataLine();
       
-      last_data_update = millis();
-    }
-#endif
+		last_data_update = millis();
+	}
 } 

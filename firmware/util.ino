@@ -62,10 +62,20 @@ void blink(uint8_t pin, uint8_t duration, uint8_t count, uint8_t finalState) {
     digitalWrite(pin, finalState);
 }
 
+int fracPart(float f, int precision)
+{
+	int32_t int_part = (int32_t)f;
+	long p[] = {0,10,100,1000,10000,100000,1000000,10000000,100000000};
+	return abs((long)((f - int_part) * p[precision]));
+}
+
 void sleepMillis(int amount) {
+#ifdef LOW_POWER_SLEEP
+	int sleeps = amount / 2000; // max sleep time is 2s, so this is the number of times we'll have to sleep
+
+	while (sleeps-- > 0)
+		LowPower.powerDown(SLEEP_2S, ADC_OFF, BOD_OFF);
+#else
   delay(amount);
-//  int sleeps = amount / 2000; // max sleep time is 2s, so this is the number of times we'll have to sleep
-//
-//  while (sleeps-- > 0)
-//      LowPower.powerDown(SLEEP_2S, ADC_OFF, BOD_OFF);
+#endif
 }

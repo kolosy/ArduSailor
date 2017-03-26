@@ -138,7 +138,7 @@ float computeDistance(float i_lat, float i_lon, float f_lat, float f_lon) {
 
 // when this is called, we're assuming that we're close to irons, otherwise why tack?
 void tack() {
-    logln("Tacking...");
+    logln(PSTR("Tacking..."));
     float start_heading = fused_heading;
     uint32_t tack_start_time = millis();
 
@@ -160,7 +160,7 @@ void tack() {
     }
     
     centerRudder();
-    logln("Finished tack");
+    logln(PSTR("Finished tack"));
     // sails are set as is
 }
 
@@ -173,7 +173,7 @@ void adjustTo(int amount) {
 }
 
 void adjustSails() {
-    logln("Checking sail trim");
+    logln(PSTR("Checking sail trim"));
     if (abs(current_roll) > START_HEEL_COMP)
       heel_adjust = min(MAX_HEEL_COMP, 2 * (abs(current_roll) - START_HEEL_COMP));
     else if (heel_adjust > MIN_HEEL_COMP)
@@ -184,11 +184,11 @@ void adjustSails() {
     float new_winch = map(abs(wind - 180), 30, 170, WINCH_MIN, WINCH_MAX) - heel_adjust;
     
     if (abs(new_winch - current_winch) > SAIL_ADJUST_ON) {
-        logln("New winch position of %d is more than %d off from %d. Adjusting trim.", (int16_t) new_winch, SAIL_ADJUST_ON, current_winch);
+        logln(PSTR("New winch position of %d is more than %d off from %d. Adjusting trim."), (int16_t) new_winch, SAIL_ADJUST_ON, current_winch);
         adjustment_made = true;
         winchTo(new_winch);
     } else
-        logln("No trim adjustment needed");
+        logln(PSTR("No trim adjustment needed"));
 }
 
 void adjustHeading() {
@@ -204,23 +204,23 @@ void adjustHeading() {
 //    if (stalled) {
 //      off_course = -(wind > 180 ? 270.0 - wind : 90.0 - wind);
 //      skip_irons_check = true;
-//      logln("Stalled. Setting course to beam reach.");
+//      logln(PSTR("Stalled. Setting course to beam reach."));
 //    } else if (IN_IRONS(wind)) {
 //      // wind > 180 == port tack, want to turn to starboard to fix
 //      // wind < 180 == starboard tack, want to turn to port to fix
 //      off_course = -(wind > 180 ? 360 - IRONS - wind : IRONS - wind);
 //      skip_irons_check = true;
-//      logln("In irons. Setting course for close reach.");
+//      logln(PSTR("In irons. Setting course for close reach."));
 //    }
     
-    logln("Off course by %d", (int16_t) off_course);
+    logln(PSTR("Off course by %d"), (int16_t) off_course);
     if (turning) 
-      logln("Currently turning by %d, rudder is at %d", turning_by, current_rudder);
+      logln(PSTR("Currently turning by %d, rudder is at %d"), turning_by, current_rudder);
     else
-      logln("Not currently turning, ruder is at %d", current_rudder);
+      logln(PSTR("Not currently turning, ruder is at %d"), current_rudder);
     
     if (fabs(off_course) > COURSE_ADJUST_ON) {
-        logln("Current course is more than %d off target. Trying to adjust", COURSE_ADJUST_ON);
+        logln(PSTR("Current course is more than %d off target. Trying to adjust"), COURSE_ADJUST_ON);
 
         // new wind if we turn the direction that we want to. The +/- is to account for the fact that 
         // rotated rudder will keep us turning
@@ -228,10 +228,10 @@ void adjustHeading() {
         
         // if adjusting any more puts us in irons
         if (!skip_irons_check && IN_IRONS(new_wind)) {
-            logln("Requested (new wind %d) course unsafe, requires tack", new_wind);
+            logln(PSTR("Requested (new wind %d) course unsafe, requires tack"), new_wind);
             // and if we're allowed to tack, we tack
             if (CAN_TURN() && gps_speed > MIN_TACK_SPEED) {
-                logln("Tack change allowed. Turning.");
+                logln(PSTR("Tack change allowed. Turning."));
                 tack();
                 last_turn = millis();
                 
@@ -241,7 +241,7 @@ void adjustHeading() {
                 adjustment_made = true;
             // if we aren't allowed to tack, but are currently turning, we stop turning
             } else if (turning) {
-                logln("Tack change not allowed. Currently in a turn, centering rudder.");
+                logln(PSTR("Tack change not allowed. Currently in a turn, centering rudder."));
                 turning = false;
                 turning_by = 0;
                 adjustment_made = true;
@@ -249,17 +249,17 @@ void adjustHeading() {
             }
         } else {
             // todo: there's something in ADJUST_BY that's misbehaving with negative off-course values. being lazy here.
-            logln("Projected new wind is %d", new_wind);
+            logln(PSTR("Projected new wind is %d"), new_wind);
             int new_rudder = ADJUST_BY(abs(off_course)) * (off_course >= 0 ? -1 : 1);
             if (abs(new_rudder - turning_by) > RUDDER_TOLERANCE) {
-                logln("Adjusting rudder by %d", new_rudder);
+                logln(PSTR("Adjusting rudder by %d"), new_rudder);
                 adjustTo(new_rudder);
                 adjustment_made = true;
             } else
-              logln("New rudder position of %d is close to current rudder position of %d. Not adjusting", new_rudder, turning_by);
+              logln(PSTR("New rudder position of %d is close to current rudder position of %d. Not adjusting"), new_rudder, turning_by);
         }
     } else if (turning) {
-        logln("Current course is not more than %d off target. Centering.", COURSE_ADJUST_ON);
+        logln(PSTR("Current course is not more than %d off target. Centering."), COURSE_ADJUST_ON);
         turning = false;
         turning_by = 0;
         adjustment_made = true;
@@ -290,39 +290,40 @@ void processManualCommands() {
                 break;
             case 'a':
                 TO_PORT(10);
-                logln("10 degrees to port");
+                logln(PSTR("10 degrees to port"));
                 break;
             case 'd':
                 TO_SBRD(10);
-                logln("10 degrees to starboard");
+                logln(PSTR("10 degrees to starboard"));
                 break;
             case 's':
                 centerRudder();
-                logln("Center rudder");
+                logln(PSTR("Center rudder"));
                 break;
             case 'q':
                 winchTo(current_winch + 5);
-                logln("Sheet out");
+                logln(PSTR("Sheet out"));
                 break;
             case 'e':
                 winchTo(current_winch - 5);
-                logln("Sheet in");
+                logln(PSTR("Sheet in"));
                 break;
             case 'w':
                 centerWinch();
-                logln("Center winch");
+                logln(PSTR("Center winch"));
                 break;
             case 'x':
                 manual_override = false;
+				serial_logging = SERIAL_LOGGING_DEFAULT;
                 resetRudder();
-                logln("End manual override");
+                logln(PSTR("End manual override"));
                 break;
         }
     }
 }
 
 void setNextWaypoint() {
-    logln("Waypoint %d reached.", target_wp);
+    logln(PSTR("Waypoint %d reached."), target_wp);
     
     if ((target_wp == 0 && direction == -1) || (target_wp + 1 == WP_COUNT && direction == 1))
         direction *= -1;
@@ -339,7 +340,7 @@ void setNextWaypoint() {
     // also can just zero it out as there's no inherent value in the time
     last_turn = 0;
 
-    logln("Waypoint %d selected, HTW: %d, DTW: %dm", 
+    logln(PSTR("Waypoint %d selected, HTW: %d, DTW: %dm"), 
             target_wp,
             ((int16_t) wp_heading), 
             ((int16_t) wp_distance));
@@ -360,7 +361,7 @@ void updateSituation() {
     // still want to check this
     if ((gps_speed > MIN_SPEED)) {
         ahrs_offset = angleDiff(ahrs_heading, gps_course, true);
-        logln("GPS vs AHRS difference is %d", (int16_t) ahrs_offset * 10);
+        logln(PSTR("GPS vs AHRS difference is %d"), (int16_t) ahrs_offset * 10);
     }
 
     fuseHeading();        
@@ -370,7 +371,7 @@ void updateSituation() {
     wp_heading = DEG(toCircle(computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon))));
     adjustment_made = false;
 
-    logln("GPS heading: %d, GPS speed (x10): %dkts, HTW: %d, DTW: %dm", 
+    logln(PSTR("GPS heading: %d, GPS speed (x10): %dkts, HTW: %d, DTW: %dm"), 
             ((int16_t) gps_course), 
             ((int16_t) (gps_speed * 10.0)),
             ((int16_t) wp_heading), 
@@ -382,7 +383,7 @@ void updateSituation() {
     if (wp_distance < HRG_THRESHOLD) {
       high_res_gps = true;
       warnGPS();
-      logln("Within high-res gps threshold. Switching to HRG");
+      logln(PSTR("Within high-res gps threshold. Switching to HRG"));
     }
     else {
       if (!high_res_gps && HIGH_RES_GPS_DEFAULT)

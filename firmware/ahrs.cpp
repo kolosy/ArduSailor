@@ -16,11 +16,12 @@ MPU6050 mpu;
 #define MPU_PAUSES 1
 #define DEVICE_ORIENTATION 1.0
 
+// mag parameters
 static const float b_field     = 61.2088;
 static const float offset[3]   = { 2.0848, -33.8208, 28.5815 };
 static const float b_inv[3][3] = {{ 0.9745, 0.0240, 0.0054 }, 
-{ 0.0240, 1.0463, -0.0089 }, 
-{ 0.0054, -0.0089, 0.9814 }};
+								  { 0.0240, 1.0463, -0.0089 }, 
+								  { 0.0054, -0.0089, 0.9814 }};
 
 // MPU control/status vars
 bool dmpReady = false;  // set true if DMP init was successful
@@ -41,22 +42,22 @@ int16_t mag[3];
 
 int mpuInit() {
 	// initialize device
-	logln(PSTR("Initializing I2C devices..."));
+	logln(F("Initializing I2C devices..."));
   
 	mpu.initialize();
 
 	// verify connection
-	logln(PSTR("Testing device connections..."));
-	mpu.testConnection() ? logln(PSTR("MPU6050 connection successful")) : logln(PSTR("MPU6050 connection failed"));
+	logln(F("Testing device connections..."));
+	mpu.testConnection() ? logln(F("MPU6050 connection successful")) : logln(F("MPU6050 connection failed"));
 
 	// load and configure the DMP
-	logln(PSTR("Initializing DMP..."));
+	logln(F("Initializing DMP..."));
 	devStatus = mpu.dmpInitialize();
     
 	// make sure it worked (returns 0 if so)
 	if (devStatus == 0) {
 		// turn on the DMP, now that it's ready
-		logln(PSTR("Enabling DMP..."));
+		logln(F("Enabling DMP..."));
 		mpu.setDMPEnabled(true);
 
 		// enable Arduino interrupt detection
@@ -65,7 +66,7 @@ int mpuInit() {
 		mpuIntStatus = mpu.getIntStatus();
 
 		// set our DMP Ready flag so the main loop() function knows it's okay to use it
-		logln(PSTR("DMP ready! Waiting for first interrupt..."));
+		logln(F("DMP ready! Waiting for first interrupt..."));
 		dmpReady = true;
 
 		// get expected DMP packet size for later comparison
@@ -77,7 +78,7 @@ int mpuInit() {
 		// 1 = initial memory load failed
 		// 2 = DMP configuration updates failed
 		// (if it's going to break, usually the code will be 1)
-		logln(PSTR("DMP Initialization failed (code %d)"), devStatus);
+		logln(F("DMP Initialization failed (code %d)"), devStatus);
 		
 		return devStatus;
 	}
@@ -136,13 +137,7 @@ int readHeading(float f_ypr[3], bool calibration) {
     
 	mpu.dmpGetMag(mag, fifoBuffer);
     
-	if (calibration) {
-		mpu.dmpGetQuaternion(&q, fifoBuffer);
-		mpu.dmpGetGravity(&gravity, &q);
-		mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-
-		logln(PSTR("%d, %d, %d; %d, %d, %d"), mag[0], mag[1], mag[2], round(ypr[0] * 180.0 / PI), round(ypr[1] * 180.0 / PI), round(ypr[2] * 180.0 / PI));
-	} else {
+	if (!calibration) {
 		mpu.dmpGetQuaternion(&q, fifoBuffer);
 		mpu.dmpGetGravity(&gravity, &q);
 		mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
@@ -170,7 +165,8 @@ int readHeading(float f_ypr[3], bool calibration) {
 		f_ypr[0] = heading;
 		f_ypr[1] = -ypr[1];
 		f_ypr[2] = ypr[2];
-	}
+	} else
+		logln(F("%d, %d, %d"), mag[0], mag[1], mag[2]);
 
 	return 1;
 }
@@ -196,7 +192,7 @@ float readSteadyHeading() {
 	current_pitch = f_ypr[1] * 180.0 / PI;
 	current_roll = f_ypr[2] * 180.0 / PI;
 	// heading = (-heading) - (PI / 2.0);
-	logln(PSTR("AHRS (y,p,r): %d, %d, %d"), 
+	logln(F("AHRS (y,p,r): %d, %d, %d"), 
 			((int16_t) (heading * 180.0 / PI)),
 			((int16_t) (current_pitch)),
 			((int16_t) (current_roll))

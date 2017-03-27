@@ -8,6 +8,7 @@ extern boolean serial_logging;
 
 void log(char *fmt, ... );
 void logln(char *fmt, ... );
+void logln(const __FlashStringHelper *ifsh, ...);
 void logInit();
 
 #endif

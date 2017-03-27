@@ -2,7 +2,6 @@
 #define ahrs_h
 
 #include "Arduino.h"
-//#define CALIBRATE_ONLY
 
 // reporting value
 extern float current_pitch;

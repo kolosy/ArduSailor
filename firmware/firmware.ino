@@ -1,5 +1,7 @@
 #include "logger.h"
 #include <Servo.h> 
+#include "servo_ctl.h"
+
 #include "LowPower.h"
 #include "ahrs.h"
 
@@ -27,16 +29,7 @@
 
 #define DATA_FREQ 1500
 
-#ifdef CALIBRATE_ONLY
-#define SERIAL_LOGGING_DEFAULT true
-#else
 #define SERIAL_LOGGING_DEFAULT false
-#endif
-
-#define WINCH_MAX 60
-#define WINCH_MIN 130
-
-#define REMOTE_CONTROLLED
 
 #define RC_DATA_FREQ 500
 
@@ -69,17 +62,14 @@ float ahrs_heading = 0;
 // winch adjustment to spill extra air if we're heeling too much
 float heel_adjust = 0;
 
-// rudder adjustment to compensate for excessive heel. todo: clarify naming
-float heel_offset = 0;
+// rudder adjustment to compensate for excessive heel. todo: clarify naming; declared in servo_ctl.h
+// float heel_offset = 0;
 
 // wind direction
 uint16_t wind = 0;
 
 // current loop() count
 uint32_t cycle = 0;
-
-uint8_t current_rudder = 0;
-uint8_t current_winch = 0;
 
 // whether the pilot made any changes
 boolean adjustment_made = false;
@@ -112,7 +102,7 @@ void setup()
 	Serial.begin(9600);
 	logInit();
 
-	logln(PSTR("ArduSailor Starting..."));
+	logln(F("ArduSailor Starting..."));
 	Serial2.begin(GPS_BAUDRATE);
 
 	servoInit();
@@ -124,11 +114,11 @@ void setup()
 	pilotInit();
     
 	blink(STATUS_LED, 100, 10, HIGH);
-	logln(PSTR("Enabling GPS..."));
+	logln(F("Enabling GPS..."));
     
 	warnGPS();
 
-	logln(PSTR("Done. System ready."));
+	logln(F("Done. System ready."));
     
 	digitalWrite(STATUS_LED, LOW);
 	
@@ -157,7 +147,7 @@ void updateSensors(boolean skip_gps) {
 
 	uint16_t gps_elapsed = millis() - last_gps_time;
 	voltage = measureVoltage();
-	logln(PSTR("Position: %s, %s (%dms old), Speed: %d.%d, Direction: %d.%d, Wind: %d, Battery %d.%d"), 
+	logln(F("Position: %s, %s (%dms old), Speed: %d.%d, Direction: %d.%d, Wind: %d, Battery %d.%d"), 
 	gps_aprs_lat, 
 	gps_aprs_lon, 
 	gps_elapsed,
@@ -189,22 +179,30 @@ void printDataLine() {
 }
 
 void doMenu() {
-	Serial.print(PSTR("Welcome to ArduSailor. Please select a menu option. Menu timeout is "));
+	Serial.print(F("Welcome to ArduSailor. Menu timeout is "));
 	Serial.println(MENU_TIMEOUT); 
 	Serial.println();
+
+	Serial.println("Current configuration is:");
+	Serial.print(F("calibration: ")); Serial.println(calibration);
+	Serial.print(F("remote control: ")); Serial.println(remote_control);
+	Serial.print(F("manual override: ")); Serial.println(manual_override);
 	
-	Serial.println(PSTR("(a) Automate."));
-	Serial.println(PSTR("(c) Calibrate."));
-	Serial.println(PSTR("(r) Remote Control."));
-	Serial.println(PSTR("(w) Change waypoints <NOT IMPLEMENTED>."));
-	Serial.print(PSTR("\n>"));
+	Serial.println(F("\nPlease select a menu option. \n"));
+	
+	Serial.println(F("(a) Automate."));
+	Serial.println(F("(c) Calibrate."));
+	Serial.println(F("(r) Remote Control."));
+	Serial.println(F("(w) Change waypoints <NOT IMPLEMENTED>."));
+	Serial.print(F("\n>"));
 	
 	long t = millis();
 	
-	while ((millis() - t < MENU_TIMEOUT) && !Serial.available());
+	while ((millis() - t < (MENU_TIMEOUT * 1000)) && !Serial.available());
 	
 	if (Serial.available()) {
-		switch ((char) Serial.read()) {
+		char c = (char) Serial.read();
+		switch (c) {
 			case 'a':
 			calibration = false;
 			remote_control = false;
@@ -226,13 +224,17 @@ void doMenu() {
 			case 'w':
 			// todo
 			break;
+			
 		}
+		
+		Serial.print(' ');
+		Serial.println(c);
 	} else
-		Serial.println(PSTR("Menu timed out."));
+		Serial.println(F("\nMenu timed out."));
 
-	Serial.print(PSTR("calibration: ")); Serial.println(calibration);
-	Serial.print(PSTR("remote control: ")); Serial.println(remote_control);
-	Serial.print(PSTR("manual override: ")); Serial.println(manual_override);
+	Serial.print(F("calibration: ")); Serial.println(calibration);
+	Serial.print(F("remote control: ")); Serial.println(remote_control);
+	Serial.print(F("manual override: ")); Serial.println(manual_override);
 }
 
 void checkInput() {
@@ -247,7 +249,7 @@ void checkInput() {
 		
 		switch ((char)Serial.read()) {
 			case 'o':
-			logln(PSTR("Entering manual override"));
+			logln(F("Entering manual override"));
 			manual_override = true;
 			serial_logging = true;
 			break;
@@ -267,11 +269,13 @@ void loop()
 { 
 	if (calibration) {
 		writeCalibrationLine();
+		checkInput();
+		
 		return;
 	}
 
 	if (!manual_override) {
-		logln(PSTR("#################### Cycle %d start ####################"), cycle);
+		logln(F("#################### Cycle %d start ####################"), cycle);
 		cycle++;
 		updateSensors(false);
 

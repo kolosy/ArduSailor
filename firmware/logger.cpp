@@ -13,6 +13,8 @@ uint32_t gps_seconds = 0;   // seconds after midnight
 
 uint8_t fileReady = 0;
 
+void do_log(char *fmt, va_list args, bool println);
+
 void logInit() {
 	// initialize the SD card
 	if (!card.init()) { 
@@ -56,37 +58,44 @@ void logInit() {
 	fileReady = 1;
 }
 
+void logln(const __FlashStringHelper *ifsh, ...) {
+    const char PROGMEM *p = (const char PROGMEM *)ifsh;
+	char * fmt = (char*)malloc(128);
+	
+    size_t n = 0;
+    while (1) {
+      unsigned char c = pgm_read_byte(p++);
+      fmt[n++] = c;
+
+	  // we want the 0 byte in there
+      if (c == 0) break;
+    }
+	
+	va_list args;
+	va_start (args, *ifsh);
+	do_log(fmt, args, true);
+	va_end (args);
+	
+	free(fmt);
+}
+
 void logln(char *fmt, ... ) {
-	char buf[128]; // resulting string limited to 128 chars
 	va_list args;
 	va_start (args, fmt );
-	vsnprintf(buf, 128, fmt, args);
+	do_log(fmt, args, true);
 	va_end (args);
-
-	if (serial_logging) {
-		Serial.print(gps_time);
-		Serial.print(':');
-		Serial.print(millis());
-		Serial.print(' ');
-		Serial.println(buf);
-	}
-    
-	if (fileReady) {
-		file.print(gps_time);
-		file.print(':');
-		file.print(millis());
-		file.print(' ');
-		file.println(buf);
-		file.sync();
-	}
 }
 
 void log(char *fmt, ... ) {
-	char buf[128]; // resulting string limited to 128 chars
 	va_list args;
 	va_start (args, fmt );
-	vsnprintf(buf, 128, fmt, args);
+	do_log(fmt, args, false);
 	va_end (args);
+}
+
+void do_log(char *fmt, va_list args, bool println) {
+	char buf[144]; // resulting string limited to 128 chars
+	vsnprintf(buf, 144, fmt, args);
 
 	if (serial_logging) {
 		Serial.print(gps_time);
@@ -94,6 +103,8 @@ void log(char *fmt, ... ) {
 		Serial.print(millis());
 		Serial.print(' ');
 		Serial.print(buf);
+		if (println)
+			Serial.println();
 	}
     
 	if (fileReady) {
@@ -102,6 +113,9 @@ void log(char *fmt, ... ) {
 		file.print(millis());
 		file.print(' ');
 		file.print(buf);
+		if (println)
+			file.println();
+		
 		file.sync();
 	}
 }

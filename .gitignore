@@ -42,3 +42,6 @@ screenlog.*
 
 # Excel lock files
 ~$*.xlsx
+
+.idea/
+build/

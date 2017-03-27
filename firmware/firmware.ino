@@ -38,12 +38,11 @@
 
 #define REMOTE_CONTROLLED
 
-#ifdef REMOTE_CONTROLLED
-#define DATA_FREQ 500
-#endif
+#define RC_DATA_FREQ 500
 
 // seconds
 #define MENU_TIMEOUT 10
+#define SHOW_MENU_ON_START
 
 // lets you do a logln of a float like so -> logln("blah %d.%d", FP(d))
 #define FP(f) (int16_t)f, fracPart(f)
@@ -69,17 +68,22 @@ float ahrs_heading = 0;
 
 // winch adjustment to spill extra air if we're heeling too much
 float heel_adjust = 0;
+
 // rudder adjustment to compensate for excessive heel. todo: clarify naming
 float heel_offset = 0;
 
 // wind direction
 uint16_t wind = 0;
+
 // current loop() count
 uint32_t cycle = 0;
+
 uint8_t current_rudder = 0;
 uint8_t current_winch = 0;
+
 // whether the pilot made any changes
 boolean adjustment_made = false;
+
 // whether we need high-res gps (drives refresh frequency)
 boolean high_res_gps = HIGH_RES_GPS_DEFAULT;
 
@@ -92,6 +96,8 @@ float wp_distance = 0;
 
 // mode variables
 boolean manual_override = false;
+
+// whather calls to logln should also log to Serial
 boolean serial_logging = SERIAL_LOGGING_DEFAULT;
 boolean remote_control = false;
 boolean calibration = false;
@@ -125,6 +131,10 @@ void setup()
 	logln(PSTR("Done. System ready."));
     
 	digitalWrite(STATUS_LED, LOW);
+	
+#ifdef SHOW_MENU_ON_START
+	doMenu();
+#endif
 } 
 
 void updateSensors(boolean skip_gps) {
@@ -186,7 +196,7 @@ void doMenu() {
 	Serial.println(PSTR("(a) Automate."));
 	Serial.println(PSTR("(c) Calibrate."));
 	Serial.println(PSTR("(r) Remote Control."));
-	Serial.println(PSTR("(w) Change waypoints."));
+	Serial.println(PSTR("(w) Change waypoints <NOT IMPLEMENTED>."));
 	Serial.print(PSTR("\n>"));
 	
 	long t = millis();
@@ -231,6 +241,10 @@ void checkInput() {
 		delay(WAIT_FOR_COMMAND_FOR);
   
 	while (Serial.available()) {
+		// a '[' signals the start of an RC command
+		if (remote_control && (char)Serial.peek() == '[')
+			return;
+		
 		switch ((char)Serial.read()) {
 			case 'o':
 			logln(PSTR("Entering manual override"));
@@ -261,14 +275,13 @@ void loop()
 		cycle++;
 		updateSensors(false);
 
-		if (!remote_control)
-			checkInput();
+		checkInput();
 		doPilot();
 	} else
 		// the actual steering commands are handled by doPilot for now
 		doPilot();
         
-	if (!serial_logging && (millis() - last_data_update > DATA_FREQ)) {
+	if (!serial_logging && (millis() - last_data_update > (remote_control ? RC_DATA_FREQ : DATA_FREQ))) {
 		printDataLine();
       
 		last_data_update = millis();

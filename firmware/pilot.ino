@@ -424,14 +424,14 @@ void doPilot() {
 
     updateSituation();    
 
-#ifdef REMOTE_CONTROLLED
-    processRCCommands();
-#else
-    if (IN_IRONS(wind) && stalled) {
-      getOutOfIrons();
-    } else {
-      adjustHeading();
-      adjustSails();
-    }
-#endif
+	if (remote_control)
+		processRCCommands();
+	else {
+	    if (IN_IRONS(wind) && stalled) {
+	      getOutOfIrons();
+	    } else {
+	      adjustHeading();
+	      adjustSails();
+	    }
+	}
 }

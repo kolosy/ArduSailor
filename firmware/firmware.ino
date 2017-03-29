@@ -81,7 +81,7 @@ uint32_t last_data_update = 0;
 float voltage = 0;
 
 // here so we can log easier
-float wp_heading = 0;
+double wp_heading = 0;
 float wp_distance = 0;
 
 // mode variables

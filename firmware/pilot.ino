@@ -1,3 +1,6 @@
+#include <PID_v1.h>
+#include <EEPROM.h>
+
 // radius of Earth in m
 #define R 6371000
 
@@ -8,30 +11,12 @@
 // how close you have to get to the waypoint to consider it hit
 #define GET_WITHIN 5
 
-// how much to move tiller by when making slight adjustments
-#define FEATHER 5.0
-
-// how to equate two requested rudder positions (i.e. if the new one is less than this from the old one, don't do it)
-#define RUDDER_TOLERANCE 1
-
-// adjust course when we're more than this much off-course
-#define COURSE_ADJUST_ON 7.0
-
-#define COURSE_ADJUST_SPEED 7.0
-
-// adjust the rudder by this amount to end up at turn of v
-#define ADJUST_BY(v) ((v/(FEATHER * COURSE_ADJUST_SPEED)+1.) * FEATHER)
-
 // adjust sails when we're more than this much off-plan
 #define SAIL_ADJUST_ON 10
-
-// when we're turning, how far ahead are we looking to check if we're going to fall in irons
-#define WIND_LOOKAHEAD 10
 
 // either side of 0 for "in irons"
 #define IRONS 45
 #define IN_IRONS(v) (((v) < IRONS || (v) > (360 - IRONS)))
-#define TACK_TIMEOUT 10000
 
 // either side of 180 for "running"
 #define ON_RUN 20
@@ -49,15 +34,9 @@
 // have sails at this position for a gybe
 #define GYBE_SAIL_POS 80
 
-// if the course requires zig-zags, turn every x millis
-#define TURN_EVERY 90000
-#define CAN_TURN() ((last_turn + TURN_EVERY) < millis())
-#define COURSE_CORRECTION_TIME 3000
-
 #define SERVO_ORIENTATION -1
 #define TO_PORT(amt) rudderTo(current_rudder + (SERVO_ORIENTATION * amt))
 #define TO_SBRD(amt) rudderTo(current_rudder - (SERVO_ORIENTATION * amt))
-
 #define ADJUST_TO_PORT(amt) ( SERVO_ORIENTATION * amt)
 #define ADJUST_TO_SBRD(amt) (-SERVO_ORIENTATION * amt)
 
@@ -75,13 +54,15 @@
 #define HEEL_COMP_DECAY 0.1
 
 // # of waypoints below
-#define WP_COUNT 7
+#define WP_COUNT 8
 
 // how close we can get to our waypoint before we switch to High Res GPS
 #define HRG_THRESHOLD 50
 
 // how long to wait for a complete RC command before we ditch it
-#define RC_TIMEOUT 10000
+#define RC_TIMEOUT 1000
+
+#define EEPROM_START_ADDR 0
 
 // lat,lon pairs
 float wp_list[] = 
@@ -107,12 +88,17 @@ float ahrs_offset = 0;
 uint8_t offset_set = 0;
 
 // not real fusion for now
-float fused_heading = 0;
+double fused_heading = 0;
 
 int16_t turning_by = 0;
 boolean turning = false;
 boolean tacking = false;
 boolean stalled = true;
+
+double new_rudder = 0;
+
+//Specify the links and initial tuning parameters
+PID steeringPID(&fused_heading, &wp_heading, &new_rudder, 2, 5, 1, DIRECT);
 
 inline void fuseHeading() {
     // no fusion for now. todo: add gps-based mag calibration compensation
@@ -136,42 +122,6 @@ float computeDistance(float i_lat, float i_lon, float f_lat, float f_lon) {
     return R * c;
 }
 
-// when this is called, we're assuming that we're close to irons, otherwise why tack?
-void tack() {
-    logln(F("Tacking..."));
-    float start_heading = fused_heading;
-    uint32_t tack_start_time = millis();
-
-    // yank the tiller, sails are fine
-    if (wind > 180) {
-        // tacking to port
-        // todo: what's the servo direction here?
-        TO_PORT(25);
-        while (!isPast(start_heading, TACK_START_STRAIGHT, fused_heading, false) && ((millis() - tack_start_time) < TACK_TIMEOUT)) {
-            updateSensors(true);
-            fuseHeading();
-        }
-    } else {
-        TO_SBRD(25);
-        while (!isPast(start_heading, TACK_START_STRAIGHT, fused_heading, true) && ((millis() - tack_start_time) < TACK_TIMEOUT)) {
-            updateSensors(true);
-            fuseHeading();
-        }
-    }
-    
-    centerRudder();
-    logln(F("Finished tack"));
-    // sails are set as is
-}
-
-void adjustTo(int amount) {
-    int corrected = amount * SERVO_ORIENTATION;
-    turning_by = amount;
-    turning = true;
-    
-    rudderFromCenter(corrected);
-}
-
 void adjustSails() {
     logln(F("Checking sail trim"));
     if (abs(current_roll) > START_HEEL_COMP)
@@ -193,78 +143,15 @@ void adjustSails() {
 
 void adjustHeading() {
     float off_course = angleDiff(fused_heading, wp_heading, true);
-    boolean skip_irons_check = false;
 
-    // + off_course == will turn to starboard
     // rudder values: 
     //       90: center. 
     //      100: turning to sbrd, pointing to port
     //       80: turning to port, pointing to sbrd
-    
-//    if (stalled) {
-//      off_course = -(wind > 180 ? 270.0 - wind : 90.0 - wind);
-//      skip_irons_check = true;
-//      logln(F("Stalled. Setting course to beam reach."));
-//    } else if (IN_IRONS(wind)) {
-//      // wind > 180 == port tack, want to turn to starboard to fix
-//      // wind < 180 == starboard tack, want to turn to port to fix
-//      off_course = -(wind > 180 ? 360 - IRONS - wind : IRONS - wind);
-//      skip_irons_check = true;
-//      logln(F("In irons. Setting course for close reach."));
-//    }
-    
-    logln(F("Off course by %d"), (int16_t) off_course);
-    if (turning) 
-      logln(F("Currently turning by %d, rudder is at %d"), turning_by, current_rudder);
-    else
-      logln(F("Not currently turning, ruder is at %d"), current_rudder);
-    
-    if (fabs(off_course) > COURSE_ADJUST_ON) {
-        logln(F("Current course is more than %d off target. Trying to adjust"), COURSE_ADJUST_ON);
 
-        // new wind if we turn the direction that we want to. The +/- is to account for the fact that 
-        // rotated rudder will keep us turning
-        int new_wind = toCircleDeg(wind - (off_course < 0 ? -WIND_LOOKAHEAD:WIND_LOOKAHEAD));
-        
-        // if adjusting any more puts us in irons
-        if (!skip_irons_check && IN_IRONS(new_wind)) {
-            logln(F("Requested (new wind %d) course unsafe, requires tack"), new_wind);
-            // and if we're allowed to tack, we tack
-            if (CAN_TURN() && gps_speed > MIN_TACK_SPEED) {
-                logln(F("Tack change allowed. Turning."));
-                tack();
-                last_turn = millis();
-                
-                // tack() centers the rudder, and we should re-evaluate where we are at that point.
-                turning_by = 0;
-                turning = false;
-                adjustment_made = true;
-            // if we aren't allowed to tack, but are currently turning, we stop turning
-            } else if (turning) {
-                logln(F("Tack change not allowed. Currently in a turn, centering rudder."));
-                turning = false;
-                turning_by = 0;
-                adjustment_made = true;
-                centerRudder();
-            }
-        } else {
-            // todo: there's something in ADJUST_BY that's misbehaving with negative off-course values. being lazy here.
-            logln(F("Projected new wind is %d"), new_wind);
-            int new_rudder = ADJUST_BY(abs(off_course)) * (off_course >= 0 ? -1 : 1);
-            if (abs(new_rudder - turning_by) > RUDDER_TOLERANCE) {
-                logln(F("Adjusting rudder by %d"), new_rudder);
-                adjustTo(new_rudder);
-                adjustment_made = true;
-            } else
-              logln(F("New rudder position of %d is close to current rudder position of %d. Not adjusting"), new_rudder, turning_by);
-        }
-    } else if (turning) {
-        logln(F("Current course is not more than %d off target. Centering."), COURSE_ADJUST_ON);
-        turning = false;
-        turning_by = 0;
-        adjustment_made = true;
-        centerRudder();
-    }
+	// PID!!
+	if (steeringPID.Compute())
+		rudderTo(round(new_rudder));
 }
 
 void pilotInit() {
@@ -273,13 +160,26 @@ void pilotInit() {
     
     wp_lat = wp_list[0];
     wp_lon = wp_list[1];
-}
-
-void resetRudder() {
-    turning = false;
-    turning_by = 0;
-    adjustment_made = false;
-    centerRudder();
+	
+	steeringPID.SetMode(AUTOMATIC);
+	steeringPID.SetOutputLimits(RUDDER_MIN, RUDDER_MAX);
+	
+	// check if PID values are stored
+	if ((char)EEPROM.read(EEPROM_START_ADDR) == 'w') {
+		int addr = EEPROM_START_ADDR + 1;
+		double kp, ki, kd;
+		
+		EEPROM.get(addr, kp); 
+		addr += sizeof(double);
+		
+		EEPROM.get(addr, ki); 
+		addr += sizeof(double);
+		
+		EEPROM.get(addr, kd); 
+		
+		logln(F("Read stored PID tuning variables of %d.%d, %d.%d, %d.%d"), FP(kp), FP(ki), FP(kd));
+		steeringPID.SetTunings(kp, ki, kd);
+	}
 }
 
 void processManualCommands() {
@@ -315,7 +215,6 @@ void processManualCommands() {
             case 'x':
                 manual_override = false;
 				serial_logging = SERIAL_LOGGING_DEFAULT;
-                resetRudder();
                 logln(F("End manual override"));
                 break;
         }

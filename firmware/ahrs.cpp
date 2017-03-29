@@ -16,7 +16,7 @@ MPU6050 mpu;
 #define MPU_PAUSES 1
 #define DEVICE_ORIENTATION 1.0
 
-// mag parameters
+// mag parameters; todo: should be moved to flash
 static const float b_field     = 61.2088;
 static const float offset[3]   = { 2.0848, -33.8208, 28.5815 };
 static const float b_inv[3][3] = {{ 0.9745, 0.0240, 0.0054 }, 

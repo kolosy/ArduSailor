@@ -44,10 +44,10 @@ void centerRudder() {
 }
 
 void winchTo(int value) {
-	logln(F("Winch to %d"), value);
-  
 	int v = constrain(value, min(WINCH_MIN, WINCH_MAX), max(WINCH_MIN, WINCH_MAX));
     
+	logln(F("Winch to %d, constrained to %d"), value, v);
+  
 	if (current_winch == v)
 		return;
 

@@ -359,7 +359,7 @@ void updateSituation() {
     stalled = gps_speed < STALL_SPEED;
     
     // still want to check this
-    if ((gps_speed > MIN_SPEED)) {
+    if (gps_speed > MIN_SPEED) {
         ahrs_offset = angleDiff(ahrs_heading, gps_course, true);
         logln(F("GPS vs AHRS difference is %d"), (int16_t) ahrs_offset * 10);
     }

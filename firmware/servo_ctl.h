@@ -6,8 +6,8 @@
 #define RUDDER_MIN 50
 #define RUDDER_MAX 125
 
-#define WINCH_MAX 60
-#define WINCH_MIN 130
+#define WINCH_MAX 56
+#define WINCH_MIN 120
 
 extern int heel_offset;
 extern uint8_t current_rudder;

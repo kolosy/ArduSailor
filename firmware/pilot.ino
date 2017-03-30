@@ -184,45 +184,49 @@ void pilotInit() {
 	// }
 }
 
-// void getPIDTunings() {
-// 	logln(F("Current PID tuning values of %d.%d, %d.%d, %d.%d"), FP(steeringPID.GetKp()), FP(steeringPID.GetKi()), FP(steeringPID.GetKd()));
-//
-// 	Serial.println(F("Enter tunings:"));
-//
-// 	if (!waitForData(5000))
-// 		return;
-//
-// 	Serial.print(F("Kp: "));
-// 	double kp = Serial.parseFloat();
-// 	Serial.println(kp, 4);
-//
-// 	if (!waitForData(5000))
-// 		return;
-//
-// 	Serial.print(F("Ki: "));
-// 	double ki = Serial.parseFloat();
-// 	Serial.println(ki, 4);
-//
-// 	if (!waitForData(5000))
-// 		return;
-//
-// 	Serial.print(F("Kd: "));
-// 	double kd = Serial.parseFloat();
-// 	Serial.println(kd, 4);
-//
-// 	int addr = EEPROM_START_ADDR + 1;
-//
-// 	EEPROM.put(addr, kp);
-// 	addr += sizeof(double);
-//
-// 	EEPROM.put(addr, ki);
-// 	addr += sizeof(double);
-//
-// 	EEPROM.put(addr, kd);
-// 	EEPROM.write(EEPROM_START_ADDR, 'w');
-//
-// 	Serial.println("Stored.");
-// }
+void getPIDTunings() {
+	logln(F("Current PID tuning values are %d.%d, %d.%d, %d.%d"), FP(steeringPID.GetKp()), FP(steeringPID.GetKi()), FP(steeringPID.GetKd()));
+
+	Serial.println(F("Enter tunings:"));
+
+	if (!waitForData(5000))
+		return;
+
+	Serial.print(F("Kp: "));
+	double kp = Serial.parseFloat();
+	Serial.println(kp, 4);
+
+	if (!waitForData(5000))
+		return;
+
+	Serial.print(F("Ki: "));
+	double ki = Serial.parseFloat();
+	Serial.println(ki, 4);
+
+	if (!waitForData(5000))
+		return;
+
+	Serial.print(F("Kd: "));
+	double kd = Serial.parseFloat();
+	Serial.println(kd, 4);
+	
+	steeringPID.SetTunings(kp, ki, kd);
+
+	// int addr = EEPROM_START_ADDR + 1;
+	//
+	// EEPROM.put(addr, kp);
+	// addr += sizeof(double);
+	//
+	// EEPROM.put(addr, ki);
+	// addr += sizeof(double);
+	//
+	// EEPROM.put(addr, kd);
+	// EEPROM.write(EEPROM_START_ADDR, 'w');
+	//
+	
+	logln(F("New PID tuning values are %d.%d, %d.%d, %d.%d"), FP(steeringPID.GetKp()), FP(steeringPID.GetKi()), FP(steeringPID.GetKd()));
+	Serial.println("Stored.");
+}
 
 void processManualCommands() {
     while (Serial.available()) {

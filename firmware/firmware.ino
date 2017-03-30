@@ -194,6 +194,7 @@ void doMenu() {
 	Serial.println(F("(c) Calibrate."));
 	Serial.println(F("(r) Remote Control."));
 	Serial.println(F("(w) Change waypoints <NOT IMPLEMENTED>."));
+	Serial.println(F("(t) Tune PID."));
 	Serial.print(F("\n>"));
 	
 	long t = millis();
@@ -223,6 +224,10 @@ void doMenu() {
 
 			case 'w':
 			// todo
+			break;
+			
+			case 't':
+			getPIDTunings();
 			break;
 			
 		}

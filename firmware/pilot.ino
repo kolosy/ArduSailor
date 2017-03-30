@@ -98,7 +98,7 @@ boolean stalled = true;
 double new_rudder = 0;
 
 //Specify the links and initial tuning parameters
-PID steeringPID(&fused_heading, &wp_heading, &new_rudder, 2, 5, 1, DIRECT);
+PID steeringPID(&fused_heading, &new_rudder, &wp_heading, 0.01, 0.01, 0.01, DIRECT);
 
 inline void fuseHeading() {
     // no fusion for now. todo: add gps-based mag calibration compensation
@@ -163,24 +163,66 @@ void pilotInit() {
 	
 	steeringPID.SetMode(AUTOMATIC);
 	steeringPID.SetOutputLimits(RUDDER_MIN, RUDDER_MAX);
-	
-	// check if PID values are stored
-	if ((char)EEPROM.read(EEPROM_START_ADDR) == 'w') {
-		int addr = EEPROM_START_ADDR + 1;
-		double kp, ki, kd;
+
+	// todo need newer eeprom library for this to work
 		
-		EEPROM.get(addr, kp); 
-		addr += sizeof(double);
-		
-		EEPROM.get(addr, ki); 
-		addr += sizeof(double);
-		
-		EEPROM.get(addr, kd); 
-		
-		logln(F("Read stored PID tuning variables of %d.%d, %d.%d, %d.%d"), FP(kp), FP(ki), FP(kd));
-		steeringPID.SetTunings(kp, ki, kd);
-	}
+	// // check if PID values are stored
+	// if ((char)EEPROM.read(EEPROM_START_ADDR) == 'w') {
+	// 	int addr = EEPROM_START_ADDR + 1;
+	// 	double kp, ki, kd;
+	//
+	// 	EEPROM.get(addr, kp);
+	// 	addr += sizeof(double);
+	//
+	// 	EEPROM.get(addr, ki);
+	// 	addr += sizeof(double);
+	//
+	// 	EEPROM.get(addr, kd);
+	//
+	// 	logln(F("Read stored PID tuning values of %d.%d, %d.%d, %d.%d"), FP(kp), FP(ki), FP(kd));
+	// 	steeringPID.SetTunings(kp, ki, kd);
+	// }
 }
+
+// void getPIDTunings() {
+// 	logln(F("Current PID tuning values of %d.%d, %d.%d, %d.%d"), FP(steeringPID.GetKp()), FP(steeringPID.GetKi()), FP(steeringPID.GetKd()));
+//
+// 	Serial.println(F("Enter tunings:"));
+//
+// 	if (!waitForData(5000))
+// 		return;
+//
+// 	Serial.print(F("Kp: "));
+// 	double kp = Serial.parseFloat();
+// 	Serial.println(kp, 4);
+//
+// 	if (!waitForData(5000))
+// 		return;
+//
+// 	Serial.print(F("Ki: "));
+// 	double ki = Serial.parseFloat();
+// 	Serial.println(ki, 4);
+//
+// 	if (!waitForData(5000))
+// 		return;
+//
+// 	Serial.print(F("Kd: "));
+// 	double kd = Serial.parseFloat();
+// 	Serial.println(kd, 4);
+//
+// 	int addr = EEPROM_START_ADDR + 1;
+//
+// 	EEPROM.put(addr, kp);
+// 	addr += sizeof(double);
+//
+// 	EEPROM.put(addr, ki);
+// 	addr += sizeof(double);
+//
+// 	EEPROM.put(addr, kd);
+// 	EEPROM.write(EEPROM_START_ADDR, 'w');
+//
+// 	Serial.println("Stored.");
+// }
 
 void processManualCommands() {
     while (Serial.available()) {
@@ -217,6 +259,9 @@ void processManualCommands() {
 				serial_logging = SERIAL_LOGGING_DEFAULT;
                 logln(F("End manual override"));
                 break;
+			// case 'p':
+			// 	getPIDTunings();
+			// 	break;
         }
     }
 }
@@ -326,11 +371,11 @@ void doPilot() {
 	if (remote_control)
 		processRCCommands();
 	else {
-	    if (IN_IRONS(wind) && stalled) {
-	      getOutOfIrons();
-	    } else {
+	    // if (IN_IRONS(wind) && stalled) {
+	    //   getOutOfIrons();
+	    // } else {
 	      adjustHeading();
 	      adjustSails();
-	    }
+	    // }
 	}
 }

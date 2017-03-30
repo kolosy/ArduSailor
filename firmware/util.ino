@@ -69,6 +69,16 @@ int fracPart(float f, int precision)
 	return abs((long)((f - int_part) * p[precision]));
 }
 
+bool waitForData(int timeout) {
+	long t = millis();
+	
+	while (!Serial.available() && millis() - t < 5000);
+	if (!Serial.available())
+		return false;
+	
+	return true;
+}
+
 void sleepMillis(int amount) {
 #ifdef LOW_POWER_SLEEP
 	int sleeps = amount / 2000; // max sleep time is 2s, so this is the number of times we'll have to sleep

@@ -37,6 +37,9 @@
 #define MENU_TIMEOUT 10
 #define SHOW_MENU_ON_START
 
+#define RAD(v) ((v) * PI / 180.0)
+#define DEG(v) ((v) * 180.0 / PI)
+
 // lets you do a logln of a float like so -> logln("blah %d.%d", FP(d))
 #define FP(f) (int16_t)f, fracPart(f)
 #define FP32(f) (int32_t)f, fracPart(f)
@@ -67,6 +70,7 @@ float heel_adjust = 0;
 
 // wind direction
 uint16_t wind = 0;
+float trailing_wind = 0;
 
 // current loop() count
 uint32_t cycle = 0;
@@ -92,6 +96,12 @@ boolean serial_logging = SERIAL_LOGGING_DEFAULT;
 boolean remote_control = false;
 boolean calibration = false;
 
+#define AHRS_TRAIL 4
+#define WIND_TRAIL 4
+
+float ahrs_trail[AHRS_TRAIL];
+float wind_trail[WIND_TRAIL];
+
 void setup() 
 { 
 	pinMode(STATUS_LED, OUTPUT);
@@ -104,6 +114,9 @@ void setup()
 
 	logln(F("ArduSailor Starting..."));
 	Serial2.begin(GPS_BAUDRATE);
+
+	// config value
+	mag_offset = RAD(-15.0);
 
 	servoInit();
 	windInit();
@@ -127,10 +140,33 @@ void setup()
 #endif
 } 
 
-void updateSensors(boolean skip_gps) {
-	// most of this will be used in human comparison stuff, no need to keep in radians.
+void initTrail() {
 	ahrs_heading = readSteadyHeading() * 180.0 / PI;
 	wind = readSteadyWind() * 180.0 / PI;
+	
+	for (int i=0; i<AHRS_TRAIL; i++)
+		ahrs_trail[i] = ahrs_heading;
+	
+	for (int i=0; i<WIND_TRAIL; i++)
+		wind_trail[i] = wind;
+}
+
+void newTrailingValue(float new_val, int count, float *target_val, float *trail) {
+	trail[cycle % count] = new_val;
+	
+	float v = 0;
+	for (int i=0; i<count; i++)
+		v += trail[i];
+
+	(*target_val) = v / (float)count;
+}
+
+void updateSensors(boolean skip_gps) {
+	// most of this will be used in human comparison stuff, no need to keep in radians.
+	newTrailingValue(readSteadyHeading() * 180.0 / PI, AHRS_TRAIL, &ahrs_heading, ahrs_trail);
+	newTrailingValue(readSteadyWind() * 180.0 / PI, WIND_TRAIL, &trailing_wind, wind_trail);
+	
+	wind = round(trailing_wind);
     
 #ifdef SLEEP_GPS
 	if (!skip_gps && (high_res_gps || (last_gps_time == 0) || ((millis() - last_gps_time) > GPS_REFRESH))) {
@@ -155,6 +191,26 @@ void updateSensors(boolean skip_gps) {
 	FP(gps_course),
 	wind, 
 	FP(voltage));
+}
+
+void getMagOffset() {
+	bool current_sl = serial_logging;
+	serial_logging = true;
+	
+	logln(F("Current mag offset is %d.%d"), FP(DEG(mag_offset)));
+
+	Serial.print(F("New offset: "));
+
+	if (!waitForData(5000))
+		return;
+	
+	float mag_offset_d = Serial.parseFloat();
+	Serial.println(mag_offset_d, 4);
+	mag_offset = RAD(mag_offset_d);
+
+	Serial.println("Stored.");
+	
+	serial_logging = current_sl;
 }
 
 void printDataLine() {
@@ -195,6 +251,7 @@ void doMenu() {
 	Serial.println(F("(r) Remote Control."));
 	Serial.println(F("(w) Change waypoints <NOT IMPLEMENTED>."));
 	Serial.println(F("(t) Tune PID."));
+	Serial.println(F("(m) Set mag offset."));
 	Serial.print(F("\n>"));
 	
 	long t = millis();
@@ -230,6 +287,9 @@ void doMenu() {
 			getPIDTunings();
 			break;
 			
+			case 'm':
+			getMagOffset();
+			break;
 		}
 		
 		Serial.print(' ');

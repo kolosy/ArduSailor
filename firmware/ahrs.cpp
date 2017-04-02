@@ -33,6 +33,7 @@ uint8_t fifoBuffer[64]; // FIFO storage buffer
 
 float current_pitch = 0;
 float current_roll = 0;
+float mag_offset = 0;
 
 // orientation/motion vars
 Quaternion q;           // [w, x, y, z]         quaternion container
@@ -187,7 +188,7 @@ float readSteadyHeading() {
 	}
     
 	heading /= ((float)MPU_LOOPS);
-	heading = toCircle(-heading + (DEVICE_ORIENTATION * PI));
+	heading = toCircle(-heading + (DEVICE_ORIENTATION * PI) + mag_offset);
     
 	current_pitch = f_ypr[1] * 180.0 / PI;
 	current_roll = f_ypr[2] * 180.0 / PI;

@@ -6,6 +6,7 @@
 // reporting value
 extern float current_pitch;
 extern float current_roll;
+extern float mag_offset;
 
 float readSteadyHeading();
 int mpuInit();

@@ -40,9 +40,6 @@
 #define ADJUST_TO_PORT(amt) ( SERVO_ORIENTATION * amt)
 #define ADJUST_TO_SBRD(amt) (-SERVO_ORIENTATION * amt)
 
-#define RAD(v) ((v) * PI / 180.0)
-#define DEG(v) ((v) * 180.0 / PI)
-
 // if we're at more than this heel, start easing the mainsheet
 #define START_HEEL_COMP 30
 #define MAX_HEEL_COMP 30
@@ -98,7 +95,7 @@ boolean stalled = true;
 double new_rudder = 0;
 
 //Specify the links and initial tuning parameters
-PID steeringPID(&fused_heading, &new_rudder, &wp_heading, 0.01, 0.01, 0.01, DIRECT);
+PID steeringPID(&fused_heading, &new_rudder, &wp_heading, 1, 5, 0.001, DIRECT);
 
 inline void fuseHeading() {
     // no fusion for now. todo: add gps-based mag calibration compensation
@@ -131,7 +128,7 @@ void adjustSails() {
     else
       heel_adjust = 0;
 
-    float new_winch = map(abs(wind - 180), 30, 170, WINCH_MIN, WINCH_MAX) - heel_adjust;
+    float new_winch = map(constrain(abs(wind - 180), 30, 170), 30, 170, WINCH_MIN, WINCH_MAX) - heel_adjust;
     
     if (abs(new_winch - current_winch) > SAIL_ADJUST_ON) {
         logln(F("New winch position of %d is more than %d off from %d. Adjusting trim."), (int16_t) new_winch, SAIL_ADJUST_ON, current_winch);
@@ -151,7 +148,7 @@ void adjustHeading() {
 
 	// PID!!
 	if (steeringPID.Compute())
-		rudderTo(round(new_rudder));
+		rudderFromCenter(round(new_rudder));
 }
 
 void pilotInit() {
@@ -162,7 +159,7 @@ void pilotInit() {
     wp_lon = wp_list[1];
 	
 	steeringPID.SetMode(AUTOMATIC);
-	steeringPID.SetOutputLimits(RUDDER_MIN, RUDDER_MAX);
+	steeringPID.SetOutputLimits(-45, 45);
 
 	// todo need newer eeprom library for this to work
 		
@@ -185,28 +182,31 @@ void pilotInit() {
 }
 
 void getPIDTunings() {
+	bool current_sl = serial_logging;
+	serial_logging = true;
+	
 	logln(F("Current PID tuning values are %d.%d, %d.%d, %d.%d"), FP(steeringPID.GetKp()), FP(steeringPID.GetKi()), FP(steeringPID.GetKd()));
 
 	Serial.println(F("Enter tunings:"));
 
+	Serial.print(F("Kp: "));
 	if (!waitForData(5000))
 		return;
 
-	Serial.print(F("Kp: "));
 	double kp = Serial.parseFloat();
 	Serial.println(kp, 4);
 
+	Serial.print(F("Ki: "));
 	if (!waitForData(5000))
 		return;
 
-	Serial.print(F("Ki: "));
 	double ki = Serial.parseFloat();
 	Serial.println(ki, 4);
 
+	Serial.print(F("Kd: "));
 	if (!waitForData(5000))
 		return;
 
-	Serial.print(F("Kd: "));
 	double kd = Serial.parseFloat();
 	Serial.println(kd, 4);
 	
@@ -226,6 +226,8 @@ void getPIDTunings() {
 	
 	logln(F("New PID tuning values are %d.%d, %d.%d, %d.%d"), FP(steeringPID.GetKp()), FP(steeringPID.GetKi()), FP(steeringPID.GetKd()));
 	Serial.println("Stored.");
+	
+	serial_logging = current_sl;
 }
 
 void processManualCommands() {

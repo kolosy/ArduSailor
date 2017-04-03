@@ -35,7 +35,7 @@
 
 // seconds
 #define MENU_TIMEOUT 10
-#define SHOW_MENU_ON_START
+// #define SHOW_MENU_ON_START
 
 #define RAD(v) ((v) * PI / 180.0)
 #define DEG(v) ((v) * 180.0 / PI)

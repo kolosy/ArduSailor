@@ -15,7 +15,7 @@
 #define SAIL_ADJUST_ON 10
 
 // either side of 0 for "in irons"
-#define IRONS 45
+#define IRONS 40
 #define IN_IRONS(v) (((v) < IRONS || (v) > (360 - IRONS)))
 
 // either side of 180 for "running"
@@ -39,6 +39,9 @@
 #define TO_SBRD(amt) rudderTo(current_rudder - (SERVO_ORIENTATION * amt))
 #define ADJUST_TO_PORT(amt) ( SERVO_ORIENTATION * amt)
 #define ADJUST_TO_SBRD(amt) (-SERVO_ORIENTATION * amt)
+
+// how often to change tacks when beating up-wind
+#define TACK_EVERY 30000
 
 // if we're at more than this heel, start easing the mainsheet
 #define START_HEEL_COMP 30
@@ -94,8 +97,11 @@ boolean stalled = true;
 
 double new_rudder = 0;
 
+// what the PID will steer to
+double requested_heading = 0;
+
 //Specify the links and initial tuning parameters
-PID steeringPID(&fused_heading, &new_rudder, &wp_heading, 1, 5, 0.001, DIRECT);
+PID steeringPID(&fused_heading, &new_rudder, &requested_heading, 1, 5, 0.001, DIRECT);
 
 inline void fuseHeading() {
     // no fusion for now. todo: add gps-based mag calibration compensation
@@ -138,14 +144,45 @@ void adjustSails() {
         logln(F("No trim adjustment needed"));
 }
 
+long time_since_tack_change = 0;
+bool beat_to_port = false;
+bool was_beating = false;
+
 void adjustHeading() {
-    float off_course = angleDiff(fused_heading, wp_heading, true);
-
-    // rudder values: 
-    //       90: center. 
-    //      100: turning to sbrd, pointing to port
-    //       80: turning to port, pointing to sbrd
-
+	float world_wind = toCircleDeg(fused_heading + wind);
+	
+	// starbord tack: world wind + irons
+	// port tack: world wind - irons
+	
+	if (angleDiff(world_wind, wp_heading, false) < IRONS) {
+		if (was_beating) {
+			if (time_since_tack_change + TACK_EVERY < millis()) {
+				beat_to_port = !beat_to_port;
+				time_since_tack_change = millis();
+			}
+		} else {
+			was_beating = true;
+			
+			// pick the closer direction when we start beating
+			// if sbord tack is farther, go to port
+			beat_to_port = angleDiff(world_wind + IRONS, wp_heading, false) > angleDiff(world_wind - IRONS, wp_heading, false);
+			time_since_tack_change = millis();
+		}
+		
+		requested_heading = toCircleDeg(world_wind + (beat_to_port ? -IRONS : IRONS));
+	} else {
+		was_beating = false;
+		
+		requested_heading = wp_heading;
+	}
+	
+	logln(F("World wind: %d.%d. Was beating: %d. Beat to port: %d, Time since change: %d. Requested heading %d.%d"),
+		FP(world_wind),
+		was_beating,
+		beat_to_port,
+		millis() - time_since_tack_change,
+		FP(requested_heading));
+		
 	// PID!!
 	if (steeringPID.Compute())
 		rudderFromCenter(round(new_rudder));
@@ -265,9 +302,6 @@ void processManualCommands() {
 				serial_logging = SERIAL_LOGGING_DEFAULT;
                 logln(F("End manual override"));
                 break;
-			// case 'p':
-			// 	getPIDTunings();
-			// 	break;
         }
     }
 }
@@ -377,11 +411,7 @@ void doPilot() {
 	if (remote_control)
 		processRCCommands();
 	else {
-	    // if (IN_IRONS(wind) && stalled) {
-	    //   getOutOfIrons();
-	    // } else {
-	      adjustHeading();
-	      adjustSails();
-	    // }
+		adjustHeading();
+		adjustSails();
 	}
 }

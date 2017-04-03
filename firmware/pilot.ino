@@ -101,7 +101,7 @@ double new_rudder = 0;
 double requested_heading = 0;
 
 //Specify the links and initial tuning parameters
-PID steeringPID(&fused_heading, &new_rudder, &requested_heading, 1, 5, 0.001, DIRECT);
+PID steeringPID(&fused_heading, &new_rudder, &requested_heading, 1, 0.001, 5, DIRECT);
 
 inline void fuseHeading() {
     // no fusion for now. todo: add gps-based mag calibration compensation

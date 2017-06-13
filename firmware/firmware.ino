@@ -96,8 +96,8 @@ boolean serial_logging = SERIAL_LOGGING_DEFAULT;
 boolean remote_control = false;
 boolean calibration = false;
 
-#define AHRS_TRAIL 4
-#define WIND_TRAIL 4
+#define AHRS_TRAIL 10
+#define WIND_TRAIL 10
 
 float ahrs_trail[AHRS_TRAIL];
 float wind_trail[WIND_TRAIL];
@@ -118,6 +118,7 @@ void setup()
 	// config value
 	mag_offset = RAD(-15.0);
 
+	initTrail();
 	servoInit();
 	windInit();
 	mpuInit();

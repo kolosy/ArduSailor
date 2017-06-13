@@ -54,7 +54,7 @@
 #define HEEL_COMP_DECAY 0.1
 
 // # of waypoints below
-#define WP_COUNT 8
+#define WP_COUNT 9
 
 // how close we can get to our waypoint before we switch to High Res GPS
 #define HRG_THRESHOLD 50
@@ -67,7 +67,8 @@
 // lat,lon pairs
 float wp_list[] = 
   {
-    41.923015, -87.631082,
+	41.923584, -87.631463,
+	41.923004, -87.631139,
     41.9207923576838 ,-87.63011004661024,
     41.92040355439754,-87.63045132003815,
     41.92024341159895,-87.63004258543924,
@@ -100,8 +101,8 @@ double new_rudder = 0;
 // what the PID will steer to
 double requested_heading = 0;
 
-//Specify the links and initial tuning parameters
-PID steeringPID(&fused_heading, &new_rudder, &requested_heading, 1, 0.001, 5, DIRECT);
+// Specify the links and initial tuning parameters
+PID steeringPID(&fused_heading, &new_rudder, &requested_heading, 0.5, 0.001, 5, DIRECT);
 
 inline void fuseHeading() {
     // no fusion for now. todo: add gps-based mag calibration compensation
@@ -134,7 +135,7 @@ void adjustSails() {
     else
       heel_adjust = 0;
 
-    float new_winch = map(constrain(abs(wind - 180), 30, 170), 30, 170, WINCH_MIN, WINCH_MAX) - heel_adjust;
+    float new_winch = map(constrain(abs(wind - 180), IRONS, 180), IRONS, 180, WINCH_MIN, WINCH_MAX) - heel_adjust;
     
     if (abs(new_winch - current_winch) > SAIL_ADJUST_ON) {
         logln(F("New winch position of %d is more than %d off from %d. Adjusting trim."), (int16_t) new_winch, SAIL_ADJUST_ON, current_winch);
@@ -154,6 +155,7 @@ void adjustHeading() {
 	// starbord tack: world wind + irons
 	// port tack: world wind - irons
 	
+	// cyclomatic complexity is a tad high, but more readable this way
 	if (angleDiff(world_wind, wp_heading, false) < IRONS) {
 		if (was_beating) {
 			if (time_since_tack_change + TACK_EVERY < millis()) {
@@ -328,15 +330,6 @@ void setNextWaypoint() {
             target_wp,
             ((int16_t) wp_heading), 
             ((int16_t) wp_distance));
-}
-
-void getOutOfIrons() {
-  // - roll == rolling to sbord
-  // + roll == rolling to port
-  
-  centerWinch();
-  
-  rudderFromCenter(current_roll < 0 ? ADJUST_TO_PORT(10) : ADJUST_TO_SBRD(10));
 }
 
 void updateSituation() {

@@ -1,12 +1,16 @@
 #include "logger.h"
 #include <stdarg.h>
 
+#ifndef NO_SD
+
 #include <SD.h>
 #include <Fat16.h>
 #include <Fat16util.h> // use functions to print strings from flash memory
 
 SdCard card;
 Fat16 file;
+
+#endif
 
 char gps_time[7];       // HHMMSS
 uint32_t gps_seconds = 0;   // seconds after midnight
@@ -16,6 +20,7 @@ uint8_t fileReady = 0;
 void do_log(char *fmt, va_list args, bool println);
 
 void logInit() {
+#ifndef NO_SD
 	// initialize the SD card
 	if (!card.init()) { 
 		Serial.print("Error initializing card - ");
@@ -56,19 +61,30 @@ void logInit() {
 	file.sync();
     
 	fileReady = 1;
+#else
+	Serial.println("Started log.");
+#endif
 }
 
 void logln(const __FlashStringHelper *ifsh, ...) {
     const char PROGMEM *p = (const char PROGMEM *)ifsh;
-	char * fmt = (char*)malloc(128);
+	char * fmt = (char*)malloc(MAX_STRING);
 	
     size_t n = 0;
+	uint16_t count = 0;
     while (1) {
       unsigned char c = pgm_read_byte(p++);
       fmt[n++] = c;
 
 	  // we want the 0 byte in there
       if (c == 0) break;
+	  
+	  if (count++ >= MAX_STRING) {
+		  Serial.println("Malformed PROGMEM string - no null terminator found.");
+		  free(fmt);
+		  
+		  return;
+	  }
     }
 	
 	va_list args;
@@ -107,6 +123,7 @@ void do_log(char *fmt, va_list args, bool println) {
 			Serial.println();
 	}
     
+#ifndef NO_SD
 	if (fileReady) {
 		file.print(gps_time);
 		file.print(':');
@@ -118,4 +135,5 @@ void do_log(char *fmt, va_list args, bool println) {
 		
 		file.sync();
 	}
+#endif
 }

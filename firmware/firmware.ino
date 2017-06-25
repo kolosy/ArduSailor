@@ -5,9 +5,11 @@
 #include "LowPower.h"
 #include "ahrs.h"
 
+#ifndef NO_SD
 #include <SD.h>
 #include <Fat16.h>
 #include <Fat16util.h> // use functions to print strings from flash memory
+#endif
 
 #include "Wire.h"
 #include "I2Cdev.h"
@@ -118,13 +120,20 @@ void setup()
 	// config value
 	mag_offset = RAD(-15.0);
 
-	initTrail();
+	logln(F("Initializing servos..."));
 	servoInit();
+	logln(F("Initializing wind sensor..."));
 	windInit();
+	logln(F("Initializing MPU..."));
 	mpuInit();
+	logln(F("Enabling GPS..."));
 	gpsInit();
+	logln(F("Starting battery monitor..."));
 	batteryInit();
+	logln(F("Allocating log trail..."));
+	initTrail();
     
+	logln(F("Starting pilot..."));
 	pilotInit();
     
 	blink(STATUS_LED, 100, 10, HIGH);
@@ -341,7 +350,7 @@ void loop()
 	}
 
 	if (!manual_override) {
-		logln(F("#################### Cycle %d start ####################"), cycle);
+		logln(F("[Cycle %d start]"), cycle);
 		cycle++;
 		updateSensors(false);
 

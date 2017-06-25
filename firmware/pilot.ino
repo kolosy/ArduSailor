@@ -98,9 +98,6 @@ boolean stalled = true;
 
 double new_rudder = 0;
 
-// what the PID will steer to
-double requested_heading = 0;
-
 // Specify the links and initial tuning parameters
 PID steeringPID(&fused_heading, &new_rudder, &requested_heading, 2.0, 0.2, 0.2, DIRECT);
 

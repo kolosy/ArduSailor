@@ -90,6 +90,9 @@ float voltage = 0;
 double wp_heading = 0;
 float wp_distance = 0;
 
+// what the PID will steer to
+double requested_heading = 0;
+
 // mode variables
 boolean manual_override = false;
 
@@ -233,6 +236,7 @@ void printDataLine() {
 	Serial.print(gps_course); Serial.print(", ");
 
 	Serial.print(ahrs_heading); Serial.print(", ");
+	Serial.print(requested_heading); Serial.print(", ");
 	Serial.print(current_roll); Serial.print(", ");
 	Serial.print(heel_adjust); Serial.print(", ");
 	Serial.print(wind); Serial.print(", ");

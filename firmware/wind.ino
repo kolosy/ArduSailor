@@ -8,6 +8,8 @@
 #define WIND_ITERATIONS 2
 #define WIND_PAUSES 5
 
+#include "trig_fix.h"
+
 void windInit() {
     pinMode(WIND_EN, OUTPUT);
     digitalWrite(WIND_EN, HIGH);

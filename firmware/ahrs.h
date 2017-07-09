@@ -13,4 +13,10 @@ int mpuInit();
 
 float toCircle(float value);
 void writeCalibrationLine();
+
+struct AngleCmp {
+	float s;
+	float c;
+};
+
 #endif

@@ -9,6 +9,7 @@
 #include "I2Cdev.h"
 
 #include "MPU6050_9Axis_MotionApps41.h"
+#include "trig_fix.h"
 
 MPU6050 mpu;
 

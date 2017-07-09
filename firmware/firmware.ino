@@ -17,6 +17,8 @@
 #include "SoftwareSerial.h"
 #include "MPU6050.h"
 
+#include "trig_fix.h"
+
 #define GPS_BAUDRATE 9600
 #define STATUS_LED 32
 
@@ -104,8 +106,8 @@ boolean calibration = false;
 #define AHRS_TRAIL 10
 #define WIND_TRAIL 10
 
-float ahrs_trail[AHRS_TRAIL];
-float wind_trail[WIND_TRAIL];
+struct AngleCmp ahrs_trail[AHRS_TRAIL];
+struct AngleCmp wind_trail[WIND_TRAIL];
 
 void setup() 
 { 
@@ -157,11 +159,30 @@ void initTrail() {
 	ahrs_heading = readSteadyHeading() * 180.0 / PI;
 	wind = readSteadyWind() * 180.0 / PI;
 	
-	for (int i=0; i<AHRS_TRAIL; i++)
-		ahrs_trail[i] = ahrs_heading;
+	for (int i=0; i<AHRS_TRAIL; i++) {
+		ahrs_trail[i].s = sin(ahrs_heading);
+		ahrs_trail[i].c = cos(ahrs_heading);
+	}
 	
-	for (int i=0; i<WIND_TRAIL; i++)
-		wind_trail[i] = wind;
+	for (int i=0; i<WIND_TRAIL; i++) {
+		wind_trail[i].s = sin(wind);
+		wind_trail[i].c = cos(wind);
+	}
+}
+
+void newTrailingHeadingValue(float new_val, int count, float *target_val, AngleCmp *trail) {
+	trail[cycle % count].s = sin(new_val);
+	trail[cycle % count].c = cos(new_val);
+	
+	float x = 0;
+	float y = 0;
+	
+	for (int i=0; i<count; i++) {
+		x += trail[i].c;
+		y += trail[i].s;
+	}
+	
+	(*target_val) = DEG(toCircle(atan2(y, x)));
 }
 
 void newTrailingValue(float new_val, int count, float *target_val, float *trail) {
@@ -176,8 +197,8 @@ void newTrailingValue(float new_val, int count, float *target_val, float *trail)
 
 void updateSensors(boolean skip_gps) {
 	// most of this will be used in human comparison stuff, no need to keep in radians.
-	newTrailingValue(readSteadyHeading() * 180.0 / PI, AHRS_TRAIL, &ahrs_heading, ahrs_trail);
-	newTrailingValue(readSteadyWind() * 180.0 / PI, WIND_TRAIL, &trailing_wind, wind_trail);
+	newTrailingHeadingValue(readSteadyHeading(), AHRS_TRAIL, &ahrs_heading, ahrs_trail);
+	newTrailingHeadingValue(readSteadyWind(), WIND_TRAIL, &trailing_wind, wind_trail);
 	
 	wind = round(trailing_wind);
     

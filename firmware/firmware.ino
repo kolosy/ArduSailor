@@ -1,5 +1,5 @@
 #include "logger.h"
-#include <Servo.h> 
+#include <Servo.h>
 #include "servo_ctl.h"
 
 #include "LowPower.h"
@@ -109,11 +109,11 @@ boolean calibration = false;
 struct AngleCmp ahrs_trail[AHRS_TRAIL];
 struct AngleCmp wind_trail[WIND_TRAIL];
 
-void setup() 
-{ 
+void setup()
+{
 	pinMode(STATUS_LED, OUTPUT);
 	digitalWrite(STATUS_LED, HIGH);
-    
+
 	Wire.begin();
 
 	Serial.begin(9600);
@@ -137,33 +137,33 @@ void setup()
 	batteryInit();
 	logln(F("Allocating log trail..."));
 	initTrail();
-    
+
 	logln(F("Starting pilot..."));
 	pilotInit();
-    
+
 	blink(STATUS_LED, 100, 10, HIGH);
 	logln(F("Enabling GPS..."));
-    
+
 	warnGPS();
 
 	logln(F("Done. System ready."));
-    
+
 	digitalWrite(STATUS_LED, LOW);
-	
+
 #ifdef SHOW_MENU_ON_START
 	doMenu();
 #endif
-} 
+}
 
 void initTrail() {
 	ahrs_heading = readSteadyHeading() * 180.0 / PI;
 	wind = readSteadyWind() * 180.0 / PI;
-	
+
 	for (int i=0; i<AHRS_TRAIL; i++) {
 		ahrs_trail[i].s = sin(ahrs_heading);
 		ahrs_trail[i].c = cos(ahrs_heading);
 	}
-	
+
 	for (int i=0; i<WIND_TRAIL; i++) {
 		wind_trail[i].s = sin(wind);
 		wind_trail[i].c = cos(wind);
@@ -173,21 +173,21 @@ void initTrail() {
 void newTrailingHeadingValue(float new_val, int count, float *target_val, AngleCmp *trail) {
 	trail[cycle % count].s = sin(new_val);
 	trail[cycle % count].c = cos(new_val);
-	
+
 	float x = 0;
 	float y = 0;
-	
+
 	for (int i=0; i<count; i++) {
 		x += trail[i].c;
 		y += trail[i].s;
 	}
-	
+
 	(*target_val) = DEG(toCircle(atan2(y, x)));
 }
 
 void newTrailingValue(float new_val, int count, float *target_val, float *trail) {
 	trail[cycle % count] = new_val;
-	
+
 	float v = 0;
 	for (int i=0; i<count; i++)
 		v += trail[i];
@@ -199,9 +199,9 @@ void updateSensors(boolean skip_gps) {
 	// most of this will be used in human comparison stuff, no need to keep in radians.
 	newTrailingHeadingValue(readSteadyHeading(), AHRS_TRAIL, &ahrs_heading, ahrs_trail);
 	newTrailingHeadingValue(readSteadyWind(), WIND_TRAIL, &trailing_wind, wind_trail);
-	
+
 	wind = round(trailing_wind);
-    
+
 #ifdef SLEEP_GPS
 	if (!skip_gps && (high_res_gps || (last_gps_time == 0) || ((millis() - last_gps_time) > GPS_REFRESH))) {
 		updateGPS();
@@ -211,47 +211,47 @@ void updateSensors(boolean skip_gps) {
 	} else
 		gps_updated = false;
 #endif
-        
+
 	if (!high_res_gps && (millis() - last_gps_time > GPS_WARNING))
 		warnGPS();
 
 	uint16_t gps_elapsed = millis() - last_gps_time;
 	voltage = measureVoltage();
-	logln(F("Position: %s, %s (%dms old), Speed: %d.%d, Direction: %d.%d, Wind: %d, Battery %d.%d"), 
-	gps_aprs_lat, 
-	gps_aprs_lon, 
+	logln(F("Position: %s, %s (%dms old), Speed: %d.%d, Direction: %d.%d, Wind: %d, Battery %d.%d"),
+	gps_aprs_lat,
+	gps_aprs_lon,
 	gps_elapsed,
 	FP(gps_speed),
 	FP(gps_course),
-	wind, 
+	wind,
 	FP(voltage));
 }
 
 void getMagOffset() {
 	bool current_sl = serial_logging;
 	serial_logging = true;
-	
+
 	logln(F("Current mag offset is %d.%d"), FP(DEG(mag_offset)));
 
 	Serial.print(F("New offset: "));
 
 	if (!waitForData(5000))
 		return;
-	
+
 	float mag_offset_d = Serial.parseFloat();
 	Serial.println(mag_offset_d, 4);
 	mag_offset = RAD(mag_offset_d);
 
 	Serial.println("Stored.");
-	
+
 	serial_logging = current_sl;
 }
 
 void printDataLine() {
 	Serial.print(gps_aprs_lat); Serial.print(", ");
-	Serial.print(gps_aprs_lon); Serial.print(", "); 
+	Serial.print(gps_aprs_lon); Serial.print(", ");
 	Serial.print(gps_lat, 6); Serial.print(", ");
-	Serial.print(gps_lon, 6); Serial.print(", "); 
+	Serial.print(gps_lon, 6); Serial.print(", ");
 	Serial.print(millis() - last_gps_time); Serial.print(", ");
 	Serial.print(gps_speed); Serial.print(", ");
 	Serial.print(gps_course); Serial.print(", ");
@@ -271,16 +271,16 @@ void printDataLine() {
 
 void doMenu() {
 	Serial.print(F("Welcome to ArduSailor. Menu timeout is "));
-	Serial.println(MENU_TIMEOUT); 
+	Serial.println(MENU_TIMEOUT);
 	Serial.println();
 
 	Serial.println("Current configuration is:");
 	Serial.print(F("calibration: ")); Serial.println(calibration);
 	Serial.print(F("remote control: ")); Serial.println(remote_control);
 	Serial.print(F("manual override: ")); Serial.println(manual_override);
-	
+
 	Serial.println(F("\nPlease select a menu option. \n"));
-	
+
 	Serial.println(F("(a) Automate."));
 	Serial.println(F("(c) Calibrate."));
 	Serial.println(F("(r) Remote Control."));
@@ -288,11 +288,11 @@ void doMenu() {
 	Serial.println(F("(t) Tune PID."));
 	Serial.println(F("(m) Set mag offset."));
 	Serial.print(F("\n>"));
-	
+
 	long t = millis();
-	
+
 	while ((millis() - t < (MENU_TIMEOUT * 1000)) && !Serial.available());
-	
+
 	if (Serial.available()) {
 		char c = (char) Serial.read();
 		switch (c) {
@@ -317,16 +317,16 @@ void doMenu() {
 			case 'w':
 			// todo
 			break;
-			
+
 			case 't':
 			getPIDTunings();
 			break;
-			
+
 			case 'm':
 			getMagOffset();
 			break;
 		}
-		
+
 		Serial.print(' ');
 		Serial.println(c);
 	} else
@@ -339,25 +339,25 @@ void doMenu() {
 
 void checkInput() {
 	// in case we're going too fast. only needed when serial_logging is on
-	if (serial_logging && (cycle % WAIT_FOR_COMMAND_EVERY == 0))
+	if (serial_logging && !calibration && (cycle % WAIT_FOR_COMMAND_EVERY == 0))
 		delay(WAIT_FOR_COMMAND_FOR);
-  
+
 	while (Serial.available()) {
 		// a '[' signals the start of an RC command
 		if (remote_control && (char)Serial.peek() == '[')
 			return;
-		
+
 		switch ((char)Serial.read()) {
 			case 'o':
 			logln(F("Entering manual override"));
 			manual_override = true;
 			serial_logging = true;
 			break;
-            
+
 			case 'l':
 			serial_logging = !serial_logging;
 			break;
-			
+
 			case 'm':
 			doMenu();
 			break;
@@ -365,12 +365,12 @@ void checkInput() {
 	}
 }
 
-void loop() 
-{ 
+void loop()
+{
 	if (calibration) {
 		writeCalibrationLine();
 		checkInput();
-		
+
 		return;
 	}
 
@@ -384,10 +384,10 @@ void loop()
 	} else
 		// the actual steering commands are handled by doPilot for now
 		doPilot();
-        
+
 	if (!serial_logging && (millis() - last_data_update > (remote_control ? RC_DATA_FREQ : DATA_FREQ))) {
 		printDataLine();
-      
+
 		last_data_update = millis();
 	}
-} 
+}

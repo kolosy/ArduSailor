@@ -9,20 +9,26 @@
 #include "I2Cdev.h"
 
 #include "MPU6050_9Axis_MotionApps41.h"
-#include "trig_fix.h"
+#include <EEPROM.h>
 
 MPU6050 mpu;
 
 #define MPU_LOOPS 2
 #define MPU_PAUSES 1
 #define DEVICE_ORIENTATION 1.0
+#define TOTAL_CALIBRATION_STEPS 300
+#define CALIBRATION_WAIT 5
 
+int16_t calibrationSteps = 0;
 // mag parameters; todo: should be moved to flash
-static const float b_field     = 61.2088;
-static const float offset[3]   = { 2.0848, -33.8208, 28.5815 };
-static const float b_inv[3][3] = {{ 0.9745, 0.0240, 0.0054 },
-								  { 0.0240, 1.0463, -0.0089 },
-								  { 0.0054, -0.0089, 0.9814 }};
+//static const float b_field     = 61.2088;
+//static const float offset[3]   = { 2.0848, -33.8208, 28.5815 };
+////static const float b_inv[3][3] = {{ 1, 0, 0 },
+////                                  { 0, 1, 0 },
+////                                  { 0, 0, 1 }};
+//static const float b_inv[3][3] = {{ 0.9745, 0.0240, 0.0054 },
+//                                  { 0.0240, 1.0463, -0.0089 },
+//                                  { 0.0054, -0.0089, 0.9814 }};
 
 // MPU control/status vars
 bool dmpReady = false;  // set true if DMP init was successful
@@ -41,8 +47,44 @@ Quaternion q;           // [w, x, y, z]         quaternion container
 VectorFloat gravity;    // [x, y, z]            gravity vector
 float ypr[3];           // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
 int16_t mag[3];
+int16_t acc[3];
+
+struct vector
+{
+  float x, y, z;
+};
+
+struct vector_i16t {
+  int16_t x, y, z;
+};
+
+float heading(vector a, vector m);
+void vector_cross(const vector *a, const vector *b, vector *out);
+float vector_dot(const vector *a, const vector *b);
+void vector_normalize(vector *a);
+int readFIFOPacket();
+
+vector_i16t m_min, m_max, running_min, running_max;
+
+// Sets the relative orientation of the MPU
+vector from = {1, 0, 0};
 
 int mpuInit() {
+    logln(F("Reading calibration data..."));
+
+    EEPROM.get(0, m_min);
+    EEPROM.get(sizeof(vector_i16t), m_max);
+//    m_min.x = -70;
+//    m_min.y = -26;
+//    m_min.z = -97;
+//    m_max.x = +60;
+//    m_max.y = +87;
+//    m_max.z = +43;
+
+    logln(F("Starting values min: {%+6d, %+6d, %+6d}\tmax: {%+6d, %+6d, %+6d}"),
+        m_min.x, m_min.y, m_min.z,
+        m_max.x, m_max.y, m_max.z);
+
 	// initialize device
 	logln(F("Initializing I2C devices..."));
 
@@ -86,58 +128,115 @@ int mpuInit() {
 	}
 }
 
-void normalize_mpu(int16_t mag_val[3], float normalized[3]) {
-	float xn = mag_val[0] + offset[0];
-	float yn = mag_val[1] + offset[1];
-	float zn = mag_val[2] + offset[2];
+void calibrationLoop() {
+    if (!readFIFOPacket())
+        return 0;
+    
+    mpu.dmpGetMag(mag, fifoBuffer);
+    
+    running_min.x = min(running_min.x, mag[0]);
+    running_min.y = min(running_min.y, mag[1]);
+    running_min.z = min(running_min.z, mag[2]);
+    
+    running_max.x = max(running_max.x, mag[0]);
+    running_max.y = max(running_max.y, mag[1]);
+    running_max.z = max(running_max.z, mag[2]);
+    
+    delay(100);
+    
+    calibrationSteps++;
+}
 
-	// normalize *and* re-align axes (because, you know, having all sensors be the same is too much to ask for).
-	normalized[1] =   ( b_inv[0][0] * xn + b_inv[0][1] * yn + b_inv[0][2] * zn) / b_field;
-	normalized[0] =   ( b_inv[1][0] * xn + b_inv[1][1] * yn + b_inv[1][2] * zn) / b_field;
-	normalized[2] = - ( b_inv[2][0] * xn + b_inv[2][1] * yn + b_inv[2][2] * zn) / b_field;
+void calibrateMag() {
+  logln(F("Beginning Calibration in %d seconds"), CALIBRATION_WAIT);
+  delay(CALIBRATION_WAIT * 1000);
+    
+  logln(F("Calibration start. Initial values min: {%+6d, %+6d, %+6d}    max: {%+6d, %+6d, %+6d}"),
+        m_min.x, m_min.y, m_min.z,
+        m_max.x, m_max.y, m_max.z);
+        
+  while (calibrationSteps < TOTAL_CALIBRATION_STEPS)
+    calibrationLoop();
+
+  logln(F("Calibration complete"));
+    
+  m_min = running_min;
+  m_max = running_max;
+
+  logln(F("New values min: {%+6d, %+6d, %+6d}    max: {%+6d, %+6d, %+6d}"),
+        m_min.x, m_min.y, m_min.z,
+        m_max.x, m_max.y, m_max.z);
+
+  logln(F("Writing to eeprom..."));
+
+  EEPROM.put(0, m_min);
+  EEPROM.put(sizeof(vector_i16t), m_max);
+}
+
+void normalize_mpu(int16_t mag_val[3], float normalized[3]) {
+    // normalize *and* re-align axes (because, you know, having all sensors be the same is too much to ask for).
+    normalized[1] =   mag_val[0] - (m_min.x + m_max.x) / 2.0;
+    normalized[0] =   mag_val[1] - (m_min.y + m_max.y) / 2.0;
+    normalized[2] = -(mag_val[2]);// - (m_min.z + m_max.z) / 2.0);
+
+//	float xn = mag_val[0] + offset[0];
+//	float yn = mag_val[1] + offset[1];
+//	float zn = mag_val[2] + offset[2];
+//
+//	normalized[1] =   ( b_inv[0][0] * xn + b_inv[0][1] * yn + b_inv[0][2] * zn) / b_field;
+//	normalized[0] =   ( b_inv[1][0] * xn + b_inv[1][1] * yn + b_inv[1][2] * zn) / b_field;
+//	normalized[2] = - ( b_inv[2][0] * xn + b_inv[2][1] * yn + b_inv[2][2] * zn) / b_field;
+}
+
+int readFIFOPacket() {
+    // if programming failed, don't try to do anything
+    if (!dmpReady) return 0;
+
+    // reset interrupt flag and get INT_STATUS byte
+    mpuIntStatus = mpu.getIntStatus();
+
+    // get current FIFO count
+    fifoCount = mpu.getFIFOCount();
+
+    // check for overflow (this should never happen unless our code is too inefficient)
+    while ((mpuIntStatus & 0x10) || fifoCount == 1024) {
+        // reset so we can continue cleanly
+        mpu.resetFIFO();
+
+        // do this again.
+        // reset interrupt flag and get INT_STATUS byte
+        mpuIntStatus = mpu.getIntStatus();
+
+        // get current FIFO count
+        fifoCount = mpu.getFIFOCount();
+    }
+
+    while (!(mpuIntStatus & 0x02)) {
+        mpuIntStatus = mpu.getIntStatus();
+
+        // get current FIFO count
+        fifoCount = mpu.getFIFOCount();
+    }
+
+    // wait for correct available data length, should be a VERY short wait
+    while (fifoCount < packetSize) fifoCount = mpu.getFIFOCount();
+
+    // read a packet from FIFO
+    mpu.getFIFOBytes(fifoBuffer, packetSize);
+
+    return 1;
 }
 
 int readHeading(float f_ypr[3], bool calibration) {
-	// if programming failed, don't try to do anything
-	if (!dmpReady) return 0;
-
-	// reset interrupt flag and get INT_STATUS byte
-	mpuIntStatus = mpu.getIntStatus();
-
-	// get current FIFO count
-	fifoCount = mpu.getFIFOCount();
-
-	// check for overflow (this should never happen unless our code is too inefficient)
-	while ((mpuIntStatus & 0x10) || fifoCount == 1024) {
-		// reset so we can continue cleanly
-		mpu.resetFIFO();
-
-		// do this again.
-		// reset interrupt flag and get INT_STATUS byte
-		mpuIntStatus = mpu.getIntStatus();
-
-		// get current FIFO count
-		fifoCount = mpu.getFIFOCount();
-	}
-
-	while (!(mpuIntStatus & 0x02)) {
-		mpuIntStatus = mpu.getIntStatus();
-
-		// get current FIFO count
-		fifoCount = mpu.getFIFOCount();
-	}
-
-	// wait for correct available data length, should be a VERY short wait
-	while (fifoCount < packetSize) fifoCount = mpu.getFIFOCount();
-
-	// read a packet from FIFO
-	mpu.getFIFOBytes(fifoBuffer, packetSize);
-
+    if (!readFIFOPacket())
+        return 0;
+	
 	// track FIFO count here in case there is > 1 packet available
 	// (this lets us immediately read more without waiting for an interrupt)
 	fifoCount -= packetSize;
 
 	mpu.dmpGetMag(mag, fifoBuffer);
+    mpu.dmpGetAccel(acc, fifoBuffer);
 
 	if (!calibration) {
 		mpu.dmpGetQuaternion(&q, fifoBuffer);
@@ -151,20 +250,10 @@ int readHeading(float f_ypr[3], bool calibration) {
 		for (int i=0; i<3; i++)
 			magnetom[i] = mpu_mag_out[i];
 
-		float magComp[3];
-		float cos_pitch = cos(-ypr[1]);
-		float sin_pitch = sin(-ypr[1]);
-		float cos_roll = cos(ypr[2]);
-		float sin_roll = sin(ypr[2]);
+        vector m = { magnetom[0], magnetom[1], magnetom[2] };
+        vector a = { gravity.x, gravity.y, gravity.z };
 
-		// Tilt compensated magnetic field X
-		float mag_x = magnetom[0] * cos_pitch + magnetom[1] * sin_roll * sin_pitch + magnetom[2] * cos_roll * sin_pitch;
-		// Tilt compensated magnetic field Y
-		float mag_y = magnetom[1] * cos_roll - magnetom[2] * sin_roll;
-		// Magnetic Heading
-		float heading = atan2(-mag_y, mag_x);
-
-		f_ypr[0] = heading;
+		f_ypr[0] = heading(a, m);
 		f_ypr[1] = -ypr[1];
 		f_ypr[2] = ypr[2];
 	} else
@@ -189,7 +278,7 @@ float readSteadyHeading() {
 	}
 
 	heading /= ((float)MPU_LOOPS);
-	heading = toCircle(-heading + (DEVICE_ORIENTATION * PI) + mag_offset);
+	heading = toCircle(heading + (DEVICE_ORIENTATION * PI) + mag_offset);
 
 	current_pitch = f_ypr[1] * 180.0 / PI;
 	current_roll = f_ypr[2] * 180.0 / PI;
@@ -202,3 +291,40 @@ float readSteadyHeading() {
 
 	return heading;
 }
+
+float heading(vector a, vector m)
+{
+    // compute E and N
+    vector E;
+    vector N;
+    vector_cross(&m, &a, &E);
+    vector_normalize(&E);
+    vector_cross(&a, &E, &N);
+    vector_normalize(&N);
+
+    // compute heading
+    float heading = atan2(vector_dot(&E, &from), vector_dot(&N, &from));
+    if (heading < 0) heading += 2 * PI;
+    return heading;
+}
+
+void vector_cross(const vector *a, const vector *b, vector *out)
+{
+  out->x = (a->y * b->z) - (a->z * b->y);
+  out->y = (a->z * b->x) - (a->x * b->z);
+  out->z = (a->x * b->y) - (a->y * b->x);
+}
+
+float vector_dot(const vector *a, const vector *b)
+{
+  return (a->x * b->x) + (a->y * b->y) + (a->z * b->z);
+}
+
+void vector_normalize(vector *a)
+{
+  float mag = sqrt(vector_dot(a, a));
+  a->x /= mag;
+  a->y /= mag;
+  a->z /= mag;
+}
+

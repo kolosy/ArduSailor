@@ -25,7 +25,7 @@ static const t_nmea_parser gga_parsers[] = {
     NULL,                        // N/S
     NULL,                        // Longitude
     NULL,                        // E/W
-    NULL,                        // Fix quality 
+    NULL,                        // Fix quality
     NULL,                        // Number of satellites
     NULL,                        // Horizontal dilution of position
     parse_altitude,              // Altitude
@@ -78,7 +78,7 @@ static bool gps_on = false;
 
 
 // Module functions
-unsigned char from_hex(char a) 
+unsigned char from_hex(char a)
 {
     if (a >= 'A' && a <= 'F')
         return a - 'A' + 10;
@@ -107,8 +107,8 @@ void parse_time(const char *token)
     strncpy(new_time, token, 6);
     // Terminate string
     new_time[6] = '\0';
-    
-    new_seconds = 
+
+    new_seconds =
         ((new_time[0] - '0') * 10 + (new_time[1] - '0')) * 60 * 60UL +
         ((new_time[2] - '0') * 10 + (new_time[3] - '0')) * 60 +
         ((new_time[4] - '0') * 10 + (new_time[5] - '0'));
@@ -193,7 +193,7 @@ void gpsInit() {
     strcpy(gps_time, "000000");
     strcpy(gps_aprs_lat, "0000.00N");
     strcpy(gps_aprs_lon, "00000.00E");
-    
+
     pinMode(GPS_EN, OUTPUT);
     digitalWrite(GPS_EN, LOW);
     gps_on = true;
@@ -271,7 +271,7 @@ bool gps_decode(char c)
             num_tokens = 0;
             sentence_type = SENTENCE_UNK;
             break;
-        
+
         case '*':
             // Handle as ',', but prepares to receive checksum (ie. do not break)
             at_checksum = true;
@@ -332,9 +332,9 @@ void warnGPS() {
 }
 
 // NOTE: This works well enough on an ATMega2560, with HardwareSerial.cpp hacked to increase the SERIAL_BUFFER_SIZE to 512 (up from 64).
-//       This implies that serial buffers now take up half the RAM of a mega (4 serial ports x 2 buffers per port x 512 = 3072). For now, 
-//       we seem to be ok with the remaining ram. If that changes, the un-lazy thing to do is modify the HarwareSerial code to only 
-//       increase the rx_buffer size, and only for serial2. 
+//       This implies that serial buffers now take up half the RAM of a mega (4 serial ports x 2 buffers per port x 512 = 3072). For now,
+//       we seem to be ok with the remaining ram. If that changes, the un-lazy thing to do is modify the HarwareSerial code to only
+//       increase the rx_buffer size, and only for serial2.
 //
 //       Not increasing the buffer size can lead to overflows which would either degrade GPS read performance, or kill it entirely.
 void serialEvent2() {
@@ -353,7 +353,7 @@ void serialEvent2() {
 //void updateGPS() {
 //    if (!gps_on)
 //        warnGPS();
-//    
+//
 //    do {
 //        while (Serial2.available() == 0);
 //    } while (! gps_decode(Serial2.read()));

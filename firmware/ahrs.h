@@ -10,9 +10,9 @@ extern float mag_offset;
 
 float readSteadyHeading();
 int mpuInit();
+void calibrateMag();
 
 float toCircle(float value);
-void writeCalibrationLine();
 
 struct AngleCmp {
 	float s;

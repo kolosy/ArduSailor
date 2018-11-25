@@ -1,6 +1,8 @@
 #ifndef __servo_ctl
 #define __servo_ctl
 
+#define NO_SAIL
+
 #include "Arduino.h"
 
 #define RUDDER_MIN 50
@@ -21,5 +23,10 @@ void normalizedWinchTo(int value);
 void normalizedWinchTo(int value, int min, int max);
 void rudderFromCenter(int value);
 void rudderTo(int value);
+
+#ifdef NO_SAIL
+void runMotor();
+void stopMotor();
+#endif
 
 #endif

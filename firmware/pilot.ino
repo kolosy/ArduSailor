@@ -1,3 +1,5 @@
+#define NO_SAIL
+
 #include <PID_v1.h>
 #include <EEPROM.h>
 
@@ -104,7 +106,7 @@ boolean stalled = true;
 double new_rudder = 0;
 
 // Specify the links and initial tuning parameters
-PID steeringPID(&fused_heading, &new_rudder, &requested_heading, 2.0, 0.2, 0.2, DIRECT);
+PID steeringPID(&fused_heading, &new_rudder, &requested_heading, 0.1, 0.001, 2.8, P_ON_E, DIRECT);
 
 inline void fuseHeading() {
     // no fusion for now. todo: add gps-based mag calibration compensation
@@ -129,13 +131,17 @@ float computeDistance(float i_lat, float i_lon, float f_lat, float f_lon) {
 }
 
 void adjustSails() {
+#ifdef NO_SAIL
+    return;
+#endif
+
     logln(F("Checking sail trim"));
     if (abs(current_roll) > START_HEEL_COMP)
-      heel_adjust = min(MAX_HEEL_COMP, 2 * (abs(current_roll) - START_HEEL_COMP));
+        heel_adjust = min(MAX_HEEL_COMP, 2 * (abs(current_roll) - START_HEEL_COMP));
     else if (heel_adjust > MIN_HEEL_COMP)
-      heel_adjust = heel_adjust * HEEL_COMP_DECAY;
+        heel_adjust = heel_adjust * HEEL_COMP_DECAY;
     else
-      heel_adjust = 0;
+        heel_adjust = 0;
 
     float new_winch = map(constrain(abs(wind - 180), IRONS, 180), IRONS, 180, WINCH_MIN, WINCH_MAX) - heel_adjust;
 
@@ -152,6 +158,7 @@ bool beat_to_port = false;
 bool was_beating = false;
 
 void adjustHeading() {
+#ifndef NO_SAIL
 	float world_wind = toCircleDeg(fused_heading + wind);
 
 	// starbord tack: world wind + irons
@@ -186,6 +193,14 @@ void adjustHeading() {
 		beat_to_port,
 		millis() - time_since_tack_change,
 		FP(requested_heading));
+
+#else
+    requested_heading = wp_heading;
+    
+    logln(F("Requested heading %d.%d, Actual heading %d.%d"),
+    	  FP(requested_heading),
+    	  FP(fused_heading));
+#endif
 
 	// PID!!
 	if (steeringPID.Compute())
@@ -309,9 +324,11 @@ void processManualCommands() {
             #ifdef NO_SAIL
             case 'm':
                 runMotor();
+                logln(F("Motor on"));
                 break;
             case '.':
                 stopMotor();
+                logln(F("Motor off"));
                 break;
             #endif
         }
@@ -368,46 +385,53 @@ void updateSituation() {
         setNextWaypoint();
 
     if (wp_distance < HRG_THRESHOLD) {
-      high_res_gps = true;
-      warnGPS();
-      logln(F("Within high-res gps threshold. Switching to HRG"));
-    }
-    else {
-      if (!high_res_gps && HIGH_RES_GPS_DEFAULT)
+        high_res_gps = true;
         warnGPS();
-
-      high_res_gps = HIGH_RES_GPS_DEFAULT;
+        logln(F("Within high-res gps threshold. Switching to HRG"));
+    } else {
+        if (!high_res_gps && HIGH_RES_GPS_DEFAULT)
+            warnGPS();
+        
+        high_res_gps = HIGH_RES_GPS_DEFAULT;
     }
 }
 
 void processRCCommands() {
-  if (!Serial.available())
-    return;
-
-  char c = 0;
-
-  // read out the buffer until we get a command start
-  while (Serial.available() && c != '[')
-    c = (char)Serial.read();
-
-  // command format : "[RRR;WW]" where RR is a signed two digit rudder position and WW is a two-digit winch position
-
-  if (c != '[')
-    return;
-
-  int rudder = Serial.parseInt();
-  int winch = Serial.parseInt();
-
-  rudderFromCenter(rudder);
-  normalizedWinchTo(winch);
+    if (!Serial.available())
+        return;
+    
+    char c = 0;
+    
+    // read out the buffer until we get a command start
+    while (Serial.available() && c != '[')
+        c = (char)Serial.read();
+    
+    // command format : "[RRR;WW]" where RR is a signed two digit rudder position and WW is a two-digit winch position
+    
+    if (c != '[')
+        return;
+    
+    int rudder = Serial.parseInt();
+    int winch = Serial.parseInt();
+    
+    rudderFromCenter(rudder);
+    normalizedWinchTo(winch);
 }
 
 void doPilot() {
     if (manual_override) {
         processManualCommands();
-
+        
         return;
     }
+
+#ifdef NO_SAIL
+  // run the motor
+    if (gps_lat != 0.0 && gps_lon != 0.0)
+        runMotor();
+    else
+        stopMotor();
+#endif
 
     updateSituation();
 

@@ -2,7 +2,7 @@
 #include <Servo.h>
 #include "servo_ctl.h"
 
-#include "LowPower.h"
+//#include "LowPower.h"
 #include "ahrs.h"
 
 #ifndef NO_SD
@@ -14,7 +14,6 @@
 #include "Wire.h"
 #include "I2Cdev.h"
 
-#include "SoftwareSerial.h"
 #include "MPU6050.h"
 
 #include "trig_fix.h"
@@ -33,7 +32,7 @@
 
 #define DATA_FREQ 1500
 
-#define SERIAL_LOGGING_DEFAULT false
+#define SERIAL_LOGGING_DEFAULT true
 
 #define RC_DATA_FREQ 500
 
@@ -101,7 +100,6 @@ boolean manual_override = false;
 // whather calls to logln should also log to Serial
 boolean serial_logging = SERIAL_LOGGING_DEFAULT;
 boolean remote_control = false;
-boolean calibration = false;
 
 #define AHRS_TRAIL 10
 #define WIND_TRAIL 10
@@ -123,7 +121,7 @@ void setup()
 	Serial2.begin(GPS_BAUDRATE);
 
 	// config value
-	mag_offset = RAD(-15.0);
+	mag_offset = 0;// RAD(-15.0);
 
 	logln(F("Initializing servos..."));
 	servoInit();
@@ -248,25 +246,25 @@ void getMagOffset() {
 }
 
 void printDataLine() {
-	Serial.print(gps_aprs_lat); Serial.print(", ");
-	Serial.print(gps_aprs_lon); Serial.print(", ");
-	Serial.print(gps_lat, 6); Serial.print(", ");
-	Serial.print(gps_lon, 6); Serial.print(", ");
-	Serial.print(millis() - last_gps_time); Serial.print(", ");
-	Serial.print(gps_speed); Serial.print(", ");
-	Serial.print(gps_course); Serial.print(", ");
+//	Serial.print(gps_aprs_lat); Serial.print(", ");
+//	Serial.print(gps_aprs_lon); Serial.print(", ");
+//	Serial.print(gps_lat, 6); Serial.print(", ");
+//	Serial.print(gps_lon, 6); Serial.print(", ");
+//	Serial.print(millis() - last_gps_time); Serial.print(", ");
+//	Serial.print(gps_speed); Serial.print(", ");
+//	Serial.print(gps_course); Serial.print(", ");
 
 	Serial.print(ahrs_heading); Serial.print(", ");
-	Serial.print(requested_heading); Serial.print(", ");
-	Serial.print(current_roll); Serial.print(", ");
-	Serial.print(heel_adjust); Serial.print(", ");
-	Serial.print(wind); Serial.print(", ");
-	Serial.print(wp_heading); Serial.print(", ");
-	Serial.print(wp_distance); Serial.print(", ");
-	Serial.print(current_rudder); Serial.print(", ");
-	Serial.print(current_winch); Serial.print(", ");
-	Serial.print(voltage); Serial.print(", ");
-	Serial.print(cycle); Serial.println();
+//	Serial.print(requested_heading); Serial.print(", ");
+	Serial.println(current_roll); //Serial.print(", ");
+//	Serial.print(heel_adjust); Serial.print(", ");
+//	Serial.print(wind); Serial.print(", ");
+//	Serial.print(wp_heading); Serial.print(", ");
+//	Serial.print(wp_distance); Serial.print(", ");
+//	Serial.print(current_rudder); Serial.print(", ");
+//	Serial.print(current_winch); Serial.print(", ");
+//	Serial.print(voltage); Serial.print(", ");
+//	Serial.print(cycle); Serial.println();
 }
 
 void doMenu() {
@@ -275,15 +273,14 @@ void doMenu() {
 	Serial.println();
 
 	Serial.println("Current configuration is:");
-	Serial.print(F("calibration: ")); Serial.println(calibration);
 	Serial.print(F("remote control: ")); Serial.println(remote_control);
 	Serial.print(F("manual override: ")); Serial.println(manual_override);
 
 	Serial.println(F("\nPlease select a menu option. \n"));
 
 	Serial.println(F("(a) Automate."));
-	Serial.println(F("(c) Calibrate."));
-	Serial.println(F("(r) Remote Control."));
+    Serial.println(F("(c) Calibrate compass."));
+    Serial.println(F("(r) Remote control."));
 	Serial.println(F("(w) Change waypoints <NOT IMPLEMENTED>."));
 	Serial.println(F("(t) Tune PID."));
 	Serial.println(F("(m) Set mag offset."));
@@ -296,20 +293,16 @@ void doMenu() {
 	if (Serial.available()) {
 		char c = (char) Serial.read();
 		switch (c) {
-			case 'a':
-			calibration = false;
-			remote_control = false;
-			manual_override = false;
-			break;
+            case 'a':
+            remote_control = false;
+            manual_override = false;
+            break;
 
-			case 'c':
-			calibration = true;
-			remote_control = false;
-			manual_override = false;
-			break;
+            case 'c':
+            calibrateMag();
+            break;
 
 			case 'r':
-			calibration = false;
 			remote_control = true;
 			manual_override = false;
 			break;
@@ -332,14 +325,13 @@ void doMenu() {
 	} else
 		Serial.println(F("\nMenu timed out."));
 
-	Serial.print(F("calibration: ")); Serial.println(calibration);
 	Serial.print(F("remote control: ")); Serial.println(remote_control);
 	Serial.print(F("manual override: ")); Serial.println(manual_override);
 }
 
 void checkInput() {
 	// in case we're going too fast. only needed when serial_logging is on
-	if (serial_logging && !calibration && (cycle % WAIT_FOR_COMMAND_EVERY == 0))
+	if (serial_logging && (cycle % WAIT_FOR_COMMAND_EVERY == 0))
 		delay(WAIT_FOR_COMMAND_FOR);
 
 	while (Serial.available()) {
@@ -367,13 +359,6 @@ void checkInput() {
 
 void loop()
 {
-	if (calibration) {
-		writeCalibrationLine();
-		checkInput();
-
-		return;
-	}
-
 	if (!manual_override) {
 		logln(F("[Cycle %d start]"), cycle);
 		cycle++;

@@ -72,7 +72,9 @@ int fracPart(float f, int precision)
 bool waitForData(int timeout) {
 	long t = millis();
 	
-	while (!Serial.available() && millis() - t < 5000);
+	while (!Serial.available() && millis() - t < timeout)
+        delay(10);
+        
 	if (!Serial.available())
 		return false;
 	

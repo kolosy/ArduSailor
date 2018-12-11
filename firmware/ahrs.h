@@ -9,7 +9,7 @@ extern float current_roll;
 extern float mag_offset;
 
 float readSteadyHeading();
-int mpuInit();
+int mpuInit(int16_t settingsAddress);
 void calibrateMag();
 
 float toCircle(float value);

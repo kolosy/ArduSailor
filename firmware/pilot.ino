@@ -37,10 +37,6 @@
 #define GYBE_SAIL_POS 80
 
 #define SERVO_ORIENTATION -1
-#define TO_PORT(amt) rudderTo(current_rudder + (SERVO_ORIENTATION * amt))
-#define TO_SBRD(amt) rudderTo(current_rudder - (SERVO_ORIENTATION * amt))
-#define ADJUST_TO_PORT(amt) ( SERVO_ORIENTATION * amt)
-#define ADJUST_TO_SBRD(amt) (-SERVO_ORIENTATION * amt)
 
 // how often to change tacks when beating up-wind
 #define TACK_EVERY 30000
@@ -105,8 +101,18 @@ boolean stalled = true;
 
 double new_rudder = 0;
 
+int16_t _pilotSettingsAddress = 0;
+
 // Specify the links and initial tuning parameters
 PID steeringPID(&fused_heading, &new_rudder, &requested_heading, 0.1, 0.001, 2.8, P_ON_E, DIRECT);
+
+inline void toPort(int amt) {
+    rudderTo(current_rudder + (SERVO_ORIENTATION * amt));
+}
+
+inline void toSbord(int amt) {
+    rudderTo(current_rudder - (SERVO_ORIENTATION * amt));
+}
 
 inline void fuseHeading() {
     // no fusion for now. todo: add gps-based mag calibration compensation
@@ -207,7 +213,9 @@ void adjustHeading() {
 		rudderFromCenter(round(new_rudder));
 }
 
-void pilotInit() {
+void pilotInit(int16_t pilotSettingsAddress) {
+    _pilotSettingsAddress = pilotSettingsAddress;
+    
     centerRudder();
     centerWinch();
 
@@ -217,122 +225,48 @@ void pilotInit() {
 	steeringPID.SetMode(AUTOMATIC);
 	steeringPID.SetOutputLimits(-45, 45);
 
-	// todo need newer eeprom library for this to work
-
-	// // check if PID values are stored
-	// if ((char)EEPROM.read(EEPROM_START_ADDR) == 'w') {
-	// 	int addr = EEPROM_START_ADDR + 1;
-	// 	double kp, ki, kd;
-	//
-	// 	EEPROM.get(addr, kp);
-	// 	addr += sizeof(double);
-	//
-	// 	EEPROM.get(addr, ki);
-	// 	addr += sizeof(double);
-	//
-	// 	EEPROM.get(addr, kd);
-	//
-	// 	logln(F("Read stored PID tuning values of %d.%d, %d.%d, %d.%d"), FP(kp), FP(ki), FP(kd));
-	// 	steeringPID.SetTunings(kp, ki, kd);
-	// }
-}
-
-void getPIDTunings() {
-	bool current_sl = serial_logging;
-	serial_logging = true;
-
-	logln(F("Current PID tuning values are %d.%d, %d.%d, %d.%d"), FP(steeringPID.GetKp()), FP(steeringPID.GetKi()), FP(steeringPID.GetKd()));
-
-	Serial.println(F("Enter tunings:"));
-
-	Serial.print(F("Kp: "));
-	if (!waitForData(5000))
-		return;
-
-	double kp = Serial.parseFloat();
-	Serial.println(kp, 4);
-
-	Serial.print(F("Ki: "));
-	if (!waitForData(5000))
-		return;
-
-	double ki = Serial.parseFloat();
-	Serial.println(ki, 4);
-
-	Serial.print(F("Kd: "));
-	if (!waitForData(5000))
-		return;
-
-	double kd = Serial.parseFloat();
-	Serial.println(kd, 4);
-
-	steeringPID.SetTunings(kp, ki, kd);
-
-	// int addr = EEPROM_START_ADDR + 1;
-	//
-	// EEPROM.put(addr, kp);
-	// addr += sizeof(double);
-	//
-	// EEPROM.put(addr, ki);
-	// addr += sizeof(double);
-	//
-	// EEPROM.put(addr, kd);
-	// EEPROM.write(EEPROM_START_ADDR, 'w');
-	//
-
-	logln(F("New PID tuning values are %d.%d, %d.%d, %d.%d"), FP(steeringPID.GetKp()), FP(steeringPID.GetKi()), FP(steeringPID.GetKd()));
-	Serial.println("Stored.");
-
-	serial_logging = current_sl;
-}
-
-void processManualCommands() {
-    while (Serial.available()) {
-        switch ((char)Serial.read()) {
-            case 'i':
-                updateSensors(false);
-                break;
-            case 'a':
-                TO_PORT(10);
-                logln(F("10 degrees to port"));
-                break;
-            case 'd':
-                TO_SBRD(10);
-                logln(F("10 degrees to starboard"));
-                break;
-            case 's':
-                centerRudder();
-                logln(F("Center rudder"));
-                break;
-            case 'q':
-                winchTo(current_winch + 5);
-                logln(F("Sheet out"));
-                break;
-            case 'e':
-                winchTo(current_winch - 5);
-                logln(F("Sheet in"));
-                break;
-            case 'w':
-                centerWinch();
-                logln(F("Center winch"));
-                break;
-            case 'x':
-                manual_override = false;
-				        serial_logging = SERIAL_LOGGING_DEFAULT;
-                logln(F("End manual override"));
-                break;
-            #ifdef NO_SAIL
-            case 'm':
-                runMotor();
-                logln(F("Motor on"));
-                break;
-            case '.':
-                stopMotor();
-                logln(F("Motor off"));
-                break;
-            #endif
-        }
+	 // check if PID values are stored
+    if ((char)EEPROM.read(_pilotSettingsAddress) == 'w') {
+    	int addr = _pilotSettingsAddress + 1;
+    	double kp, ki, kd;
+    
+    	EEPROM.get(addr, kp);
+    	addr += sizeof(double);
+    
+    	EEPROM.get(addr, ki);
+    	addr += sizeof(double);
+    
+    	EEPROM.get(addr, kd);
+    
+    	logln(F("Read stored PID tuning values of %d.%d, %d.%d, %d.%d"), FP(kp), FP(ki), FP(kd));
+    	steeringPID.SetTunings(kp, ki, kd);
     }
+}
+
+void getCurrentPIDTunings(double* tuningsOut) {
+    logln(F("Current PID tuning values are %d.%d, %d.%d, %d.%d"), FP(steeringPID.GetKp()), FP(steeringPID.GetKi()), FP(steeringPID.GetKd()));
+
+    tuningsOut[0] = steeringPID.GetKp();
+    tuningsOut[1] = steeringPID.GetKi();
+    tuningsOut[2] = steeringPID.GetKd();
+}
+
+void updateCurrentPIDTunings(double* tunings) {
+    steeringPID.SetTunings(tunings[0], tunings[1], tunings[2]);
+
+    logln(F("New PID tuning values are %d.%d, %d.%d, %d.%d"), FP(steeringPID.GetKp()), FP(steeringPID.GetKi()), FP(steeringPID.GetKd()));
+    int addr = _pilotSettingsAddress + 1;
+    
+    EEPROM.put(addr, tunings[0]);
+    addr += sizeof(double);
+    
+    EEPROM.put(addr, tunings[1]);
+    addr += sizeof(double);
+    
+    EEPROM.put(addr, tunings[2]);
+    EEPROM.write(_pilotSettingsAddress, 'w');
+
+    logln(F("New PID tunings stored."));
 }
 
 void setNextWaypoint() {
@@ -394,28 +328,6 @@ void updateSituation() {
         
         high_res_gps = HIGH_RES_GPS_DEFAULT;
     }
-}
-
-void processRCCommands() {
-    if (!Serial.available())
-        return;
-    
-    char c = 0;
-    
-    // read out the buffer until we get a command start
-    while (Serial.available() && c != '[')
-        c = (char)Serial.read();
-    
-    // command format : "[RRR;WW]" where RR is a signed two digit rudder position and WW is a two-digit winch position
-    
-    if (c != '[')
-        return;
-    
-    int rudder = Serial.parseInt();
-    int winch = Serial.parseInt();
-    
-    rudderFromCenter(rudder);
-    normalizedWinchTo(winch);
 }
 
 void doPilot() {

@@ -69,11 +69,15 @@ vector_i16t m_min, m_max, running_min, running_max;
 // Sets the relative orientation of the MPU
 vector from = {1, 0, 0};
 
-int mpuInit() {
-    logln(F("Reading calibration data..."));
+int16_t _settingsAddress = 0;
 
-    EEPROM.get(0, m_min);
-    EEPROM.get(sizeof(vector_i16t), m_max);
+int mpuInit(int16_t settingsAddress) {
+    _settingsAddress = settingsAddress;
+    
+    logln(F("Reading calibration data at location %d"), _settingsAddress);
+
+    EEPROM.get(_settingsAddress, m_min);
+    EEPROM.get(_settingsAddress + sizeof(vector_i16t), m_max);
 //    m_min.x = -70;
 //    m_min.y = -26;
 //    m_min.z = -97;
@@ -167,25 +171,17 @@ void calibrateMag() {
         m_min.x, m_min.y, m_min.z,
         m_max.x, m_max.y, m_max.z);
 
-  logln(F("Writing to eeprom..."));
+  logln(F("Writing to eeprom at location %d"), _settingsAddress);
 
-  EEPROM.put(0, m_min);
-  EEPROM.put(sizeof(vector_i16t), m_max);
+  EEPROM.put(_settingsAddress, m_min);
+  EEPROM.put(_settingsAddress + sizeof(vector_i16t), m_max);
 }
 
 void normalize_mpu(int16_t mag_val[3], float normalized[3]) {
     // normalize *and* re-align axes (because, you know, having all sensors be the same is too much to ask for).
     normalized[1] =   mag_val[0] - (m_min.x + m_max.x) / 2.0;
     normalized[0] =   mag_val[1] - (m_min.y + m_max.y) / 2.0;
-    normalized[2] = -(mag_val[2]);// - (m_min.z + m_max.z) / 2.0);
-
-//	float xn = mag_val[0] + offset[0];
-//	float yn = mag_val[1] + offset[1];
-//	float zn = mag_val[2] + offset[2];
-//
-//	normalized[1] =   ( b_inv[0][0] * xn + b_inv[0][1] * yn + b_inv[0][2] * zn) / b_field;
-//	normalized[0] =   ( b_inv[1][0] * xn + b_inv[1][1] * yn + b_inv[1][2] * zn) / b_field;
-//	normalized[2] = - ( b_inv[2][0] * xn + b_inv[2][1] * yn + b_inv[2][2] * zn) / b_field;
+    normalized[2] = -(mag_val[2]);
 }
 
 int readFIFOPacket() {

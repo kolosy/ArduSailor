@@ -36,8 +36,6 @@
 
 #define RC_DATA_FREQ 500
 
-// seconds
-#define MENU_TIMEOUT 10
 // #define SHOW_MENU_ON_START
 
 #define RAD(v) ((v) * PI / 180.0)
@@ -46,6 +44,11 @@
 // lets you do a logln of a float like so -> logln("blah %d.%d", FP(d))
 #define FP(f) (int16_t)f, fracPart(f)
 #define FP32(f) (int32_t)f, fracPart(f)
+
+void getCurrentPIDTunings(double* tuningsOut);
+void updateCurrentPIDTunings(double* tunings);
+
+void doMenu();
 
 // glancing ahead at the util sketch. todo: make that a c file
 int fracPart(float f, int precision = 2);
@@ -97,7 +100,7 @@ double requested_heading = 0;
 // mode variables
 boolean manual_override = false;
 
-// whather calls to logln should also log to Serial
+// whether calls to logln should also log to Serial
 boolean serial_logging = SERIAL_LOGGING_DEFAULT;
 boolean remote_control = false;
 
@@ -106,6 +109,9 @@ boolean remote_control = false;
 
 struct AngleCmp ahrs_trail[AHRS_TRAIL];
 struct AngleCmp wind_trail[WIND_TRAIL];
+
+#define MPU_PARAM_ADDRESS 0
+#define PILOT_PARAM_ADDRESS 256
 
 void setup()
 {
@@ -128,7 +134,7 @@ void setup()
 	logln(F("Initializing wind sensor..."));
 	windInit();
 	logln(F("Initializing MPU..."));
-	mpuInit();
+	mpuInit(MPU_PARAM_ADDRESS);
 	logln(F("Enabling GPS..."));
 	gpsInit();
 	logln(F("Starting battery monitor..."));
@@ -137,7 +143,7 @@ void setup()
 	initTrail();
 
 	logln(F("Starting pilot..."));
-	pilotInit();
+	pilotInit(PILOT_PARAM_ADDRESS);
 
 	blink(STATUS_LED, 100, 10, HIGH);
 	logln(F("Enabling GPS..."));
@@ -265,96 +271,6 @@ void printDataLine() {
 //	Serial.print(current_winch); Serial.print(", ");
 //	Serial.print(voltage); Serial.print(", ");
 //	Serial.print(cycle); Serial.println();
-}
-
-void doMenu() {
-	Serial.print(F("Welcome to ArduSailor. Menu timeout is "));
-	Serial.println(MENU_TIMEOUT);
-	Serial.println();
-
-	Serial.println("Current configuration is:");
-	Serial.print(F("remote control: ")); Serial.println(remote_control);
-	Serial.print(F("manual override: ")); Serial.println(manual_override);
-
-	Serial.println(F("\nPlease select a menu option. \n"));
-
-	Serial.println(F("(a) Automate."));
-    Serial.println(F("(c) Calibrate compass."));
-    Serial.println(F("(r) Remote control."));
-	Serial.println(F("(w) Change waypoints <NOT IMPLEMENTED>."));
-	Serial.println(F("(t) Tune PID."));
-	Serial.println(F("(m) Set mag offset."));
-	Serial.print(F("\n>"));
-
-	long t = millis();
-
-	while ((millis() - t < (MENU_TIMEOUT * 1000)) && !Serial.available());
-
-	if (Serial.available()) {
-		char c = (char) Serial.read();
-		switch (c) {
-            case 'a':
-            remote_control = false;
-            manual_override = false;
-            break;
-
-            case 'c':
-            calibrateMag();
-            break;
-
-			case 'r':
-			remote_control = true;
-			manual_override = false;
-			break;
-
-			case 'w':
-			// todo
-			break;
-
-			case 't':
-			getPIDTunings();
-			break;
-
-			case 'm':
-			getMagOffset();
-			break;
-		}
-
-		Serial.print(' ');
-		Serial.println(c);
-	} else
-		Serial.println(F("\nMenu timed out."));
-
-	Serial.print(F("remote control: ")); Serial.println(remote_control);
-	Serial.print(F("manual override: ")); Serial.println(manual_override);
-}
-
-void checkInput() {
-	// in case we're going too fast. only needed when serial_logging is on
-	if (serial_logging && (cycle % WAIT_FOR_COMMAND_EVERY == 0))
-		delay(WAIT_FOR_COMMAND_FOR);
-
-	while (Serial.available()) {
-		// a '[' signals the start of an RC command
-		if (remote_control && (char)Serial.peek() == '[')
-			return;
-
-		switch ((char)Serial.read()) {
-			case 'o':
-			logln(F("Entering manual override"));
-			manual_override = true;
-			serial_logging = true;
-			break;
-
-			case 'l':
-			serial_logging = !serial_logging;
-			break;
-
-			case 'm':
-			doMenu();
-			break;
-		}
-	}
 }
 
 void loop()

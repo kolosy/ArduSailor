@@ -149,10 +149,13 @@ void doMenu() {
     Serial.println(F("\nPlease select a menu option. \n"));
 
     Serial.println(F("(a) Automate."));
+    Serial.println(F("(o) Auto-calibrate compass."));
     Serial.println(F("(c) Calibrate compass."));
     Serial.println(F("(r) Remote control."));
     Serial.println(F("(w) Change waypoints <NOT IMPLEMENTED>."));
     Serial.println(F("(t) Tune PID."));
+    Serial.println(F("(y) Auto-tune PID."));
+    Serial.println(F("(u) Stop PID auto-tune."));
     Serial.println(F("(m) Set mag offset."));
     Serial.print(F("\n>"));
 
@@ -169,7 +172,15 @@ void doMenu() {
             break;
 
             case 'c':
-            calibrateMag();
+            calibrateMag(true);
+            break;
+
+            case 'o':
+            runMotor();
+            rudderFromCenter(30);
+            calibrateMag(false);
+            stopMotor();
+            centerRudder();
             break;
 
             case 'r':
@@ -183,6 +194,14 @@ void doMenu() {
 
             case 't':
             getPIDTunings();
+            break;
+
+            case 'y':
+            tuningPID = true;
+            break;
+
+            case 'u':
+            tuningPID = false;
             break;
 
             case 'm':

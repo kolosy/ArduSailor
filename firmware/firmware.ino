@@ -104,6 +104,9 @@ boolean manual_override = false;
 boolean serial_logging = SERIAL_LOGGING_DEFAULT;
 boolean remote_control = false;
 
+// are we tuning the PID
+boolean tuningPID = false;
+
 #define AHRS_TRAIL 10
 #define WIND_TRAIL 10
 
@@ -252,25 +255,25 @@ void getMagOffset() {
 }
 
 void printDataLine() {
-//	Serial.print(gps_aprs_lat); Serial.print(", ");
-//	Serial.print(gps_aprs_lon); Serial.print(", ");
-//	Serial.print(gps_lat, 6); Serial.print(", ");
-//	Serial.print(gps_lon, 6); Serial.print(", ");
-//	Serial.print(millis() - last_gps_time); Serial.print(", ");
-//	Serial.print(gps_speed); Serial.print(", ");
-//	Serial.print(gps_course); Serial.print(", ");
+	Serial.print(gps_aprs_lat); Serial.print(", ");
+	Serial.print(gps_aprs_lon); Serial.print(", ");
+	Serial.print(gps_lat, 6); Serial.print(", ");
+	Serial.print(gps_lon, 6); Serial.print(", ");
+	Serial.print(millis() - last_gps_time); Serial.print(", ");
+	Serial.print(gps_speed); Serial.print(", ");
+	Serial.print(gps_course); Serial.print(", ");
 
 	Serial.print(ahrs_heading); Serial.print(", ");
-//	Serial.print(requested_heading); Serial.print(", ");
-	Serial.println(current_roll); //Serial.print(", ");
-//	Serial.print(heel_adjust); Serial.print(", ");
-//	Serial.print(wind); Serial.print(", ");
-//	Serial.print(wp_heading); Serial.print(", ");
-//	Serial.print(wp_distance); Serial.print(", ");
-//	Serial.print(current_rudder); Serial.print(", ");
-//	Serial.print(current_winch); Serial.print(", ");
-//	Serial.print(voltage); Serial.print(", ");
-//	Serial.print(cycle); Serial.println();
+	Serial.print(requested_heading); Serial.print(", ");
+	Serial.print(current_roll); Serial.print(", ");
+	Serial.print(heel_adjust); Serial.print(", ");
+	Serial.print(wind); Serial.print(", ");
+	Serial.print(wp_heading); Serial.print(", ");
+	Serial.print(wp_distance); Serial.print(", ");
+	Serial.print(current_rudder); Serial.print(", ");
+	Serial.print(current_winch); Serial.print(", ");
+	Serial.print(voltage); Serial.print(", ");
+	Serial.print(cycle); Serial.println();
 }
 
 void loop()

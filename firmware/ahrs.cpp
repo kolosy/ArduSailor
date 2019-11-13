@@ -151,9 +151,11 @@ void calibrationLoop() {
     calibrationSteps++;
 }
 
-void calibrateMag() {
-  logln(F("Beginning Calibration in %d seconds"), CALIBRATION_WAIT);
-  delay(CALIBRATION_WAIT * 1000);
+void calibrateMag(bool waitForSetup) {
+  if (waitForSetup) {
+      logln(F("Beginning Calibration in %d seconds"), CALIBRATION_WAIT);
+      delay(CALIBRATION_WAIT * 1000);
+  }
     
   logln(F("Calibration start. Initial values min: {%+6d, %+6d, %+6d}    max: {%+6d, %+6d, %+6d}"),
         m_min.x, m_min.y, m_min.z,

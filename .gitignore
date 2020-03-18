@@ -45,3 +45,4 @@ screenlog.*
 
 .idea/
 build/
+.DS_Store

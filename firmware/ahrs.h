@@ -10,7 +10,7 @@ extern float mag_offset;
 
 float readSteadyHeading();
 int mpuInit(int16_t settingsAddress);
-void calibrateMag();
+void calibrateMag(bool waitForSetup);
 
 float toCircle(float value);
 

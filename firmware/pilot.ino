@@ -1,6 +1,7 @@
 #define NO_SAIL
 
 #include <PID_v1.h>
+#include <PID_AutoTune_v0.h>
 #include <EEPROM.h>
 
 // radius of Earth in m
@@ -102,9 +103,12 @@ boolean stalled = true;
 double new_rudder = 0;
 
 int16_t _pilotSettingsAddress = 0;
+double aTuneStep=5, aTuneNoise=1, aTuneStartValue=100;
+unsigned int aTuneLookBack=20;
 
 // Specify the links and initial tuning parameters
 PID steeringPID(&fused_heading, &new_rudder, &requested_heading, 0.1, 0.001, 2.8, P_ON_E, DIRECT);
+PID_ATune pidTune(&fused_heading, &new_rudder);
 
 inline void toPort(int amt) {
     rudderTo(current_rudder + (SERVO_ORIENTATION * amt));
@@ -163,6 +167,15 @@ long time_since_tack_change = 0;
 bool beat_to_port = false;
 bool was_beating = false;
 
+void autotune() {
+    if (pidTune.Runtime()) {
+        logln(F("PID Autotuning complete"));
+        double tunings[] = {pidTune.GetKp(), pidTune.GetKi(), pidTune.GetKd()};
+        updateCurrentPIDTunings(tunings);
+        tuningPID = false;
+    }
+}
+
 void adjustHeading() {
 #ifndef NO_SAIL
 	float world_wind = toCircleDeg(fused_heading + wind);
@@ -202,20 +215,23 @@ void adjustHeading() {
 
 #else
     requested_heading = wp_heading;
-    
+
     logln(F("Requested heading %d.%d, Actual heading %d.%d"),
     	  FP(requested_heading),
     	  FP(fused_heading));
 #endif
 
-	// PID!!
-	if (steeringPID.Compute())
-		rudderFromCenter(round(new_rudder));
+    if (tuningPID)
+        autotune();
+	else
+	    steeringPID.Compute();
+
+	rudderFromCenter(round(new_rudder));
 }
 
 void pilotInit(int16_t pilotSettingsAddress) {
     _pilotSettingsAddress = pilotSettingsAddress;
-    
+
     centerRudder();
     centerWinch();
 
@@ -224,20 +240,24 @@ void pilotInit(int16_t pilotSettingsAddress) {
 
 	steeringPID.SetMode(AUTOMATIC);
 	steeringPID.SetOutputLimits(-45, 45);
+    
+    pidTune.SetNoiseBand(aTuneNoise);
+    pidTune.SetOutputStep(aTuneStep);
+    pidTune.SetLookbackSec((int)aTuneLookBack);
 
 	 // check if PID values are stored
     if ((char)EEPROM.read(_pilotSettingsAddress) == 'w') {
     	int addr = _pilotSettingsAddress + 1;
     	double kp, ki, kd;
-    
+
     	EEPROM.get(addr, kp);
     	addr += sizeof(double);
-    
+
     	EEPROM.get(addr, ki);
     	addr += sizeof(double);
-    
+
     	EEPROM.get(addr, kd);
-    
+
     	logln(F("Read stored PID tuning values of %d.%d, %d.%d, %d.%d"), FP(kp), FP(ki), FP(kd));
     	steeringPID.SetTunings(kp, ki, kd);
     }
@@ -256,13 +276,13 @@ void updateCurrentPIDTunings(double* tunings) {
 
     logln(F("New PID tuning values are %d.%d, %d.%d, %d.%d"), FP(steeringPID.GetKp()), FP(steeringPID.GetKi()), FP(steeringPID.GetKd()));
     int addr = _pilotSettingsAddress + 1;
-    
+
     EEPROM.put(addr, tunings[0]);
     addr += sizeof(double);
-    
+
     EEPROM.put(addr, tunings[1]);
     addr += sizeof(double);
-    
+
     EEPROM.put(addr, tunings[2]);
     EEPROM.write(_pilotSettingsAddress, 'w');
 
@@ -325,7 +345,7 @@ void updateSituation() {
     } else {
         if (!high_res_gps && HIGH_RES_GPS_DEFAULT)
             warnGPS();
-        
+
         high_res_gps = HIGH_RES_GPS_DEFAULT;
     }
 }
@@ -333,7 +353,7 @@ void updateSituation() {
 void doPilot() {
     if (manual_override) {
         processManualCommands();
-        
+
         return;
     }
 

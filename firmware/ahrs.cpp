@@ -1,3 +1,6 @@
+#define PILOT_DEBUG
+
+#ifndef PILOT_DEBUG
 #include "ahrs.h"
 #include "logger.h"
 // Arduino Wire library is required if I2Cdev I2CDEV_ARDUINO_WIRE implementation
@@ -325,4 +328,4 @@ void vector_normalize(vector *a)
   a->y /= mag;
   a->z /= mag;
 }
-
+#endif

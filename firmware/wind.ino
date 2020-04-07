@@ -1,3 +1,4 @@
+#ifndef PILOT_DEBUG
 #define WS1 8
 #define WS2 9
 #define WIND_EN 33 // p-channel
@@ -32,3 +33,4 @@ float readSteadyWind() {
 
     return toCircle(-atan2(ws1 / ((float) WIND_ITERATIONS) - SIGN_SHIFT, ws2 / ((float) WIND_ITERATIONS) - SIGN_SHIFT) - (SENSOR_OFFSET * PI / 180.0) + PI);
 }
+#endif

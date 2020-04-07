@@ -88,7 +88,7 @@ void logln(const __FlashStringHelper *ifsh, ...) {
     }
 	
 	va_list args;
-	va_start (args, *ifsh);
+	va_start (args, ifsh);
 	do_log(fmt, args, true);
 	va_end (args);
 	

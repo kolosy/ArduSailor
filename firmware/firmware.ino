@@ -1,3 +1,5 @@
+#define PILOT_DEBUG
+
 #include "logger.h"
 #include <Servo.h>
 #include "servo_ctl.h"
@@ -32,7 +34,7 @@
 
 #define DATA_FREQ 1500
 
-#define SERIAL_LOGGING_DEFAULT true
+#define SERIAL_LOGGING_DEFAULT false
 
 #define RC_DATA_FREQ 500
 
@@ -110,11 +112,38 @@ boolean tuningPID = false;
 #define AHRS_TRAIL 10
 #define WIND_TRAIL 10
 
-struct AngleCmp ahrs_trail[AHRS_TRAIL];
-struct AngleCmp wind_trail[WIND_TRAIL];
-
 #define MPU_PARAM_ADDRESS 0
 #define PILOT_PARAM_ADDRESS 256
+
+#ifdef PILOT_DEBUG
+float current_pitch;
+float current_roll;
+float mag_offset;
+
+long sample = 0;
+long _heading = 0;
+
+float readSteadyHeading() { 
+  float delta_t = (millis() - sample) / 1000.0;
+  float turn_speed = map(current_rudder, RUDDER_MIN, RUDDER_MAX, -12, 12);
+  
+  _heading = toCircleDeg(_heading + turn_speed * delta_t + random(-5, 5));
+  
+  sample = millis();
+
+  delay(10);
+  return RAD(_heading);
+}
+
+int mpuInit(int16_t settingsAddress) { return 0; }
+void calibrateMag(bool waitForSetup) {}
+
+void windInit() {}
+float readSteadyWind() { return 0; }
+#endif
+
+AngleCmp ahrs_trail[AHRS_TRAIL];
+AngleCmp wind_trail[WIND_TRAIL];
 
 void setup()
 {

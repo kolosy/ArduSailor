@@ -102,13 +102,20 @@ boolean stalled = true;
 
 double new_rudder = 0;
 
+// the PID steers on a continuous ("unwrapped") heading so it never sees the jump at 0/360 and
+// always turns the short way. steer_input accumulates the shortest turn between readings, and
+// steer_setpoint sits the shortest signed distance to requested_heading away from it.
+double steer_input = 0;
+double steer_setpoint = 0;
+float last_fused_heading = 0;
+
 int16_t _pilotSettingsAddress = 0;
 double aTuneStep=5, aTuneNoise=1, aTuneStartValue=100;
 unsigned int aTuneLookBack=20;
 
 // Specify the links and initial tuning parameters
-PID steeringPID(&fused_heading, &new_rudder, &requested_heading, 0.1, 0.001, 2.8, P_ON_E, DIRECT);
-PID_ATune pidTune(&fused_heading, &new_rudder);
+PID steeringPID(&steer_input, &new_rudder, &steer_setpoint, 0.1, 0.001, 2.8, P_ON_E, DIRECT);
+PID_ATune pidTune(&steer_input, &new_rudder);
 
 inline void toPort(int amt) {
     rudderTo(current_rudder + (SERVO_ORIENTATION * amt));
@@ -121,6 +128,12 @@ inline void toSbord(int amt) {
 inline void fuseHeading() {
     // no fusion for now. todo: add gps-based mag calibration compensation
     fused_heading = ahrs_heading;
+}
+
+inline void unwrapHeadings() {
+    steer_input += angleDiff(last_fused_heading, fused_heading, true);
+    last_fused_heading = fused_heading;
+    steer_setpoint = steer_input + angleDiff(fused_heading, requested_heading, true);
 }
 
 // lat/lon and result in radians
@@ -221,6 +234,8 @@ void adjustHeading() {
     	  FP(fused_heading));
 #endif
 
+    unwrapHeadings();
+
     if (tuningPID)
         autotune();
 	else
@@ -237,6 +252,9 @@ void pilotInit(int16_t pilotSettingsAddress) {
 
     wp_lat = wp_list[0];
     wp_lon = wp_list[1];
+
+    // start the unwrapped heading where we are, so the first PID step doesn't see a jump from 0
+    last_fused_heading = ahrs_heading;
 
 	steeringPID.SetMode(AUTOMATIC);
 	steeringPID.SetOutputLimits(-45, 45);

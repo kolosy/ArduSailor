@@ -1,4 +1,4 @@
-#define PILOT_DEBUG
+#include "config.h"
 
 #ifndef PILOT_DEBUG
 #include "ahrs.h"

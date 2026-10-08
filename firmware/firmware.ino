@@ -1,5 +1,4 @@
-#define PILOT_DEBUG
-
+#include "config.h"
 #include "logger.h"
 #include <Servo.h>
 #include "servo_ctl.h"

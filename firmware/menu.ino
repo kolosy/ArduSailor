@@ -176,10 +176,15 @@ void doMenu() {
             break;
 
             case 'o':
+            // circle while calibrating; under sail the boat has to be moving already
+#ifdef NO_SAIL
             runMotor();
+#endif
             rudderFromCenter(30);
             calibrateMag(false);
+#ifdef NO_SAIL
             stopMotor();
+#endif
             centerRudder();
             break;
 

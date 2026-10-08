@@ -76,8 +76,8 @@ float heel_adjust = 0;
 // rudder adjustment to compensate for excessive heel. todo: clarify naming; declared in servo_ctl.h
 // float heel_offset = 0;
 
-// wind direction
-uint16_t wind = 0;
+// wind direction. signed so that math like (wind - 180) stays signed with avr's 16-bit int
+int16_t wind = 0;
 float trailing_wind = 0;
 
 // current loop() count

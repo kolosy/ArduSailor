@@ -52,6 +52,9 @@
 // we're going decrease the amount of heel adjust by this factor to bring things back slowly
 #define HEEL_COMP_DECAY 0.1
 
+// the trim map in adjustSails() puts the fully eased sheet at WINCH_MIN, so easing moves toward it
+#define EASE_SHEET(v) ((WINCH_MIN > WINCH_MAX) ? (v) : -(v))
+
 // how close we can get to our waypoint before we switch to High Res GPS
 #define HRG_THRESHOLD 50
 
@@ -162,11 +165,11 @@ void adjustSails() {
     if (abs(current_roll) > START_HEEL_COMP)
         heel_adjust = min(MAX_HEEL_COMP, 2 * (abs(current_roll) - START_HEEL_COMP));
     else if (heel_adjust > MIN_HEEL_COMP)
-        heel_adjust = heel_adjust * HEEL_COMP_DECAY;
+        heel_adjust -= heel_adjust * HEEL_COMP_DECAY;
     else
         heel_adjust = 0;
 
-    float new_winch = map(constrain(abs(wind - 180), IRONS, 180), IRONS, 180, WINCH_MIN, WINCH_MAX) - heel_adjust;
+    float new_winch = map(constrain(abs(wind - 180), IRONS, 180), IRONS, 180, WINCH_MIN, WINCH_MAX) + EASE_SHEET(heel_adjust);
 
     if (abs(new_winch - current_winch) > SAIL_ADJUST_ON) {
         logln(F("New winch position of %d is more than %d off from %d. Adjusting trim."), (int16_t) new_winch, SAIL_ADJUST_ON, current_winch);

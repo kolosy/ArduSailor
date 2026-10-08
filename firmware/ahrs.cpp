@@ -270,16 +270,21 @@ void writeCalibrationLine() {
 
 float readSteadyHeading() {
 	float f_ypr[3];
-	float heading = 0;
+
+	// average as unit vectors, so readings either side of north don't average out to south
+	float s = 0;
+	float c = 0;
 
 	for (uint8_t i=0; i<MPU_LOOPS;) {
-		i += readHeading(f_ypr, false);
-		heading += f_ypr[0];
+		if (readHeading(f_ypr, false)) {
+			s += sin(f_ypr[0]);
+			c += cos(f_ypr[0]);
+			i++;
+		}
 		delay(MPU_PAUSES);
 	}
 
-	heading /= ((float)MPU_LOOPS);
-	heading = toCircle(heading + (DEVICE_ORIENTATION * PI) + mag_offset);
+	float heading = toCircle(atan2(s, c) + (DEVICE_ORIENTATION * PI) + mag_offset);
 
 	current_pitch = f_ypr[1] * 180.0 / PI;
 	current_roll = f_ypr[2] * 180.0 / PI;

@@ -22,6 +22,23 @@ MPU6050 mpu;
 #define TOTAL_CALIBRATION_STEPS 300
 #define CALIBRATION_WAIT 5
 
+// stored after the calibration in eeprom. calibrations from older firmware were 14-bit (and could have a
+// bad centre), so they don't carry this marker and are ignored.
+#define MAG_CAL_VERSION 'm'
+
+// the MPU-9250's AK8963 magnetometer sits at 0x0C on the auxiliary bus. i2cdevlib's DMP 4.1 setup was
+// written for an AK8975 at 0x0E, so point the MPU's I2C master at it ourselves.
+#define AK8963_ADDRESS 0x0C
+
+// CNTL1 value written each cycle to start the next reading: single measurement (MODE 0001) with 16-bit
+// output (BIT 1), 0.15uT/LSB. i2cdevlib's 0x01 gives 14-bit at 0.6uT/LSB, only ~20 counts of horizontal
+// field in Chicago.
+#define AK8963_SINGLE_16BIT 0x11
+
+// read the magnetometer every (1 + MAG_SAMPLE_DELAY) samples: 200Hz / 5 = 40Hz. i2cdevlib's 24 gives 8Hz,
+// so on a rolling boat the reading could be 125ms older than the gravity vector it's tilt-compensated with.
+#define MAG_SAMPLE_DELAY 4
+
 int16_t calibrationSteps = 0;
 // mag parameters; todo: should be moved to flash
 //static const float b_field     = 61.2088;
@@ -79,8 +96,11 @@ int mpuInit(int16_t settingsAddress) {
     
     logln(F("Reading calibration data at location %d"), _settingsAddress);
 
-    EEPROM.get(_settingsAddress, m_min);
-    EEPROM.get(_settingsAddress + sizeof(vector_i16t), m_max);
+    if (EEPROM.read(_settingsAddress + 2 * sizeof(vector_i16t)) == MAG_CAL_VERSION) {
+        EEPROM.get(_settingsAddress, m_min);
+        EEPROM.get(_settingsAddress + sizeof(vector_i16t), m_max);
+    } else
+        logln(F("No compass calibration for this firmware. Calibrate from the menu (c or o)."));
 //    m_min.x = -70;
 //    m_min.y = -26;
 //    m_min.z = -97;
@@ -107,6 +127,12 @@ int mpuInit(int16_t settingsAddress) {
 
 	// make sure it worked (returns 0 if so)
 	if (devStatus == 0) {
+		// slave 0 reads the AK8963's ST1..ST2, slave 2 writes CNTL1 to start the next measurement
+		mpu.setSlaveAddress(0, 0x80 | AK8963_ADDRESS);
+		mpu.setSlaveAddress(2, AK8963_ADDRESS);
+		mpu.setSlaveOutputByte(2, AK8963_SINGLE_16BIT);
+		mpu.setSlave4MasterDelay(MAG_SAMPLE_DELAY);
+
 		// turn on the DMP, now that it's ready
 		logln(F("Enabling DMP..."));
 		mpu.setDMPEnabled(true);
@@ -137,8 +163,8 @@ int mpuInit(int16_t settingsAddress) {
 
 void calibrationLoop() {
     if (!readFIFOPacket())
-        return 0;
-    
+        return;
+
     mpu.dmpGetMag(mag, fifoBuffer);
     
     running_min.x = min(running_min.x, mag[0]);
@@ -163,14 +189,29 @@ void calibrateMag(bool waitForSetup) {
   logln(F("Calibration start. Initial values min: {%+6d, %+6d, %+6d}    max: {%+6d, %+6d, %+6d}"),
         m_min.x, m_min.y, m_min.z,
         m_max.x, m_max.y, m_max.z);
-        
+
+  // start from the extremes, not 0: an axis whose offset is bigger than the field never reads 0
+  calibrationSteps = 0;
+  running_min = {INT16_MAX, INT16_MAX, INT16_MAX};
+  running_max = {INT16_MIN, INT16_MIN, INT16_MIN};
+
   while (calibrationSteps < TOTAL_CALIBRATION_STEPS)
     calibrationLoop();
 
   logln(F("Calibration complete"));
-    
+
   m_min = running_min;
   m_max = running_max;
+
+  // a flat circle can't measure the vertical offset: Z only ever reads (vertical field + offset). Work it
+  // out from the horizontal field (the X/Y radius) and the local inclination instead. The magnetometer's
+  // Z points down through the board, so with the board upright the vertical field reads positive. A 3-D
+  // calibration (turning through every orientation, including upside down) measures Z directly.
+  float horizontal = ((m_max.x - m_min.x) + (m_max.y - m_min.y)) / 4.0;
+  if (m_max.z - m_min.z < horizontal) {
+      m_min.z = m_max.z = round((m_min.z + m_max.z) / 2.0 - horizontal * tan(MAG_INCLINATION * PI / 180.0));
+      logln(F("Flat calibration; vertical offset estimated from MAG_INCLINATION"));
+  }
 
   logln(F("New values min: {%+6d, %+6d, %+6d}    max: {%+6d, %+6d, %+6d}"),
         m_min.x, m_min.y, m_min.z,
@@ -180,13 +221,14 @@ void calibrateMag(bool waitForSetup) {
 
   EEPROM.put(_settingsAddress, m_min);
   EEPROM.put(_settingsAddress + sizeof(vector_i16t), m_max);
+  EEPROM.write(_settingsAddress + 2 * sizeof(vector_i16t), MAG_CAL_VERSION);
 }
 
 void normalize_mpu(int16_t mag_val[3], float normalized[3]) {
     // normalize *and* re-align axes (because, you know, having all sensors be the same is too much to ask for).
     normalized[1] =   mag_val[0] - (m_min.x + m_max.x) / 2.0;
     normalized[0] =   mag_val[1] - (m_min.y + m_max.y) / 2.0;
-    normalized[2] = -(mag_val[2]);
+    normalized[2] = -(mag_val[2] - (m_min.z + m_max.z) / 2.0);
 }
 
 int readFIFOPacket() {

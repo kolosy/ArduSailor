@@ -15,4 +15,9 @@
 // log to serial only, not to the SD card
 #define NO_SD
 
+// magnetic inclination (dip) at the sailing site in degrees, positive in the northern hemisphere. A flat
+// compass calibration uses it to work out the vertical offset. NOAA's World Magnetic Model (WMM2025)
+// gives 68.4 at the pilot.ino waypoints in Chicago; look up your own site if you sail elsewhere.
+#define MAG_INCLINATION 68.4
+
 #endif

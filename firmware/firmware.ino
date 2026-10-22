@@ -157,8 +157,8 @@ void setup()
 	logln(F("ArduSailor Starting..."));
 	Serial2.begin(GPS_BAUDRATE);
 
-	// config value
-	mag_offset = 0;// RAD(-15.0);
+	// magnetic to true north (config.h)
+	mag_offset = RAD(MAG_DECLINATION);
 
 	logln(F("Initializing servos..."));
 	servoInit();

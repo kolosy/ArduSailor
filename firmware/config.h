@@ -20,4 +20,9 @@
 // gives 68.4 at the pilot.ino waypoints in Chicago; look up your own site if you sail elsewhere.
 #define MAG_INCLINATION 68.4
 
+// magnetic declination at the sailing site in degrees, east positive. The compass reads magnetic north and
+// waypoint bearings are true, so this is added to every heading. WMM2025 gives -4.2 (4.2 west) at the
+// pilot.ino waypoints. The menu's mag offset option overrides it until the next restart.
+#define MAG_DECLINATION -4.2
+
 #endif

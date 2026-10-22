@@ -235,34 +235,29 @@ int readFIFOPacket() {
     // if programming failed, don't try to do anything
     if (!dmpReady) return 0;
 
-    // reset interrupt flag and get INT_STATUS byte
-    mpuIntStatus = mpu.getIntStatus();
+    // the FIFO keeps filling while the rest of the loop runs, so whatever is queued is stale, and once it
+    // has overflowed (512 bytes on the MPU-9250, not a whole number of packets, oldest bytes dropped)
+    // it's misaligned too. Empty it and take the next packet the DMP writes.
+    mpu.resetFIFO();
+    mpu.getIntStatus();
 
-    // get current FIFO count
-    fifoCount = mpu.getFIFOCount();
-
-    // check for overflow (this should never happen unless our code is too inefficient)
-    while ((mpuIntStatus & 0x10) || fifoCount == 1024) {
-        // reset so we can continue cleanly
-        mpu.resetFIFO();
-
-        // do this again.
-        // reset interrupt flag and get INT_STATUS byte
+    while (true) {
+        // reading INT_STATUS clears it; the DMP sets bit 1 each time it finishes writing a packet
         mpuIntStatus = mpu.getIntStatus();
+        if (!(mpuIntStatus & 0x02))
+            continue;
 
-        // get current FIFO count
         fifoCount = mpu.getFIFOCount();
+
+        // a packet the DMP was partway through writing when we reset leaves its tail at the front
+        if (fifoCount % packetSize) {
+            mpu.resetFIFO();
+            continue;
+        }
+
+        if (fifoCount >= packetSize)
+            break;
     }
-
-    while (!(mpuIntStatus & 0x02)) {
-        mpuIntStatus = mpu.getIntStatus();
-
-        // get current FIFO count
-        fifoCount = mpu.getFIFOCount();
-    }
-
-    // wait for correct available data length, should be a VERY short wait
-    while (fifoCount < packetSize) fifoCount = mpu.getFIFOCount();
 
     // read a packet from FIFO
     mpu.getFIFOBytes(fifoBuffer, packetSize);
@@ -273,10 +268,6 @@ int readFIFOPacket() {
 int readHeading(float f_ypr[3], bool calibration) {
     if (!readFIFOPacket())
         return 0;
-	
-	// track FIFO count here in case there is > 1 packet available
-	// (this lets us immediately read more without waiting for an interrupt)
-	fifoCount -= packetSize;
 
 	mpu.dmpGetMag(mag, fifoBuffer);
     mpu.dmpGetAccel(acc, fifoBuffer);

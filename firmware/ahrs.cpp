@@ -302,22 +302,34 @@ void writeCalibrationLine() {
 }
 
 float readSteadyHeading() {
+	static float last_heading = 0;
 	float f_ypr[3];
 
 	// average as unit vectors, so readings either side of north don't average out to south
 	float s = 0;
 	float c = 0;
+	uint8_t valid = 0;
 
 	for (uint8_t i=0; i<MPU_LOOPS;) {
 		if (readHeading(f_ypr, false)) {
-			s += sin(f_ypr[0]);
-			c += cos(f_ypr[0]);
+			// a zero field vector (compass not answering, or no calibration) gives NaN, which would
+			// stay in the heading average and the steering PID for good
+			if (!isnan(f_ypr[0])) {
+				s += sin(f_ypr[0]);
+				c += cos(f_ypr[0]);
+				valid++;
+			}
 			i++;
 		}
 		delay(MPU_PAUSES);
 	}
 
-	float heading = toCircle(atan2(s, c) + (DEVICE_ORIENTATION * PI) + mag_offset);
+	float heading = last_heading;
+	if (valid)
+		heading = toCircle(atan2(s, c) + (DEVICE_ORIENTATION * PI) + mag_offset);
+	else
+		logln(F("No valid compass reading, keeping the last heading"));
+	last_heading = heading;
 
 	current_pitch = f_ypr[1] * 180.0 / PI;
 	current_roll = f_ypr[2] * 180.0 / PI;

@@ -132,6 +132,10 @@ inline void fuseHeading() {
 }
 
 inline void unwrapHeadings() {
+    // a NaN would stay in the accumulator, and so in the PID, for good
+    if (isnan(fused_heading) || isnan(requested_heading))
+        return;
+
     steer_input += angleDiff(last_fused_heading, fused_heading, true);
     last_fused_heading = fused_heading;
     steer_setpoint = steer_input + angleDiff(fused_heading, requested_heading, true);

@@ -1,0 +1,6 @@
+#ifndef SIM_MPU6050_9AXIS_MOTIONAPPS41_H
+#define SIM_MPU6050_9AXIS_MOTIONAPPS41_H
+
+#include "MPU6050.h"
+
+#endif

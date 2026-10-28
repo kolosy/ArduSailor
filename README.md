@@ -17,6 +17,14 @@ The platform is built around a simple, two-servo sail boat design, with a winch 
 
 The included firmware operates off of a list of GPS waypoints, and is a very rudimentary implementation of a greedy algorithm for navigation. The pilot simply tries to point the boat as close to the next waypoint as it can, without falling into irons. Tacks are limited by a timer. A recent addition is stall control - if boat speed falls below a certain limit, it will fall off to beam reach (position itself with the wind coming in at a 90 degree angle) until it comes back up to speed. There is no cross-track correction
 
+Simulator
+=========
+`sim/` builds the firmware for your computer and sails it around a simulated course, with the boat, wind, waves and sensors shown in a browser. You can change the conditions, the PID gains and the firmware's settings while it runs. On a Mac (after `xcode-select --install`):
+
+    python3 sim/run.py
+
+See [sim/README.md](sim/README.md).
+
 Status
 ======
 I've built several iterations of the circuit board, and it works reliably. When at speed, the navigation works .. somewhat. My current testing is in a sub-optimal body of water (a long, narrow channel), making certain tests difficult.

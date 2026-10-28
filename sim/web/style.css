@@ -1,0 +1,226 @@
+:root {
+  --bg: #eef2f5;
+  --panel: #ffffff;
+  --text: #1d2730;
+  --muted: #66727d;
+  --line: #d5dce2;
+  --accent: #1f6fb2;
+  --accent-text: #ffffff;
+  --water: #d8e8f3;
+  --water-line: #b9d3e6;
+  --crest: #ffffff;
+  --hull: #f7f4ee;
+  --hull-edge: #3b4650;
+  --sail: #fffdf6;
+  --sail-edge: #5b6670;
+  --boat-true: #1f6fb2;
+  --fw: #d9822b;
+  --req: #2b3640;
+  --rudder: #3f9a5a;
+  --wind: #7a5bc2;
+  --gps: #d9822b;
+  --target: #c2413b;
+  --warn: #b2501f;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12171c;
+    --panel: #1b2229;
+    --text: #e3e8ec;
+    --muted: #8d9aa5;
+    --line: #2f3a44;
+    --accent: #4d9be0;
+    --accent-text: #0d1319;
+    --water: #16303f;
+    --water-line: #1f4256;
+    --crest: #4f7c96;
+    --hull: #e6e1d6;
+    --hull-edge: #0d1216;
+    --sail: #f2efe6;
+    --sail-edge: #9aa6b0;
+    --boat-true: #5aa8ec;
+    --fw: #f0a04b;
+    --req: #e3e8ec;
+    --rudder: #63c27e;
+    --wind: #b297f2;
+    --gps: #f0a04b;
+    --target: #ef6b63;
+    --warn: #f08a4b;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+h1 { font-size: 15px; margin: 0; font-weight: 650; }
+.clock { font-variant-numeric: tabular-nums; font-size: 14px; min-width: 120px; }
+.muted, .hint { color: var(--muted); }
+.hint { font-weight: 400; font-size: 11px; margin-left: 6px; }
+.status { margin-left: auto; color: var(--muted); }
+.status.ok { color: var(--rudder); }
+.status.bad { color: var(--warn); }
+
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+button.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+button.small { padding: 1px 7px; font-size: 11px; }
+.speed, .actions { display: flex; gap: 4px; }
+
+main {
+  display: grid;
+  grid-template-columns: minmax(380px, 1.45fr) minmax(300px, 1fr) 330px;
+  grid-template-rows: minmax(300px, 1.35fr) minmax(200px, 1fr) minmax(190px, 0.95fr);
+  grid-template-areas:
+    "map boat controls"
+    "chart stern controls"
+    "console instruments controls";
+  gap: 10px;
+  padding: 10px;
+  height: calc(100vh - 50px);
+  min-height: 720px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.panel-title .inline { margin-left: auto; font-weight: 400; }
+
+canvas { flex: 1; width: 100%; min-height: 0; display: block; }
+
+.map-panel { grid-area: map; }
+.boat-panel { grid-area: boat; }
+.stern-panel { grid-area: stern; }
+.chart-panel { grid-area: chart; }
+.instruments-panel { grid-area: instruments; }
+.console-panel { grid-area: console; }
+.controls { grid-area: controls; overflow-y: auto; padding: 4px 0; }
+
+#map { cursor: grab; }
+#map.dragging { cursor: grabbing; }
+
+.legend { font-weight: 400; font-size: 11px; color: var(--muted); margin-left: auto; }
+.sw { display: inline-block; width: 14px; height: 3px; margin: 0 4px 2px 8px; vertical-align: middle; }
+.sw.true { background: var(--boat-true); }
+.sw.fw { background: var(--fw); }
+.sw.req { background: var(--req); }
+.sw.rud { background: var(--rudder); }
+
+#instruments { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 12px; }
+.instruments-panel { overflow-y: auto; }
+#instruments th, #instruments td { padding: 2px 8px; text-align: right; border-bottom: 1px solid var(--line); }
+#instruments th { text-align: left; font-weight: 500; color: var(--muted); }
+#instruments thead th { color: var(--text); font-weight: 600; text-align: right; }
+#instruments thead th:first-child { text-align: left; }
+#instruments td.fw { color: var(--fw); }
+#instruments tr.flags td { text-align: left; color: var(--muted); }
+
+#console {
+  flex: 1;
+  margin: 0;
+  padding: 6px 10px;
+  overflow-y: auto;
+  font: 11px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+#console .event { color: var(--accent); }
+#console .data { color: var(--muted); }
+#console .sent { color: var(--fw); }
+
+#serial-form { display: flex; gap: 6px; padding: 6px 10px 2px; align-items: center; }
+#serial-input { flex: 1; font: 12px ui-monospace, Menlo, monospace; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--text); }
+.keys { display: flex; gap: 4px; padding: 4px 10px 8px; flex-wrap: wrap; }
+.keys button { padding: 1px 7px; font: 11px ui-monospace, Menlo, monospace; }
+
+details { border-bottom: 1px solid var(--line); padding: 4px 12px 8px; }
+summary { font-weight: 600; cursor: pointer; padding: 4px 0; }
+.note { color: var(--muted); font-size: 11px; margin: 2px 0 6px; }
+details button { margin: 2px 0; width: 100%; }
+
+.param { display: grid; grid-template-columns: 1fr 58px; gap: 2px 8px; align-items: center; margin: 5px 0; }
+.param label { font-size: 12px; }
+.param .unit { color: var(--muted); font-size: 11px; }
+.param input[type=range] { grid-column: 1 / 3; width: 100%; margin: 0; }
+.param input[type=number], .tunable input, .pid input {
+  width: 100%;
+  font: 12px ui-monospace, Menlo, monospace;
+  padding: 2px 4px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--text);
+}
+.changed { border-color: var(--fw) !important; }
+
+.pid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 6px; align-items: end; }
+.pid label { font-size: 11px; color: var(--muted); }
+.pid button { width: auto; }
+
+.tunable { display: grid; grid-template-columns: 1fr 74px; gap: 2px 8px; align-items: center; margin: 6px 0; }
+.tunable .name { font: 12px ui-monospace, Menlo, monospace; }
+.tunable .comment { grid-column: 1 / 3; color: var(--muted); font-size: 11px; }
+.tunable .restart { color: var(--fw); margin-left: 4px; }
+.file { font-size: 11px; color: var(--muted); margin-top: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+#waypoints { width: 100%; font: 11px ui-monospace, Menlo, monospace; border-collapse: collapse; }
+#waypoints td { padding: 2px 4px; }
+#waypoints tr.target td { color: var(--target); font-weight: 600; }
+
+label.inline { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; }
+
+@media (max-width: 1100px) {
+  main {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-template-areas: "map" "boat" "stern" "chart" "instruments" "console" "controls";
+    height: auto;
+  }
+  .map-panel { height: 460px; }
+  .boat-panel, .stern-panel, .chart-panel { height: 320px; }
+  .console-panel { height: 320px; }
+  .controls { max-height: none; }
+}

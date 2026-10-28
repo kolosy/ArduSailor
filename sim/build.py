@@ -31,7 +31,18 @@ BINARY = os.path.join(BUILD, "ardusailor-sim")
 # Array sizes become ARRAY_TUNABLE_MAX, and the value stays the number of entries used.
 TUNABLES = [
     ("IRONS", 10, 90, False),
-    ("TACK_EVERY", 1000, 600000, False),
+    ("CORRIDOR", 1, 200, False),
+    ("MIN_TACK_SPEED", 0, 5, False),
+    ("MIN_TACK_INTERVAL", 0, 120000, False),
+    ("LAYLINE_MARGIN", 0, 45, False),
+    ("STALL_SPEED", 0, 3, False),
+    ("STALL_TIME", 500, 60000, False),
+    ("RECOVER_TIME", 0, 60000, False),
+    ("WIND_SIDE_MIN", 0, 60, False),
+    ("FOOT_ANGLE", 0, 45, False),
+    ("FOOT_TIME", 0, 120000, False),
+    ("GYBE_FROM", 120, 175, False),
+    ("LUFF_RATE", 0.5, 90, False),
     ("GET_WITHIN", 1, 50, False),
     ("SAIL_ADJUST_ON", 0, 60, False),
     ("START_HEEL_COMP", 0, 90, False),
@@ -101,9 +112,12 @@ def configure(fw):
 
 
 def comment_above(lines, index):
-    """The // comment block directly above a line, as one sentence."""
+    """The // comment block directly above a line, as one sentence. A group of #defines shares the comment above
+    it (the ones already turned into variables are an extern and a #define each)."""
     out = []
     i = index - 1
+    while i >= 0 and lines[i].strip().startswith(("#define", "extern ")):
+        i -= 1
     while i >= 0 and lines[i].strip().startswith("//"):
         out.insert(0, lines[i].strip().lstrip("/").strip())
         i -= 1

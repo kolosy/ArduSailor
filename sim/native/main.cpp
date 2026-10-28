@@ -257,8 +257,9 @@ void send_info() {
 void send_frame() {
     simfw_state fw;
     simfw_snapshot(&fw);
-    double gx, gy;
+    double gx, gy, lx, ly;
     latlon_to_local(fw.gps_lat, fw.gps_lon, &gx, &gy);
+    latlon_to_local(fw.leg_lat, fw.leg_lon, &lx, &ly);
     double ve = boat.u * sin(boat.psi) + boat.v * cos(boat.psi);
     double vn = boat.u * cos(boat.psi) - boat.v * sin(boat.psi);
     double length = G * params.wave_period * params.wave_period / (2 * 3.14159265358979);
@@ -291,7 +292,11 @@ void send_frame() {
                         .n("heel_adjust", fw.heel_adjust, 4).n("gps_lat", fw.gps_lat, 10).n("gps_lon", fw.gps_lon, 10)
                         .n("gps_x", fw.gps_lat != 0 ? gx : NAN).n("gps_y", fw.gps_lat != 0 ? gy : NAN)
                         .n("gps_speed", fw.gps_speed, 4).n("gps_course", fw.gps_course, 4)
-                        .n("gps_age_ms", fw.gps_age_ms).b("beating", fw.was_beating).b("beat_to_port", fw.beat_to_port)
+                        .n("gps_age_ms", fw.gps_age_ms).b("beating", fw.was_beating).n("tack", fw.tack)
+                        .n("on_tack", fw.current_tack).b("recovering", fw.recovering).b("making_way", fw.making_way)
+                        .b("tack_wanted", fw.tack_wanted).b("gybing_round", fw.gybing_round)
+                        .n("cross_track", fw.cross_track, 4).n("corridor", fw.corridor, 4).n("pointing", fw.pointing, 4)
+                        .n("leg_x", fw.leg_lat != 0 ? lx : NAN).n("leg_y", fw.leg_lat != 0 ? ly : NAN)
                         .n("cycle", fw.cycle, 10).n("kp", fw.kp).n("ki", fw.ki).n("kd", fw.kd)
                         .n("pid_output", fw.pid_output, 4).n("rudder_cmd", fw.rudder_servo_cmd)
                         .n("winch_cmd", fw.winch_servo_cmd).b("autotune", fw.tuning_pid)

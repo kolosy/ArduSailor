@@ -7,7 +7,10 @@
 
 // minimum speed needed to establish course (knots)
 #define MIN_SPEED 1.0
-#define MIN_TACK_SPEED 1.0
+
+// only tack with at least this much speed on (knots): a tack started slowly ends in irons. In the simulator, tacks
+// from under 1.5 knots mostly failed and from over 2 almost all worked.
+#define MIN_TACK_SPEED 2.0
 
 // how close you have to get to the waypoint to consider it hit
 #define GET_WITHIN 5
@@ -30,15 +33,40 @@
 #define TACK_START_STRAIGHT 50
 #define GYBE_START_STRAIGHT 50
 
+// slower than this (knots), or drifting backwards, for STALL_TIME (ms) means we're in irons. Once we've made way
+// again for RECOVER_TIME (ms), we're out
 #define STALL_SPEED 0.5
+#define STALL_TIME 3000
+#define RECOVER_TIME 5000
 
 // have sails at this position for a gybe
 #define GYBE_SAIL_POS 80
 
 #define SERVO_ORIENTATION -1
 
-// how often to change tacks when beating up-wind
-#define TACK_EVERY 30000
+// beating up-wind, zigzag up a corridor this many metres either side of the line from where the leg started to
+// the waypoint, tacking at its edges
+#define CORRIDOR 15
+
+// don't tack again within this long (ms) of the last tack, or of getting out of irons
+#define MIN_TACK_INTERVAL 10000
+
+// tack for a waypoint that's off the wind on the other tack only once it's this many degrees outside the no-go
+// zone: the apparent wind swings aft after a tack, so the new tack can't point quite as high as it looks from here
+#define LAYLINE_MARGIN 10
+
+// the apparent wind has to be this many degrees off the bow before we trust which side it's on
+#define WIND_SIDE_MIN 15
+
+// too slow to tack: bear away this many degrees to build speed. No speed within FOOT_TIME (ms): go round the
+// other way instead, bearing away until the wind is GYBE_FROM degrees off the bow and then gybing
+#define FOOT_ANGLE 15
+#define FOOT_TIME 15000
+#define GYBE_FROM 150
+
+// after getting out of irons (from a beam reach) or a tack (from FOOT_ANGLE below close-hauled), come back up
+// to close-hauled at no more than this many degrees a second, building speed on the way
+#define LUFF_RATE 4
 
 // if we're at more than this heel, start easing the mainsheet
 #define START_HEEL_COMP 30
@@ -99,7 +127,33 @@ double fused_heading = 0;
 int16_t turning_by = 0;
 boolean turning = false;
 boolean tacking = false;
-boolean stalled = true;
+
+// the tack we're on, from the wind vane: 1 is starboard (wind over the starboard side), -1 port. tack is the one
+// we're sailing for; the two differ while we're tacking or gybing.
+int8_t current_tack = 1;
+int8_t tack = 1;
+uint32_t last_tack = 0;
+boolean was_beating = false;
+
+// when we started wanting the other tack (0: we don't), and whether we're going round by gybing
+uint32_t tack_wanted_since = 0;
+boolean gybing_round = false;
+
+// how close to the wind (degrees) we'll sail just now: IRONS, or more just after irons or a tack
+float pointing = 90;
+uint32_t last_heading_update = 0;
+
+// in irons: not making way (too slow, or drifting backwards) for STALL_TIME
+boolean making_way = false;
+boolean recovering = false;
+uint32_t last_made_way = 0;
+uint32_t last_lost_way = 0;
+
+// where the leg to the current waypoint started, the line's bearing, and how far we are to the right (+) or
+// left (-) of the line, in m
+float leg_lat = 0, leg_lon = 0;
+float leg_bearing = 0;
+float cross_track = 0;
 
 double new_rudder = 0;
 
@@ -158,6 +212,55 @@ float computeDistance(float i_lat, float i_lon, float f_lat, float f_lon) {
     return R * c;
 }
 
+// metres east and north of lat0, lon0 (degrees). Flat is close enough over a course.
+void offsetFrom(float lat0, float lon0, float lat, float lon, float *east, float *north) {
+    *north = RAD(lat - lat0) * R;
+    *east = RAD(lon - lon0) * R * cos(RAD(lat0));
+}
+
+inline boolean haveFix() {
+    return gps_lat != 0.0 || gps_lon != 0.0;
+}
+
+// a new leg starts where we are now
+void startLeg() {
+    leg_lat = gps_lat;
+    leg_lon = gps_lon;
+}
+
+void updateCrossTrack() {
+    float line_e, line_n, boat_e, boat_n;
+    offsetFrom(leg_lat, leg_lon, wp_lat, wp_lon, &line_e, &line_n);
+    offsetFrom(leg_lat, leg_lon, gps_lat, gps_lon, &boat_e, &boat_n);
+
+    float length = sqrt(line_e * line_e + line_n * line_n);
+    leg_bearing = toCircleDeg(DEG(atan2(line_e, line_n)));
+    cross_track = length > 1 ? (boat_e * line_n - boat_n * line_e) / length : 0;
+}
+
+void updateStall() {
+    // GPS speed has no sign: drifting backwards shows up as a course opposite the heading
+    making_way = gps_speed >= STALL_SPEED && angleDiff(gps_course, ahrs_heading, false) < 90;
+    if (making_way)
+        last_made_way = millis();
+    else
+        last_lost_way = millis();
+
+    if (!recovering && millis() - last_made_way > STALL_TIME) {
+        recovering = true;
+        tack_wanted_since = 0;
+        gybing_round = false;
+        pointing = 90;
+        logln(F("Not making way. Falling off to get out of irons."));
+    } else if (recovering && millis() - last_lost_way > RECOVER_TIME) {
+        // stay on the tack we fell off onto for a while: tacking straight back is what put us in irons
+        recovering = false;
+        tack = current_tack;
+        last_tack = millis();
+        logln(F("Making way again."));
+    }
+}
+
 void adjustSails() {
 #ifdef NO_SAIL
     return;
@@ -173,6 +276,10 @@ void adjustSails() {
 
     float new_winch = map(constrain(abs(wind - 180), IRONS, 180), IRONS, 180, WINCH_MIN, WINCH_MAX) + EASE_SHEET(heel_adjust);
 
+    // stuck in irons, let the sheet go: hauled in, the main only turns the bow back into the wind
+    if (recovering && !making_way)
+        new_winch = WINCH_MIN;
+
     if (abs(new_winch - current_winch) > SAIL_ADJUST_ON) {
         logln(F("New winch position of %d is more than %d off from %d. Adjusting trim."), (int16_t) new_winch, SAIL_ADJUST_ON, current_winch);
         adjustment_made = true;
@@ -180,10 +287,6 @@ void adjustSails() {
     } else
         logln(F("No trim adjustment needed"));
 }
-
-long time_since_tack_change = 0;
-bool beat_to_port = false;
-bool was_beating = false;
 
 void autotune() {
     if (pidTune.Runtime()) {
@@ -194,42 +297,133 @@ void autotune() {
     }
 }
 
+// the heading as close to the wind as we'll sail on tack t (world_wind is where the wind comes from)
+inline float closeHauled(float world_wind, int8_t t) {
+    return toCircleDeg(world_wind - t * pointing);
+}
+
+// whether sailing close-hauled on tack t takes us further from the leg's line
+boolean awayFromLine(float world_wind, int8_t t) {
+    float across = sin(RAD(angleDiff(leg_bearing, closeHauled(world_wind, t), true)));
+    return cross_track > 0 ? across > 0 : across < 0;
+}
+
+void changeTack() {
+    tack = -tack;
+    last_tack = millis();
+    logln(F("Changing to %s tack"), tack > 0 ? "starboard" : "port");
+}
+
+// the course on tack t: straight for the waypoint if we can get there on this tack, otherwise close-hauled
+float courseOn(float world_wind, int8_t t, float wp_from_wind) {
+    int8_t wp_tack = wp_from_wind < 0 ? 1 : -1;
+    return abs(wp_from_wind) < pointing || wp_tack != t ? closeHauled(world_wind, t) : wp_heading;
+}
+
+// The heading to steer for the waypoint. It's never inside the no-go zone, and it only crosses the wind (a tack)
+// with way on and not too soon after the last tack. Upwind, it zigzags close-hauled up the corridor around the
+// leg's line, until the waypoint can be reached on one tack.
+float chooseCourse(float world_wind) {
+    // where the waypoint and the bow are from the wind: negative to the left of it, as on starboard tack
+    float wp_from_wind = angleDiff(world_wind, wp_heading, true);
+    float heading_from_wind = angleDiff(world_wind, fused_heading, true);
+    int8_t wp_tack = wp_from_wind < 0 ? 1 : -1;
+
+    was_beating = abs(wp_from_wind) < IRONS;
+
+    boolean want_other;
+    if (was_beating)
+        want_other = abs(cross_track) > CORRIDOR && awayFromLine(world_wind, tack);
+    else if (wp_tack == tack)
+        want_other = false;
+    else if (abs(heading_from_wind) + abs(wp_from_wind) > 180) {
+        // the waypoint is round the other side of the wind behind us: gybe, which we can do at any speed
+        changeTack();
+        want_other = false;
+    } else
+        want_other = abs(wp_from_wind) > IRONS + LAYLINE_MARGIN;
+
+    if (gybing_round) {
+        if (!want_other)
+            gybing_round = false;
+        else if (abs(heading_from_wind) > GYBE_FROM) {
+            // far enough off the wind that the short way onto the other tack is through a gybe
+            gybing_round = false;
+            changeTack();
+            return courseOn(world_wind, tack, wp_from_wind);
+        } else
+            return toCircleDeg(world_wind - tack * (GYBE_FROM + 20));
+    }
+
+    float course = courseOn(world_wind, tack, wp_from_wind);
+    if (!want_other) {
+        tack_wanted_since = 0;
+        return course;
+    }
+
+    if (tack_wanted_since == 0)
+        tack_wanted_since = millis();
+
+    boolean settled = tack == current_tack && millis() - last_tack > MIN_TACK_INTERVAL;
+    if (settled && making_way && gps_speed >= MIN_TACK_SPEED) {
+        tack_wanted_since = 0;
+        changeTack();
+        return courseOn(world_wind, tack, wp_from_wind);
+    }
+
+    if (settled && millis() - tack_wanted_since > FOOT_TIME) {
+        logln(F("Too slow to tack. Going round by gybing."));
+        tack_wanted_since = 0;
+        gybing_round = true;
+        return toCircleDeg(world_wind - tack * (GYBE_FROM + 20));
+    }
+
+    // bear away a little to build speed for the tack
+    return toCircleDeg(course - tack * FOOT_ANGLE);
+}
+
 void adjustHeading() {
 #ifndef NO_SAIL
-	float world_wind = toCircleDeg(fused_heading + wind);
+    float world_wind = toCircleDeg(fused_heading + wind);
 
-	// starbord tack: world wind + irons
-	// port tack: world wind - irons
+    // which side the wind is on. Head to wind, keep the last side we were sure of
+    int8_t was_on = current_tack;
+    int16_t wind_from_bow = wind > 180 ? wind - 360 : wind;
+    if (wind_from_bow > WIND_SIDE_MIN)
+        current_tack = 1;
+    else if (wind_from_bow < -WIND_SIDE_MIN)
+        current_tack = -1;
 
-	// cyclomatic complexity is a tad high, but more readable this way
-	if (angleDiff(world_wind, wp_heading, false) < IRONS) {
-		if (was_beating) {
-			if (time_since_tack_change + TACK_EVERY < millis()) {
-				beat_to_port = !beat_to_port;
-				time_since_tack_change = millis();
-			}
-		} else {
-			was_beating = true;
+    // just through a tack, the boat is slow: come out of it a little off the wind, then work back up
+    if (current_tack != was_on)
+        pointing = max(pointing, IRONS + FOOT_ANGLE);
+    pointing = max(IRONS, pointing - LUFF_RATE * (millis() - last_heading_update) / 1000.0);
+    last_heading_update = millis();
 
-			// pick the closer direction when we start beating
-			// if sbord tack is farther, go to port
-			beat_to_port = angleDiff(world_wind + IRONS, wp_heading, false) > angleDiff(world_wind - IRONS, wp_heading, false);
-			time_since_tack_change = millis();
-		}
+    // a tack or gybe gets MIN_TACK_INTERVAL to happen. After that, whichever tack we're on is the one we sail.
+    if (tack != current_tack && millis() - last_tack > MIN_TACK_INTERVAL)
+        tack = current_tack;
 
-		requested_heading = toCircleDeg(world_wind + (beat_to_port ? -IRONS : IRONS));
-	} else {
-		was_beating = false;
+    if (recovering || !haveFix()) {
+        // in irons, or no position yet: fall off onto a beam reach on the tack we're on and build speed there
+        tack = current_tack;
+        was_beating = false;
+        requested_heading = toCircleDeg(world_wind - tack * 90);
+    } else
+        requested_heading = chooseCourse(world_wind);
 
-		requested_heading = wp_heading;
-	}
+    logln(F("World wind: %d.%d. Tack %d (on %d). Beating: %d. Off line %dm. Recovering: %d. Requested heading %d.%d"),
+        FP(world_wind),
+        tack,
+        current_tack,
+        was_beating,
+        (int16_t) cross_track,
+        recovering,
+        FP(requested_heading));
 
-	logln(F("World wind: %d.%d. Was beating: %d. Beat to port: %d, Time since change: %d. Requested heading %d.%d"),
-		FP(world_wind),
-		was_beating,
-		beat_to_port,
-		millis() - time_since_tack_change,
-		FP(requested_heading));
+    // drifting backwards, the rudder works the other way round
+    boolean backwards = recovering && gps_speed > 0 && angleDiff(gps_course, fused_heading, false) > 90;
+    steeringPID.SetControllerDirection(backwards ? REVERSE : DIRECT);
 
 #else
     requested_heading = wp_heading;
@@ -260,6 +454,7 @@ void pilotInit(int16_t pilotSettingsAddress) {
 
     // start the unwrapped heading where we are, so the first PID step doesn't see a jump from 0
     last_fused_heading = ahrs_heading;
+    last_heading_update = millis();
 
 	steeringPID.SetMode(AUTOMATIC);
 	steeringPID.SetOutputLimits(-45, 45);
@@ -325,6 +520,7 @@ void setNextWaypoint() {
     // wp changed, need to recompute
     wp_distance = computeDistance(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon));
     wp_heading = DEG(toCircle(computeBearing(RAD(gps_lat), RAD(gps_lon), RAD(wp_lat), RAD(wp_lon))));
+    startLeg();
 
     // we should allow tacks now, as this mechanism is just to space out zig zags
     // also can just zero it out as there's no inherent value in the time
@@ -337,7 +533,10 @@ void setNextWaypoint() {
 }
 
 void updateSituation() {
-    stalled = gps_speed < STALL_SPEED;
+#ifndef NO_SAIL
+    if (haveFix())
+        updateStall();
+#endif
 
     // still want to check this
     if (gps_speed > MIN_SPEED) {
@@ -360,6 +559,11 @@ void updateSituation() {
 
     if (wp_distance < GET_WITHIN)
         setNextWaypoint();
+
+    // the first leg starts at the first fix
+    if (leg_lat == 0.0 && leg_lon == 0.0 && haveFix())
+        startLeg();
+    updateCrossTrack();
 
     if (wp_distance < HRG_THRESHOLD) {
         high_res_gps = true;

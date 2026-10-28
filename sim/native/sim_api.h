@@ -55,7 +55,9 @@ typedef struct {
     uint32_t gps_age_ms;
     double current_roll, current_pitch, heel_adjust, voltage;
     int wind, target_wp, wp_direction, cycle;
-    int was_beating, beat_to_port, tuning_pid, manual_override, remote_control, serial_logging;
+    int was_beating, tack, current_tack, recovering, making_way, tack_wanted, gybing_round;
+    double cross_track, leg_lat, leg_lon, corridor, pointing;
+    int tuning_pid, manual_override, remote_control, serial_logging;
     double kp, ki, kd, pid_output;
     int rudder_servo_cmd, winch_servo_cmd;
     int calibration_steps, calibration_total;  // compass calibration progress (ahrs.cpp)

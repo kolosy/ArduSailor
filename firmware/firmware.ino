@@ -191,17 +191,20 @@ void setup()
 }
 
 void initTrail() {
-	ahrs_heading = readSteadyHeading() * 180.0 / PI;
-	wind = readSteadyWind() * 180.0 / PI;
+	float heading = readSteadyHeading();
+	float wind_angle = readSteadyWind();
+	ahrs_heading = DEG(heading);
+	wind = round(DEG(wind_angle));
 
+	// the trails hold radians, as newTrailingHeadingValue() fills them
 	for (int i=0; i<AHRS_TRAIL; i++) {
-		ahrs_trail[i].s = sin(ahrs_heading);
-		ahrs_trail[i].c = cos(ahrs_heading);
+		ahrs_trail[i].s = sin(heading);
+		ahrs_trail[i].c = cos(heading);
 	}
 
 	for (int i=0; i<WIND_TRAIL; i++) {
-		wind_trail[i].s = sin(wind);
-		wind_trail[i].c = cos(wind);
+		wind_trail[i].s = sin(wind_angle);
+		wind_trail[i].c = cos(wind_angle);
 	}
 }
 
@@ -306,6 +309,8 @@ void printDataLine() {
 
 void loop()
 {
+	servoService();
+
 	if (!manual_override) {
 		logln(F("[Cycle %d start]"), cycle);
 		cycle++;

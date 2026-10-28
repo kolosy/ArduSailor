@@ -43,6 +43,8 @@ class Simulator:
         self.last_frame = None
         # a frame every half simulated second, so a browser that connects later still gets the track and chart
         self.recent = collections.deque(maxlen=1200)
+        # the latest change to each setting and to the waypoints since the info message, for the same reason
+        self.changes = {}
         self.settings = {}    # "set"/"tune" commands, passed on the command line when restarting
         self.waypoints = {}   # moved waypoints, sent again after a restart
 
@@ -54,6 +56,7 @@ class Simulator:
             self.info = None
             self.last_frame = None
             self.recent.clear()
+            self.changes.clear()
             self.proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, bufsize=0)
             proc = self.proc
         threading.Thread(target=self._read, args=(proc,), daemon=True).start()
@@ -121,6 +124,9 @@ class Simulator:
                 # keep what a browser that connects later needs, unless this simulator is being replaced
                 if self.proc is proc and kind == "info":
                     self.info = line
+                elif self.proc is proc and kind in ("param", "tunable", "waypoints"):
+                    m = json.loads(line)
+                    self.changes[(kind, m.get("key", m.get("name")))] = line
                 elif self.proc is proc and kind == "frame":
                     self.last_frame = line
                     t = json.loads(line)["t"]
@@ -135,7 +141,7 @@ class Simulator:
         q = queue.Queue(maxsize=2000)
         with self.lock:
             self.clients.add(q)
-            first = [self.info] + [line for _, line in self.recent] + [self.last_frame]
+            first = [self.info] + list(self.changes.values()) + [line for _, line in self.recent] + [self.last_frame]
             first = [line for line in first if line]
         for l in first:
             q.put(l)

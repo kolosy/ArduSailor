@@ -1,5 +1,4 @@
-#define PILOT_DEBUG
-
+#include "config.h"
 #include "logger.h"
 #include <Servo.h>
 #include "servo_ctl.h"
@@ -76,8 +75,8 @@ float heel_adjust = 0;
 // rudder adjustment to compensate for excessive heel. todo: clarify naming; declared in servo_ctl.h
 // float heel_offset = 0;
 
-// wind direction
-uint16_t wind = 0;
+// wind direction. signed so that math like (wind - 180) stays signed with avr's 16-bit int
+int16_t wind = 0;
 float trailing_wind = 0;
 
 // current loop() count
@@ -158,8 +157,8 @@ void setup()
 	logln(F("ArduSailor Starting..."));
 	Serial2.begin(GPS_BAUDRATE);
 
-	// config value
-	mag_offset = 0;// RAD(-15.0);
+	// magnetic to true north (config.h)
+	mag_offset = RAD(MAG_DECLINATION);
 
 	logln(F("Initializing servos..."));
 	servoInit();

@@ -1,5 +1,3 @@
-#define NO_SAIL
-
 #include <PID_v1.h>
 #include <PID_AutoTune_v0.h>
 #include <EEPROM.h>
@@ -52,6 +50,9 @@
 // we're going decrease the amount of heel adjust by this factor to bring things back slowly
 #define HEEL_COMP_DECAY 0.1
 
+// the trim map in adjustSails() puts the fully eased sheet at WINCH_MIN, so easing moves toward it
+#define EASE_SHEET(v) ((WINCH_MIN > WINCH_MAX) ? (v) : -(v))
+
 // how close we can get to our waypoint before we switch to High Res GPS
 #define HRG_THRESHOLD 50
 
@@ -102,13 +103,20 @@ boolean stalled = true;
 
 double new_rudder = 0;
 
+// the PID steers on a continuous ("unwrapped") heading so it never sees the jump at 0/360 and
+// always turns the short way. steer_input accumulates the shortest turn between readings, and
+// steer_setpoint sits the shortest signed distance to requested_heading away from it.
+double steer_input = 0;
+double steer_setpoint = 0;
+float last_fused_heading = 0;
+
 int16_t _pilotSettingsAddress = 0;
 double aTuneStep=5, aTuneNoise=1, aTuneStartValue=100;
 unsigned int aTuneLookBack=20;
 
 // Specify the links and initial tuning parameters
-PID steeringPID(&fused_heading, &new_rudder, &requested_heading, 0.1, 0.001, 2.8, P_ON_E, DIRECT);
-PID_ATune pidTune(&fused_heading, &new_rudder);
+PID steeringPID(&steer_input, &new_rudder, &steer_setpoint, 0.1, 0.001, 2.8, P_ON_E, DIRECT);
+PID_ATune pidTune(&steer_input, &new_rudder);
 
 inline void toPort(int amt) {
     rudderTo(current_rudder + (SERVO_ORIENTATION * amt));
@@ -121,6 +129,16 @@ inline void toSbord(int amt) {
 inline void fuseHeading() {
     // no fusion for now. todo: add gps-based mag calibration compensation
     fused_heading = ahrs_heading;
+}
+
+inline void unwrapHeadings() {
+    // a NaN would stay in the accumulator, and so in the PID, for good
+    if (isnan(fused_heading) || isnan(requested_heading))
+        return;
+
+    steer_input += angleDiff(last_fused_heading, fused_heading, true);
+    last_fused_heading = fused_heading;
+    steer_setpoint = steer_input + angleDiff(fused_heading, requested_heading, true);
 }
 
 // lat/lon and result in radians
@@ -149,11 +167,11 @@ void adjustSails() {
     if (abs(current_roll) > START_HEEL_COMP)
         heel_adjust = min(MAX_HEEL_COMP, 2 * (abs(current_roll) - START_HEEL_COMP));
     else if (heel_adjust > MIN_HEEL_COMP)
-        heel_adjust = heel_adjust * HEEL_COMP_DECAY;
+        heel_adjust -= heel_adjust * HEEL_COMP_DECAY;
     else
         heel_adjust = 0;
 
-    float new_winch = map(constrain(abs(wind - 180), IRONS, 180), IRONS, 180, WINCH_MIN, WINCH_MAX) - heel_adjust;
+    float new_winch = map(constrain(abs(wind - 180), IRONS, 180), IRONS, 180, WINCH_MIN, WINCH_MAX) + EASE_SHEET(heel_adjust);
 
     if (abs(new_winch - current_winch) > SAIL_ADJUST_ON) {
         logln(F("New winch position of %d is more than %d off from %d. Adjusting trim."), (int16_t) new_winch, SAIL_ADJUST_ON, current_winch);
@@ -221,6 +239,8 @@ void adjustHeading() {
     	  FP(fused_heading));
 #endif
 
+    unwrapHeadings();
+
     if (tuningPID)
         autotune();
 	else
@@ -237,6 +257,9 @@ void pilotInit(int16_t pilotSettingsAddress) {
 
     wp_lat = wp_list[0];
     wp_lon = wp_list[1];
+
+    // start the unwrapped heading where we are, so the first PID step doesn't see a jump from 0
+    last_fused_heading = ahrs_heading;
 
 	steeringPID.SetMode(AUTOMATIC);
 	steeringPID.SetOutputLimits(-45, 45);

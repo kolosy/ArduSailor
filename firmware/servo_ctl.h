@@ -1,9 +1,8 @@
 #ifndef __servo_ctl
 #define __servo_ctl
 
-#define NO_SAIL
-
 #include "Arduino.h"
+#include "config.h"
 
 #define RUDDER_MIN 50
 #define RUDDER_MAX 125

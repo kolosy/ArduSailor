@@ -2,6 +2,7 @@
 #define ahrs_h
 
 #include "Arduino.h"
+#include "config.h"
 
 #ifndef PILOT_DEBUG
 // reporting value

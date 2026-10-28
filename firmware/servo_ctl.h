@@ -23,6 +23,9 @@ void normalizedWinchTo(int value, int min, int max);
 void rudderFromCenter(int value);
 void rudderTo(int value);
 
+// call every loop: powers the winch down once its move is done
+void servoService();
+
 #ifdef NO_SAIL
 void runMotor();
 void stopMotor();

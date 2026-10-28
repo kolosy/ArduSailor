@@ -368,6 +368,16 @@ for (const btn of document.querySelectorAll('.keys button')) {
 
 // ---------------------------------------------------------------- instruments
 
+function steeringFor(fw) {
+  const name = (t) => (t > 0 ? 'starboard' : 'port');
+  if (fw.recovering) return `beam reach on ${name(fw.on_tack)} tack, out of irons`;
+  if (fw.gybing_round) return `bearing away to gybe onto ${name(-fw.tack)}, too slow to tack`;
+  if (fw.tack_wanted) return `building speed to tack onto ${name(-fw.tack)}`;
+  if (fw.tack !== fw.on_tack) return `${fw.beating ? 'tacking' : 'tacking or gybing'} onto ${name(fw.tack)}`;
+  const easing = fw.pointing > tunableValue('IRONS', 40) + 0.5 ? `, coming up to the wind (${fmt(fw.pointing, 0, '°')} off)` : '';
+  return (fw.beating ? `beating, ${name(fw.tack)} tack` : `${name(fw.tack)} tack`) + easing;
+}
+
 function renderInstruments() {
   const f = state.frame;
   if (!f) return;
@@ -376,8 +386,9 @@ function renderInstruments() {
   const worldWind = wrap360(fw.heading + fw.wind);
   const rows = [
     ['Heading', fmtDeg(b.heading, 1), fmtDeg(fw.heading, 1)],
-    ['Steering for', '', fmtDeg(fw.requested, 1) + (fw.beating ? (fw.beat_to_port ? ' beating, port side of the wind' : ' beating, starboard side') : '')],
-    ['Waypoint', '', `#${fw.target_wp}: ${fmtDeg(fw.wp_heading)} ${fmt(fw.wp_distance, 1, ' m')}`],
+    ['Steering for', '', fmtDeg(fw.requested, 1) + ' ' + steeringFor(fw)],
+    ['Waypoint', '', `#${fw.target_wp}: ${fmtDeg(fw.wp_heading)} ${fmt(fw.wp_distance, 1, ' m')}, ` +
+      `${fmt(Math.abs(fw.cross_track), 1, ' m')} ${fw.cross_track >= 0 ? 'right' : 'left'} of the line`],
     ['Speed', `${fmt(b.speed, 2, ' kn')} (over ground ${fmt(b.sog, 2)})`, `GPS ${fmt(fw.gps_speed, 1, ' kn')} ${fmtDeg(fw.gps_course)}`],
     ['Position', `leeway ${fmt(b.leeway, 1, '°')}`, `GPS ${fmt(gpsError, 1, ' m')} off, ${fw.gps_age_ms} ms old`],
     ['Apparent wind', `${fmtDeg(b.awa)} ${fmt(b.aws, 1, ' kn')}`, `vane ${fmtDeg(fw.wind)} (now ${fmtDeg(b.vane)})`],
@@ -388,7 +399,7 @@ function renderInstruments() {
     ['Sail', `${fmt(b.alpha, 0, '°')} attack, drive ${fmt(b.drive, 2, ' N')}, side ${fmt(b.side, 1, ' N')}`, ''],
     ['Loop', '', `${fmt(f.loop_ms, 0, ' ms')}, cycle ${fw.cycle}, battery ${fmt(fw.voltage, 2, ' V')}`],
   ];
-  const flags = [fw.manual && 'MANUAL OVERRIDE', fw.remote && 'remote control', fw.autotune && 'PID autotune',
+  const flags = [fw.recovering && 'in irons, falling off to recover', fw.manual && 'MANUAL OVERRIDE', fw.remote && 'remote control', fw.autotune && 'PID autotune',
     fw.logging && 'serial logging', b.tumbling && 'boat out of the water, tumbling',
     fw.cal_steps > 0 && fw.cal_steps < fw.cal_total && `compass calibration ${fw.cal_steps}/${fw.cal_total}`].filter(Boolean);
   $('instruments').innerHTML =
@@ -547,6 +558,7 @@ function drawRoute(ctx, w, h, f) {
     ctx.font = '600 12px system-ui, sans-serif';
     ctx.fillText(String(i), sx + 6, sy - 6);
   });
+  if (f && wps[target] && finite(f.fw.leg_x)) drawCorridor(ctx, w, h, f, wps[target]);
   if (f && wps[target]) {
     const [bx, by] = toScreen(f.boat.x, f.boat.y, w, h);
     const [tx, ty] = toScreen(wps[target][2], wps[target][3], w, h);
@@ -557,6 +569,30 @@ function drawRoute(ctx, w, h, f) {
     ctx.setLineDash([]);
     ctx.globalAlpha = 1;
   }
+}
+
+// the line the firmware is sailing this leg along, and the corridor it beats up, tacking at the edges
+function drawCorridor(ctx, w, h, f, wp) {
+  const ax = f.fw.leg_x, ay = f.fw.leg_y, bx = wp[2], by = wp[3];
+  const len = Math.hypot(bx - ax, by - ay);
+  if (len < 1) return;
+  const nx = (by - ay) / len * f.fw.corridor, ny = -(bx - ax) / len * f.fw.corridor;  // to the right of the line
+  const corners = [[ax + nx, ay + ny], [bx + nx, by + ny], [bx - nx, by - ny], [ax - nx, ay - ny]].map((p) => toScreen(p[0], p[1], w, h));
+  ctx.fillStyle = colors.target;
+  ctx.globalAlpha = f.fw.beating ? 0.08 : 0.04;
+  ctx.beginPath();
+  corners.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = colors.target;
+  ctx.globalAlpha = f.fw.beating ? 0.45 : 0.2;
+  ctx.lineWidth = 1;
+  ctx.setLineDash([6, 4]);
+  for (const [i, j] of [[0, 1], [3, 2]]) {
+    ctx.beginPath(); ctx.moveTo(...corners[i]); ctx.lineTo(...corners[j]); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  ctx.globalAlpha = 1;
 }
 
 function drawMapBoat(ctx, w, h, f) {

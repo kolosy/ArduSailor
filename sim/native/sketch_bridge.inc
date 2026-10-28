@@ -22,7 +22,17 @@ extern "C" void simfw_snapshot(simfw_state *s) {
     s->wp_direction = direction;
     s->cycle = (int)cycle;
     s->was_beating = was_beating;
-    s->beat_to_port = beat_to_port;
+    s->tack = tack;
+    s->current_tack = current_tack;
+    s->recovering = recovering;
+    s->making_way = making_way;
+    s->tack_wanted = tack_wanted_since != 0;
+    s->gybing_round = gybing_round;
+    s->cross_track = cross_track;
+    s->leg_lat = leg_lat;
+    s->leg_lon = leg_lon;
+    s->corridor = CORRIDOR;
+    s->pointing = pointing;
     s->tuning_pid = tuningPID;
     s->manual_override = manual_override;
     s->remote_control = remote_control;

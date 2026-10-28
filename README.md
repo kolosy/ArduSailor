@@ -15,7 +15,7 @@ The platform is built around a simple, two-servo sail boat design, with a winch 
 * A breakout for the main UART port for logging (on my build I have this routed to a 433MHz radio module)
 * ICSP header for programming
 
-The included firmware operates off of a list of GPS waypoints, and is a very rudimentary implementation of a greedy algorithm for navigation. The pilot simply tries to point the boat as close to the next waypoint as it can, without falling into irons. Tacks are limited by a timer. A recent addition is stall control - if boat speed falls below a certain limit, it will fall off to beam reach (position itself with the wind coming in at a 90 degree angle) until it comes back up to speed. There is no cross-track correction
+The included firmware operates off of a list of GPS waypoints. The pilot steers straight for the next waypoint when it can. When the waypoint is upwind (within `IRONS` of the wind), it beats: close-hauled, zigzagging up a corridor `CORRIDOR` metres either side of the line from where the leg started to the waypoint, tacking at the corridor's edges, until it can lay the waypoint on one tack. It only tacks with way on (`MIN_TACK_SPEED`). Too slow, it bears away to build speed, and if that doesn't work it goes round by gybing instead. If the boat stops (in irons, or drifting backwards), it lets the sheet out and falls off onto a beam reach on whichever tack it's on, steering the other way while it's going backwards. It then stays on that tack, working back up to close-hauled gradually, rather than tacking straight back into irons. Outside a beat there is no cross-track correction.
 
 Simulator
 =========

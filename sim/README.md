@@ -31,8 +31,8 @@ restarts, just as they would on the board.
 ## What's on the screen
 
 - **Course**: the waypoints (drag them to move them), the route, the boat's track, the GPS fixes the firmware
-  received, the heading the firmware is asking for and the heading it thinks it has. Scroll to zoom, drag to
-  pan; *whole course* zooms out to the waypoints.
+  received, the heading the firmware is asking for and the heading it thinks it has, and the corridor it beats up
+  when the waypoint is upwind. Scroll to zoom, drag to pan; *whole course* zooms out to the waypoints.
 - **Boat from above**: hull, rudder and boom at their actual angles (the rudder's commanded angle is drawn
   faintly when the servo hasn't caught up), the sail's camber or luffing, true and apparent wind, the sheet's
   limit, and the wind vane.
@@ -52,7 +52,7 @@ On the right:
   shifts (and how quickly they come and go); wave height, period and direction; the boat's displacement,
   sail area, stability and weather helm; servo speeds and how the winch servo maps to the boom; compass hard
   iron, sensor noise and lag, GPS error, battery voltage. Changes apply immediately.
-- **Firmware settings**: the firmware's tuning `#define`s (`IRONS`, `TACK_EVERY`, `GET_WITHIN`,
+- **Firmware settings**: the firmware's tuning `#define`s (`IRONS`, `CORRIDOR`, `MIN_TACK_SPEED`, `GET_WITHIN`,
   `RUDDER_MAX`, `WINCH_MIN`, `AHRS_TRAIL`, ...), made adjustable. Ones marked ↻ are only read in `setup()`
   and take effect after *Reboot Arduino*.
 - **Waypoints** and **Start over** (forget every change, or blank the EEPROM).

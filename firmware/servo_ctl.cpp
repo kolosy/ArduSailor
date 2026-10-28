@@ -21,6 +21,11 @@ uint8_t current_winch = 0;
 
 bool motor_running = false;
 
+// A big trim change takes the winch a couple of seconds, too long to stop steering for. So the winch moves in the
+// background: it stays powered until winch_until, and servoService() switches it off after that.
+bool winch_moving = false;
+uint32_t winch_until = 0;
+
 Servo sv_winch, sv_rudder;
 
 void servoInit() {
@@ -82,16 +87,28 @@ void winchTo(int value) {
 	if (current_winch == v)
 		return;
 
+	// still on its way somewhere else: it could be up to the rest of that move further away
+	uint32_t still_to_go = 0;
+	if (winch_moving && (long)(winch_until - millis()) > 0)
+		still_to_go = winch_until - millis();
+
 	digitalWrite(SP_EN, HIGH);
 	delay(10);
 	digitalWrite(WINCH_EN, HIGH);
 	delay(10);
 	sv_winch.write(v);
-	delay(1000 * (abs((current_winch - v))/WINCH_SPEED) + 150);
-	digitalWrite(WINCH_EN, LOW);
-	digitalWrite(SP_EN, LOW);
 
+	winch_moving = true;
+	winch_until = millis() + still_to_go + 1000 * (abs((current_winch - v))/WINCH_SPEED) + 150;
 	current_winch = v;
+}
+
+void servoService() {
+	if (winch_moving && (long)(millis() - winch_until) >= 0) {
+		digitalWrite(WINCH_EN, LOW);
+		digitalWrite(SP_EN, LOW);
+		winch_moving = false;
+	}
 }
 
 void normalizedWinchTo(int value) {
@@ -114,6 +131,11 @@ void rudderTo(int value) {
 	if (current_rudder == v)
 		return;
 
+	// one servo powered at a time, as before: hold the winch where it is while the rudder moves
+	uint32_t paused = millis();
+	if (winch_moving)
+		digitalWrite(WINCH_EN, LOW);
+
 	digitalWrite(SP_EN, HIGH);
 	delay(10);
 	digitalWrite(RUDDER_EN, HIGH);
@@ -122,12 +144,17 @@ void rudderTo(int value) {
 	delay(1000 * (abs((current_rudder - v))/RUDDER_SPEED) + 150);
 	digitalWrite(RUDDER_EN, LOW);
 
+	if (winch_moving) {
+		digitalWrite(WINCH_EN, HIGH);
+		winch_until += millis() - paused;
+	} else {
 #ifndef NO_SAIL
-	digitalWrite(SP_EN, LOW);
-#else
-	if (!motor_running)
 		digitalWrite(SP_EN, LOW);
+#else
+		if (!motor_running)
+			digitalWrite(SP_EN, LOW);
 #endif
+	}
 
 	current_rudder = v;
 }

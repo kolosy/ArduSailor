@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ArduSailor simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>ArduSailor simulator</h1>
+    <div class="clock"><span id="sim-time">0:00</span> <span id="realtime" class="muted"></span></div>
+    <div class="speed" id="speed">
+      <button data-pause title="Pause / resume">&#10074;&#10074;</button>
+      <button data-speed="1">1&times;</button>
+      <button data-speed="2">2&times;</button>
+      <button data-speed="5">5&times;</button>
+      <button data-speed="10">10&times;</button>
+      <button data-speed="30">30&times;</button>
+      <button data-speed="0" title="As fast as it will go">max</button>
+    </div>
+    <div class="actions">
+      <button id="reset-boat" title="Put the boat back at the start, stopped">Reset boat</button>
+      <button id="restart" title="Restart the firmware (setup() runs again; EEPROM is kept)">Reboot Arduino</button>
+    </div>
+    <div id="status" class="status">connecting&hellip;</div>
+  </header>
+
+  <main>
+    <section class="panel map-panel">
+      <div class="panel-title">Course <span class="hint">scroll to zoom, drag to pan, drag a waypoint to move it</span>
+        <label class="inline"><input type="checkbox" id="follow" checked> follow boat</label>
+        <button id="fit-course" class="small" title="Zoom out to show every waypoint">whole course</button>
+        <button id="clear-track" class="small">clear track</button>
+      </div>
+      <canvas id="map"></canvas>
+    </section>
+
+    <section class="panel boat-panel">
+      <div class="panel-title">Boat from above <span class="hint">bow up</span></div>
+      <canvas id="boat"></canvas>
+    </section>
+
+    <section class="panel stern-panel">
+      <div class="panel-title">From astern</div>
+      <canvas id="stern"></canvas>
+    </section>
+
+    <section class="panel chart-panel">
+      <div class="panel-title">Last 60 seconds
+        <span class="legend"><i class="sw true"></i>heading <i class="sw fw"></i>compass <i class="sw req"></i>requested <i class="sw rud"></i>rudder</span>
+      </div>
+      <canvas id="chart"></canvas>
+    </section>
+
+    <section class="panel instruments-panel">
+      <div class="panel-title">Simulator vs firmware</div>
+      <table id="instruments"></table>
+    </section>
+
+    <section class="panel console-panel">
+      <div class="panel-title">Serial
+        <label class="inline"><input type="checkbox" id="hide-data"> hide data lines</label>
+        <button id="clear-console" class="small">clear</button>
+      </div>
+      <pre id="console"></pre>
+      <form id="serial-form">
+        <input id="serial-input" autocomplete="off" placeholder="type to the firmware's Serial port (menu: m, logging: l, override: o)">
+        <label class="inline"><input type="checkbox" id="serial-newline"> newline</label>
+        <button>Send</button>
+      </form>
+      <div class="keys">
+        <button data-serial="m" title="Open the menu (then a, c, o, r, t, y, u, m)">m menu</button>
+        <button data-serial="l" title="Toggle serial logging">l log</button>
+        <button data-serial="o" title="Manual override">o override</button>
+        <button data-serial="a" title="Manual: rudder 10 to port">a</button>
+        <button data-serial="s" title="Manual: centre rudder">s</button>
+        <button data-serial="d" title="Manual: rudder 10 to starboard">d</button>
+        <button data-serial="q" title="Manual: sheet out">q</button>
+        <button data-serial="w" title="Manual: centre winch">w</button>
+        <button data-serial="e" title="Manual: sheet in">e</button>
+        <button data-serial="x" title="End manual override">x end</button>
+      </div>
+    </section>
+
+    <aside class="panel controls">
+      <details open>
+        <summary>Pilot (PID)</summary>
+        <div class="pid">
+          <label>Kp <input type="number" id="kp" step="0.01"></label>
+          <label>Ki <input type="number" id="ki" step="0.001"></label>
+          <label>Kd <input type="number" id="kd" step="0.01"></label>
+          <button id="pid-apply" title="Calls the firmware's updateCurrentPIDTunings(), which also stores them in EEPROM">Apply</button>
+        </div>
+        <label class="inline"><input type="checkbox" id="autotune"> PID autotune running</label>
+        <p class="note">The firmware's defaults are 0.1, 0.001, 2.8. Gains are kept in the simulated EEPROM across reboots.</p>
+      </details>
+      <details>
+        <summary>Compass calibration</summary>
+        <p class="note">Runs the firmware's own calibration from its menu. The firmware doesn't steer or trim while it runs (about 40 seconds).</p>
+        <button id="cal-tumble" title="Menu c, while the simulator lifts the boat out and turns it through every orientation">3-D: tumble the boat (menu c)</button>
+        <button id="cal-circle" title="Menu o: rudder 30 degrees over while the boat circles flat">Flat: circle on the water (menu o)</button>
+      </details>
+      <div id="param-groups"></div>
+      <details>
+        <summary>Firmware settings (#define)</summary>
+        <p class="note">Constants from the firmware, made adjustable for the simulator. Ones marked &#8635; only take effect after a reboot.</p>
+        <div id="tunables"></div>
+      </details>
+      <details>
+        <summary>Waypoints</summary>
+        <p class="note">Drag them on the map. The route goes 0, 1, 2, 3 and back.</p>
+        <table id="waypoints"></table>
+      </details>
+      <details>
+        <summary>Start over</summary>
+        <button id="defaults" title="Forget every change made here and reboot">Reset all settings</button>
+        <button id="erase" title="Blank EEPROM: default PID gains, no compass calibration">Erase EEPROM and reboot</button>
+      </details>
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

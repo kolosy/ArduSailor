@@ -46,3 +46,7 @@ screenlog.*
 .idea/
 build/
 .DS_Store
+
+# simulator state and Python caches
+sim/.state/
+__pycache__/

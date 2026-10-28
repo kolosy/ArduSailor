@@ -210,12 +210,14 @@ void world_step(double dt) {
     boat.drive = sail_f;
     boat.side = sail_s;
 
-    // rudder: works on the water flowing past the stern, which swings out when the boat turns
+    // rudder: works on the water flowing past the stern, which swings out when the boat turns. Going backwards
+    // the flow comes from behind, so both the sideslip's effect and the lift reverse. Stalled, it's a brake.
     double stern_v = boat.v - boat.r * RUDDER_ARM;
     double flow2 = boat.u * boat.u + stern_v * stern_v;
-    double attack = boat.rudder + atan2(stern_v, std::max(fabs(boat.u), 0.05));
+    double attack = boat.rudder + atan(stern_v / (boat.u >= 0 ? std::max(boat.u, 0.05) : std::min(boat.u, -0.05)));
     double rudder_lift = 0.5 * RHO_WATER * RUDDER_AREA * flow2 * rudder_cl(attack) * (boat.u < 0 ? -1 : 1);
-    double rudder_drag = 0.5 * RHO_WATER * RUDDER_AREA * flow2 * (0.02 + 0.25 * rudder_cl(attack) * rudder_cl(attack));
+    double rudder_drag = 0.5 * RHO_WATER * RUDDER_AREA * flow2 *
+                         (0.02 + 0.1 * rudder_cl(attack) * rudder_cl(attack) + 1.1 * sin(attack) * sin(attack));
 
     // windage on the hull, centred ahead of the keel: blows the bow off the wind when the boat stops
     double hull_q = 0.5 * RHO_AIR * boat.aws * boat.aws * HULL_WINDAGE;

@@ -371,11 +371,10 @@ for (const btn of document.querySelectorAll('.keys button')) {
 function steeringFor(fw) {
   const name = (t) => (t > 0 ? 'starboard' : 'port');
   if (fw.recovering) return `beam reach on ${name(fw.on_tack)} tack, out of irons`;
-  if (fw.gybing_round) return `bearing away to gybe onto ${name(-fw.tack)}, too slow to tack`;
-  if (fw.tack_wanted) return `building speed to tack onto ${name(-fw.tack)}`;
+  if (fw.gybing_round) return `bearing away to gybe onto ${name(-fw.tack)}, can't tack`;
+  if (fw.tack_wanted) return `coming up to tack onto ${name(-fw.tack)}` + (fw.failed_tacks ? ` (${fw.failed_tacks} failed)` : '');
   if (fw.tack !== fw.on_tack) return `${fw.beating ? 'tacking' : 'tacking or gybing'} onto ${name(fw.tack)}`;
-  const easing = fw.pointing > tunableValue('IRONS', 40) + 0.5 ? `, coming up to the wind (${fmt(fw.pointing, 0, '°')} off)` : '';
-  return (fw.beating ? `beating, ${name(fw.tack)} tack` : `${name(fw.tack)} tack`) + easing;
+  return (fw.beating ? `beating, ${name(fw.tack)} tack` : `${name(fw.tack)} tack`) + (fw.rebuilding ? ', building speed' : '');
 }
 
 function renderInstruments() {

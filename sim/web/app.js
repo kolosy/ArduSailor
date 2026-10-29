@@ -262,15 +262,38 @@ function buildParams(params) {
       Object.assign(range, { min: p.min, max: p.max, step: p.step, value: p.value });
       const push = debounce((v) => send(`set ${p.key} ${v}`), 120);
       const changed = (v) => input.classList.toggle('changed', Math.abs(v - p.default) > 1e-9);
-      range.addEventListener('input', () => { input.value = range.value; changed(Number(range.value)); push(range.value); });
-      input.addEventListener('change', () => { range.value = input.value; changed(Number(input.value)); push(input.value); });
+      range.addEventListener('input', () => { input.value = range.value; changed(Number(range.value)); push(range.value); keepWavesRealistic(); });
+      input.addEventListener('change', () => { range.value = input.value; changed(Number(input.value)); push(input.value); keepWavesRealistic(); });
       row.append(label, input, range);
       det.append(row);
-      state.params[p.key] = { info: p, input, range };
+      state.params[p.key] = { info: p, input, range, push, changed };
       changed(p.value);
+    }
+    if (group === 'Waves') {
+      const note = document.createElement('p');
+      note.className = 'note';
+      note.textContent = 'The period goes up with the height when it has to, so the waves are no steeper than 1 in 10 (real ones break at about 1 in 7).';
+      det.append(note);
     }
     root.append(det);
   }
+}
+
+// Steeper than this (height to length) isn't a wave that could exist for long: they break at about 1 in 7.
+const MAX_WAVE_STEEPNESS = 1 / 10;
+
+// a higher wave needs a longer one, and in deep water length = g T^2 / 2 pi
+function keepWavesRealistic() {
+  const h = state.params.wave_height, t = state.params.wave_period;
+  if (!h || !t) return;
+  const step = Number(t.info.step) || 0.1;
+  const shortest = Math.sqrt(2 * Math.PI * (Number(h.input.value) / MAX_WAVE_STEEPNESS) / 9.81);
+  const period = +Math.min(t.info.max, Math.ceil(shortest / step - 1e-9) * step).toFixed(3);
+  if (Number(t.input.value) >= period) return;
+  t.input.value = period;
+  t.range.value = period;
+  t.changed(period);
+  t.push(period);
 }
 
 function showParam(key, value) {

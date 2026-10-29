@@ -148,7 +148,7 @@ std::vector<ParamInfo> &param_table() {
         {"gust", "Wind", "Gusts", "%", 0, 60, 1, &p.gust, 0},
         {"shift", "Wind", "Shifts", "deg", 0, 45, 1, &p.shift, 0},
         {"wind_period", "Wind", "Gust and shift period", "s", 2, 120, 1, &p.wind_period, 0},
-        {"wave_height", "Waves", "Height", "m", 0, 0.5, 0.01, &p.wave_height, 0},
+        {"wave_height", "Waves", "Height", "m", 0, 1, 0.01, &p.wave_height, 0},
         {"wave_period", "Waves", "Period", "s", 0.5, 6, 0.1, &p.wave_period, 0},
         {"wave_angle", "Waves", "Direction off the wind", "deg", -180, 180, 5, &p.wave_angle, 0},
         {"mass", "Boat", "Displacement", "kg", 1, 10, 0.1, &p.mass, 0},
@@ -295,7 +295,8 @@ void send_frame() {
                         .n("gps_age_ms", fw.gps_age_ms).b("beating", fw.was_beating).n("tack", fw.tack)
                         .n("on_tack", fw.current_tack).b("recovering", fw.recovering).b("making_way", fw.making_way)
                         .b("tack_wanted", fw.tack_wanted).b("gybing_round", fw.gybing_round)
-                        .n("cross_track", fw.cross_track, 4).n("corridor", fw.corridor, 4).n("pointing", fw.pointing, 4)
+                        .n("cross_track", fw.cross_track, 4).n("corridor", fw.corridor, 4)
+                        .b("rebuilding", fw.rebuilding).n("failed_tacks", fw.failed_tacks)
                         .n("leg_x", fw.leg_lat != 0 ? lx : NAN).n("leg_y", fw.leg_lat != 0 ? ly : NAN)
                         .n("cycle", fw.cycle, 10).n("kp", fw.kp).n("ki", fw.ki).n("kd", fw.kd)
                         .n("pid_output", fw.pid_output, 4).n("rudder_cmd", fw.rudder_servo_cmd)
@@ -587,7 +588,10 @@ int main(int argc, char **argv) {
 
     for (auto &s : sets)
         if (!find_param(s.first)) fprintf(stderr, "unknown parameter %s\n", s.first.c_str());
-        else *find_param(s.first)->value = s.second;
+        else {
+            ParamInfo *p = find_param(s.first);
+            *p->value = std::max(p->min, std::min(p->max, s.second));
+        }
     for (auto &s : tunes)
         if (!find_tunable(s.first)) fprintf(stderr, "unknown firmware setting %s\n", s.first.c_str());
         else set_tunable(s.first, s.second);

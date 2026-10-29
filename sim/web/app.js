@@ -262,15 +262,38 @@ function buildParams(params) {
       Object.assign(range, { min: p.min, max: p.max, step: p.step, value: p.value });
       const push = debounce((v) => send(`set ${p.key} ${v}`), 120);
       const changed = (v) => input.classList.toggle('changed', Math.abs(v - p.default) > 1e-9);
-      range.addEventListener('input', () => { input.value = range.value; changed(Number(range.value)); push(range.value); });
-      input.addEventListener('change', () => { range.value = input.value; changed(Number(input.value)); push(input.value); });
+      range.addEventListener('input', () => { input.value = range.value; changed(Number(range.value)); push(range.value); keepWavesRealistic(); });
+      input.addEventListener('change', () => { range.value = input.value; changed(Number(input.value)); push(input.value); keepWavesRealistic(); });
       row.append(label, input, range);
       det.append(row);
-      state.params[p.key] = { info: p, input, range };
+      state.params[p.key] = { info: p, input, range, push, changed };
       changed(p.value);
+    }
+    if (group === 'Waves') {
+      const note = document.createElement('p');
+      note.className = 'note';
+      note.textContent = 'The period goes up with the height when it has to, so the waves are no steeper than 1 in 10 (real ones break at about 1 in 7).';
+      det.append(note);
     }
     root.append(det);
   }
+}
+
+// Steeper than this (height to length) isn't a wave that could exist for long: they break at about 1 in 7.
+const MAX_WAVE_STEEPNESS = 1 / 10;
+
+// a higher wave needs a longer one, and in deep water length = g T^2 / 2 pi
+function keepWavesRealistic() {
+  const h = state.params.wave_height, t = state.params.wave_period;
+  if (!h || !t) return;
+  const step = Number(t.info.step) || 0.1;
+  const shortest = Math.sqrt(2 * Math.PI * (Number(h.input.value) / MAX_WAVE_STEEPNESS) / 9.81);
+  const period = +Math.min(t.info.max, Math.ceil(shortest / step - 1e-9) * step).toFixed(3);
+  if (Number(t.input.value) >= period) return;
+  t.input.value = period;
+  t.range.value = period;
+  t.changed(period);
+  t.push(period);
 }
 
 function showParam(key, value) {
@@ -371,11 +394,10 @@ for (const btn of document.querySelectorAll('.keys button')) {
 function steeringFor(fw) {
   const name = (t) => (t > 0 ? 'starboard' : 'port');
   if (fw.recovering) return `beam reach on ${name(fw.on_tack)} tack, out of irons`;
-  if (fw.gybing_round) return `bearing away to gybe onto ${name(-fw.tack)}, too slow to tack`;
-  if (fw.tack_wanted) return `building speed to tack onto ${name(-fw.tack)}`;
+  if (fw.gybing_round) return `bearing away to gybe onto ${name(-fw.tack)}, can't tack`;
+  if (fw.tack_wanted) return `coming up to tack onto ${name(-fw.tack)}` + (fw.failed_tacks ? ` (${fw.failed_tacks} failed)` : '');
   if (fw.tack !== fw.on_tack) return `${fw.beating ? 'tacking' : 'tacking or gybing'} onto ${name(fw.tack)}`;
-  const easing = fw.pointing > tunableValue('IRONS', 40) + 0.5 ? `, coming up to the wind (${fmt(fw.pointing, 0, '°')} off)` : '';
-  return (fw.beating ? `beating, ${name(fw.tack)} tack` : `${name(fw.tack)} tack`) + easing;
+  return (fw.beating ? `beating, ${name(fw.tack)} tack` : `${name(fw.tack)} tack`) + (fw.rebuilding ? ', building speed' : '');
 }
 
 function renderInstruments() {

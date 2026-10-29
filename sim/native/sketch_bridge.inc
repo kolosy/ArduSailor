@@ -32,7 +32,8 @@ extern "C" void simfw_snapshot(simfw_state *s) {
     s->leg_lat = leg_lat;
     s->leg_lon = leg_lon;
     s->corridor = CORRIDOR;
-    s->pointing = pointing;
+    s->rebuilding = rebuilding;
+    s->failed_tacks = failed_tacks;
     s->tuning_pid = tuningPID;
     s->manual_override = manual_override;
     s->remote_control = remote_control;
